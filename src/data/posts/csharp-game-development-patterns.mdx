@@ -1,0 +1,1802 @@
+---
+title: "C# 游戏开发模式与实践：从设计模式到架构模式"
+date: "2024-08-07"
+summary: "深入探讨C#在游戏开发中的设计模式和架构模式，包括观察者模式、状态模式、工厂模式等实战应用。"
+tags: ["C#", "游戏开发", "设计模式", "架构模式", "Unity"]
+published: true
+---
+
+# C# 游戏开发模式与实践：从设计模式到架构模式
+
+C#作为游戏开发的主要语言之一，特别是在Unity引擎中，有着广泛的应用。本文将深入探讨C#在游戏开发中的各种设计模式和架构模式，帮助你构建更优雅、可维护的游戏代码。
+
+## C#在游戏开发中的优势
+
+```csharp
+// C#游戏开发的核心优势
+var csharpAdvantages = new {
+    语言特性 = new[] {
+        "面向对象编程",
+        "强类型检查",
+        "自动内存管理",
+        "异步编程支持",
+        "LINQ查询",
+        "属性和事件"
+    },
+    生态支持 = new[] {
+        "Unity引擎原生支持",
+        "丰富的第三方库",
+        "Visual Studio强大IDE",
+        "NuGet包管理",
+        "完善的文档和社区"
+    },
+    性能特点 = new[] {
+        "JIT编译优化",
+        "值类型优化",
+        "异步IO",
+        "多线程支持",
+        "内存池管理"
+    }
+};
+```
+
+## 设计模式实战
+
+### 1. 观察者模式 - 事件系统
+
+```csharp
+// 事件管理器 - 观察者模式实现
+public class EventManager : MonoBehaviour
+{
+    private static EventManager _instance;
+    public static EventManager Instance => _instance;
+    
+    private Dictionary<string, List<Action<object>>> eventListeners = 
+        new Dictionary<string, List<Action<object>>>();
+    
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    // 注册事件监听器
+    public void AddListener(string eventName, Action<object> listener)
+    {
+        if (!eventListeners.ContainsKey(eventName))
+        {
+            eventListeners[eventName] = new List<Action<object>>();
+        }
+        
+        if (!eventListeners[eventName].Contains(listener))
+        {
+            eventListeners[eventName].Add(listener);
+        }
+    }
+    
+    // 移除事件监听器
+    public void RemoveListener(string eventName, Action<object> listener)
+    {
+        if (eventListeners.ContainsKey(eventName))
+        {
+            eventListeners[eventName].Remove(listener);
+        }
+    }
+    
+    // 触发事件
+    public void TriggerEvent(string eventName, object eventData = null)
+    {
+        if (eventListeners.ContainsKey(eventName))
+        {
+            // 创建副本以避免在迭代过程中修改集合
+            var listeners = new List<Action<object>>(eventListeners[eventName]);
+            
+            foreach (var listener in listeners)
+            {
+                try
+                {
+                    listener?.Invoke(eventData);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error in event listener for {eventName}: {e.Message}");
+                }
+            }
+        }
+    }
+}
+
+// 游戏事件类型
+public static class GameEvents
+{
+    public const string PlayerDeath = "PlayerDeath";
+    public const string LevelComplete = "LevelComplete";
+    public const string EnemyDefeated = "EnemyDefeated";
+    public const string ItemCollected = "ItemCollected";
+    public const string GamePaused = "GamePaused";
+    public const string GameResumed = "GameResumed";
+}
+
+// 使用示例
+public class PlayerHealth : MonoBehaviour
+{
+    public int maxHealth = 100;
+    private int currentHealth;
+    
+    private void Start()
+    {
+        currentHealth = maxHealth;
+        EventManager.Instance.AddListener(GameEvents.PlayerDeath, OnPlayerDeath);
+    }
+    
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+    
+    private void Die()
+    {
+        EventManager.Instance.TriggerEvent(GameEvents.PlayerDeath, this);
+        Destroy(gameObject);
+    }
+    
+    private void OnPlayerDeath(object eventData)
+    {
+        Debug.Log("Player death event received");
+        // 处理玩家死亡逻辑
+    }
+    
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener(GameEvents.PlayerDeath, OnPlayerDeath);
+    }
+}
+
+public class ScoreManager : MonoBehaviour
+{
+    private int score = 0;
+    
+    private void Start()
+    {
+        EventManager.Instance.AddListener(GameEvents.EnemyDefeated, OnEnemyDefeated);
+        EventManager.Instance.AddListener(GameEvents.ItemCollected, OnItemCollected);
+    }
+    
+    private void OnEnemyDefeated(object eventData)
+    {
+        score += 100;
+        Debug.Log($"Score: {score}");
+    }
+    
+    private void OnItemCollected(object eventData)
+    {
+        score += 50;
+        Debug.Log($"Score: {score}");
+    }
+    
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener(GameEvents.EnemyDefeated, OnEnemyDefeated);
+        EventManager.Instance.RemoveListener(GameEvents.ItemCollected, OnItemCollected);
+    }
+}
+```
+
+### 2. 状态模式 - 游戏状态管理
+
+```csharp
+// 状态基类
+public abstract class GameState
+{
+    protected GameManager gameManager;
+    
+    public GameState(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
+    }
+    
+    public virtual void Enter() { }
+    public virtual void Exit() { }
+    public virtual void Update() { }
+    public virtual void FixedUpdate() { }
+    public virtual void LateUpdate() { }
+    public virtual void HandleInput() { }
+}
+
+// 游戏管理器
+public class GameManager : MonoBehaviour
+{
+    private static GameManager _instance;
+    public static GameManager Instance => _instance;
+    
+    private GameState currentState;
+    private Dictionary<System.Type, GameState> states = 
+        new Dictionary<System.Type, GameState>();
+    
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+            InitializeStates();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    private void InitializeStates()
+    {
+        // 初始化所有状态
+        AddState(new MainMenuState(this));
+        AddState(new GameplayState(this));
+        AddState(new PauseState(this));
+        AddState(new GameOverState(this));
+        AddState(new VictoryState(this));
+        
+        // 设置初始状态
+        ChangeState<MainMenuState>();
+    }
+    
+    private void AddState(GameState state)
+    {
+        states[state.GetType()] = state;
+    }
+    
+    public void ChangeState<T>() where T : GameState
+    {
+        var stateType = typeof(T);
+        
+        if (states.TryGetValue(stateType, out var newState))
+        {
+            currentState?.Exit();
+            currentState = newState;
+            currentState.Enter();
+        }
+    }
+    
+    private void Update()
+    {
+        currentState?.Update();
+        currentState?.HandleInput();
+    }
+    
+    private void FixedUpdate()
+    {
+        currentState?.FixedUpdate();
+    }
+    
+    private void LateUpdate()
+    {
+        currentState?.LateUpdate();
+    }
+}
+
+// 主菜单状态
+public class MainMenuState : GameState
+{
+    public MainMenuState(GameManager gameManager) : base(gameManager) { }
+    
+    public override void Enter()
+    {
+        Debug.Log("Entering Main Menu");
+        Time.timeScale = 1f;
+        UIManager.Instance.ShowMainMenu();
+    }
+    
+    public override void Exit()
+    {
+        Debug.Log("Exiting Main Menu");
+        UIManager.Instance.HideMainMenu();
+    }
+    
+    public override void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            gameManager.ChangeState<GameplayState>();
+        }
+    }
+}
+
+// 游戏状态
+public class GameplayState : GameState
+{
+    public GameplayState(GameManager gameManager) : base(gameManager) { }
+    
+    public override void Enter()
+    {
+        Debug.Log("Entering Gameplay");
+        Time.timeScale = 1f;
+        UIManager.Instance.ShowGameUI();
+        SpawnManager.Instance.StartSpawning();
+    }
+    
+    public override void Exit()
+    {
+        Debug.Log("Exiting Gameplay");
+        UIManager.Instance.HideGameUI();
+        SpawnManager.Instance.StopSpawning();
+    }
+    
+    public override void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            gameManager.ChangeState<PauseState>();
+        }
+    }
+    
+    public override void HandleInput()
+    {
+        // 处理游戏输入
+    }
+}
+
+// 暂停状态
+public class PauseState : GameState
+{
+    public PauseState(GameManager gameManager) : base(gameManager) { }
+    
+    public override void Enter()
+    {
+        Debug.Log("Entering Pause");
+        Time.timeScale = 0f;
+        UIManager.Instance.ShowPauseMenu();
+    }
+    
+    public override void Exit()
+    {
+        Debug.Log("Exiting Pause");
+        Time.timeScale = 1f;
+        UIManager.Instance.HidePauseMenu();
+    }
+    
+    public override void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            gameManager.ChangeState<GameplayState>();
+        }
+    }
+}
+
+// 游戏结束状态
+public class GameOverState : GameState
+{
+    public GameOverState(GameManager gameManager) : base(gameManager) { }
+    
+    public override void Enter()
+    {
+        Debug.Log("Entering Game Over");
+        Time.timeScale = 0f;
+        UIManager.Instance.ShowGameOverScreen();
+    }
+    
+    public override void Exit()
+    {
+        Debug.Log("Exiting Game Over");
+        UIManager.Instance.HideGameOverScreen();
+    }
+    
+    public override void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            // 重新开始游戏
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        else if (Input.GetKeyDown(KeyCode.M))
+        {
+            gameManager.ChangeState<MainMenuState>();
+        }
+    }
+}
+```
+
+### 3. 工厂模式 - 对象创建管理
+
+```csharp
+// 对象工厂基类
+public abstract class ObjectFactory<T> where T : MonoBehaviour
+{
+    private Dictionary<string, GameObject> prefabs = 
+        new Dictionary<string, GameObject>();
+    
+    private List<T> activeObjects = new List<T>();
+    private Queue<T> objectPool = new Queue<T>();
+    
+    public int PoolSize = 10;
+    
+    protected void RegisterPrefab(string key, GameObject prefab)
+    {
+        prefabs[key] = prefab;
+    }
+    
+    public T Create(string key, Vector3 position, Quaternion rotation)
+    {
+        T obj = GetFromPool(key);
+        
+        if (obj != null)
+        {
+            obj.transform.position = position;
+            obj.transform.rotation = rotation;
+            obj.gameObject.SetActive(true);
+            activeObjects.Add(obj);
+        }
+        
+        return obj;
+    }
+    
+    private T GetFromPool(string key)
+    {
+        // 尝试从对象池获取
+        if (objectPool.Count > 0)
+        {
+            return objectPool.Dequeue();
+        }
+        
+        // 创建新对象
+        if (prefabs.TryGetValue(key, out var prefab))
+        {
+            GameObject newObj = Instantiate(prefab);
+            T component = newObj.GetComponent<T>();
+            
+            if (component != null)
+            {
+                return component;
+            }
+        }
+        
+        return null;
+    }
+    
+    public void ReturnToPool(T obj)
+    {
+        obj.gameObject.SetActive(false);
+        activeObjects.Remove(obj);
+        objectPool.Enqueue(obj);
+    }
+    
+    public void ClearPool()
+    {
+        foreach (var obj in activeObjects)
+        {
+            if (obj != null)
+            {
+                Destroy(obj.gameObject);
+            }
+        }
+        
+        foreach (var obj in objectPool)
+        {
+            if (obj != null)
+            {
+                Destroy(obj.gameObject);
+            }
+        }
+        
+        activeObjects.Clear();
+        objectPool.Clear();
+    }
+}
+
+// 敌人工厂
+public class EnemyFactory : ObjectFactory<Enemy>
+{
+    private static EnemyFactory _instance;
+    public static EnemyFactory Instance => _instance;
+    
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+            InitializePrefabs();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    private void InitializePrefabs()
+    {
+        // 注册敌人预制体
+        RegisterPrefab("Zombie", Resources.Load<GameObject>("Enemies/Zombie"));
+        RegisterPrefab("Skeleton", Resources.Load<GameObject>("Enemies/Skeleton"));
+        RegisterPrefab("Orc", Resources.Load<GameObject>("Enemies/Orc"));
+    }
+    
+    public Enemy CreateEnemy(EnemyType type, Vector3 position)
+    {
+        string key = type.ToString();
+        return Create(key, position, Quaternion.identity);
+    }
+}
+
+public enum EnemyType
+{
+    Zombie,
+    Skeleton,
+    Orc
+}
+
+// 特效工厂
+public class EffectFactory : ObjectFactory<ParticleSystem>
+{
+    private static EffectFactory _instance;
+    public static EffectFactory Instance => _instance;
+    
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+            InitializePrefabs();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    private void InitializePrefabs()
+    {
+        RegisterPrefab("Explosion", Resources.Load<GameObject>("Effects/Explosion"));
+        RegisterPrefab("Hit", Resources.Load<GameObject>("Effects/Hit"));
+        RegisterPrefab("LevelUp", Resources.Load<GameObject>("Effects/LevelUp"));
+    }
+    
+    public ParticleSystem CreateEffect(EffectType type, Vector3 position)
+    {
+        string key = type.ToString();
+        var effect = Create(key, position, Quaternion.identity);
+        
+        // 自动返回到对象池
+        if (effect != null)
+        {
+            StartCoroutine(ReturnEffectAfterDuration(effect, effect.main.duration));
+        }
+        
+        return effect;
+    }
+    
+    private System.Collections.IEnumerator ReturnEffectAfterDuration(ParticleSystem effect, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        ReturnToPool(effect);
+    }
+}
+
+public enum EffectType
+{
+    Explosion,
+    Hit,
+    LevelUp
+}
+
+// 使用示例
+public class SpawnManager : MonoBehaviour
+{
+    public EnemyType[] enemyTypes;
+    public float spawnInterval = 2f;
+    public float spawnRadius = 10f;
+    
+    private float spawnTimer;
+    
+    private void Update()
+    {
+        spawnTimer += Time.deltaTime;
+        
+        if (spawnTimer >= spawnInterval)
+        {
+            SpawnEnemy();
+            spawnTimer = 0f;
+        }
+    }
+    
+    private void SpawnEnemy()
+    {
+        Vector3 randomPosition = transform.position + 
+            Random.insideUnitSphere * spawnRadius;
+        randomPosition.y = 0f;
+        
+        EnemyType randomType = enemyTypes[Random.Range(0, enemyTypes.Length)];
+        Enemy enemy = EnemyFactory.Instance.CreateEnemy(randomType, randomPosition);
+        
+        if (enemy != null)
+        {
+            enemy.Initialize();
+        }
+    }
+}
+```
+
+### 4. 命令模式 - 输入系统
+
+```csharp
+// 命令接口
+public interface ICommand
+{
+    void Execute();
+    void Undo();
+}
+
+// 移动命令
+public class MoveCommand : ICommand
+{
+    private PlayerController player;
+    private Vector3 direction;
+    private Vector3 previousPosition;
+    
+    public MoveCommand(PlayerController player, Vector3 direction)
+    {
+        this.player = player;
+        this.direction = direction;
+    }
+    
+    public void Execute()
+    {
+        previousPosition = player.transform.position;
+        player.Move(direction);
+    }
+    
+    public void Undo()
+    {
+        player.transform.position = previousPosition;
+    }
+}
+
+// 跳跃命令
+public class JumpCommand : ICommand
+{
+    private PlayerController player;
+    
+    public JumpCommand(PlayerController player)
+    {
+        this.player = player;
+    }
+    
+    public void Execute()
+    {
+        player.Jump();
+    }
+    
+    public void Undo()
+    {
+        // 跳跃无法撤销，这里可以留空或实现其他逻辑
+    }
+}
+
+// 攻击命令
+public class AttackCommand : ICommand
+{
+    private PlayerController player;
+    
+    public AttackCommand(PlayerController player)
+    {
+        this.player = player;
+    }
+    
+    public void Execute()
+    {
+        player.Attack();
+    }
+    
+    public void Undo()
+    {
+        // 攻击无法撤销
+    }
+}
+
+// 输入管理器
+public class InputManager : MonoBehaviour
+{
+    private Dictionary<KeyCode, ICommand> keyBindings = 
+        new Dictionary<KeyCode, ICommand>();
+    
+    private Stack<ICommand> commandHistory = new Stack<ICommand>();
+    public int maxHistorySize = 10;
+    
+    private PlayerController player;
+    
+    private void Start()
+    {
+        player = FindObjectOfType<PlayerController>();
+        InitializeKeyBindings();
+    }
+    
+    private void InitializeKeyBindings()
+    {
+        // WASD移动
+        keyBindings[KeyCode.W] = new MoveCommand(player, Vector3.forward);
+        keyBindings[KeyCode.S] = new MoveCommand(player, Vector3.back);
+        keyBindings[KeyCode.A] = new MoveCommand(player, Vector3.left);
+        keyBindings[KeyCode.D] = new MoveCommand(player, Vector3.right);
+        
+        // 空格跳跃
+        keyBindings[KeyCode.Space] = new JumpCommand(player);
+        
+        // 鼠标左键攻击
+        keyBindings[KeyCode.Mouse0] = new AttackCommand(player);
+    }
+    
+    private void Update()
+    {
+        HandleKeyboardInput();
+        HandleMouseInput();
+        
+        // 撤销功能
+        if (Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.LeftControl))
+        {
+            UndoLastCommand();
+        }
+    }
+    
+    private void HandleKeyboardInput()
+    {
+        foreach (var binding in keyBindings)
+        {
+            if (Input.GetKeyDown(binding.Key))
+            {
+                ExecuteCommand(binding.Value);
+            }
+        }
+    }
+    
+    private void HandleMouseInput()
+    {
+        // 处理鼠标输入
+        if (Input.GetMouseButtonDown(0))
+        {
+            ExecuteCommand(keyBindings[KeyCode.Mouse0]);
+        }
+    }
+    
+    private void ExecuteCommand(ICommand command)
+    {
+        command.Execute();
+        
+        // 添加到历史记录
+        commandHistory.Push(command);
+        
+        // 限制历史记录大小
+        if (commandHistory.Count > maxHistorySize)
+        {
+            var tempStack = new Stack<ICommand>();
+            
+            // 保留最近的命令
+            for (int i = 0; i < maxHistorySize; i++)
+            {
+                if (commandHistory.Count > 0)
+                {
+                    tempStack.Push(commandHistory.Pop());
+                }
+            }
+            
+            commandHistory = tempStack;
+        }
+    }
+    
+    private void UndoLastCommand()
+    {
+        if (commandHistory.Count > 0)
+        {
+            ICommand lastCommand = commandHistory.Pop();
+            lastCommand.Undo();
+        }
+    }
+}
+
+// 玩家控制器
+public class PlayerController : MonoBehaviour
+{
+    public float moveSpeed = 5f;
+    public float jumpForce = 10f;
+    public float attackRange = 2f;
+    public int attackDamage = 10;
+    
+    private Rigidbody rb;
+    private bool isGrounded;
+    
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+    
+    public void Move(Vector3 direction)
+    {
+        Vector3 movement = direction * moveSpeed * Time.deltaTime;
+        transform.Translate(movement, Space.World);
+    }
+    
+    public void Jump()
+    {
+        if (isGrounded)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
+    }
+    
+    public void Attack()
+    {
+        // 检查攻击范围内的敌人
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
+        
+        foreach (var collider in hitColliders)
+        {
+            if (collider.CompareTag("Enemy"))
+            {
+                Enemy enemy = collider.GetComponent<Enemy>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(attackDamage);
+                }
+            }
+        }
+        
+        // 播放攻击动画
+        GetComponent<Animator>().SetTrigger("Attack");
+        
+        // 创建攻击特效
+        EffectFactory.Instance.CreateEffect(EffectType.Hit, transform.position);
+    }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+}
+```
+
+## 架构模式实践
+
+### 1. MVC模式 - UI系统
+
+```csharp
+// Model - 游戏数据模型
+public class GameModel
+{
+    public int Score { get; private set; }
+    public int Lives { get; private set; }
+    public int Level { get; private set; }
+    public float Health { get; private set; }
+    
+    public event System.Action<int> OnScoreChanged;
+    public event System.Action<int> OnLivesChanged;
+    public event System.Action<int> OnLevelChanged;
+    public event System.Action<float> OnHealthChanged;
+    
+    public void AddScore(int amount)
+    {
+        Score += amount;
+        OnScoreChanged?.Invoke(Score);
+    }
+    
+    public void LoseLife()
+    {
+        Lives--;
+        OnLivesChanged?.Invoke(Lives);
+    }
+    
+    public void SetLevel(int level)
+    {
+        Level = level;
+        OnLevelChanged?.Invoke(Level);
+    }
+    
+    public void SetHealth(float health)
+    {
+        Health = Mathf.Clamp(health, 0, 100);
+        OnHealthChanged?.Invoke(Health);
+    }
+}
+
+// View - UI视图
+public class GameUIView : MonoBehaviour
+{
+    public Text scoreText;
+    public Text livesText;
+    public Text levelText;
+    public Slider healthSlider;
+    
+    public void UpdateScore(int score)
+    {
+        scoreText.text = $"Score: {score}";
+    }
+    
+    public void UpdateLives(int lives)
+    {
+        livesText.text = $"Lives: {lives}";
+    }
+    
+    public void UpdateLevel(int level)
+    {
+        levelText.text = $"Level: {level}";
+    }
+    
+    public void UpdateHealth(float health)
+    {
+        healthSlider.value = health;
+    }
+    
+    public void ShowGameOver()
+    {
+        // 显示游戏结束界面
+    }
+    
+    public void ShowVictory()
+    {
+        // 显示胜利界面
+    }
+}
+
+// Controller - UI控制器
+public class GameUIController : MonoBehaviour
+{
+    private GameModel model;
+    private GameUIView view;
+    
+    private void Awake()
+    {
+        model = FindObjectOfType<GameModel>();
+        view = FindObjectOfType<GameUIView>();
+        
+        // 订阅模型事件
+        model.OnScoreChanged += view.UpdateScore;
+        model.OnLivesChanged += view.UpdateLives;
+        model.OnLevelChanged += view.UpdateLevel;
+        model.OnHealthChanged += view.UpdateHealth;
+    }
+    
+    private void OnDestroy()
+    {
+        // 取消订阅事件
+        model.OnScoreChanged -= view.UpdateScore;
+        model.OnLivesChanged -= view.UpdateLives;
+        model.OnLevelChanged -= view.UpdateLevel;
+        model.OnHealthChanged -= view.UpdateHealth;
+    }
+    
+    // 处理UI输入
+    public void OnPauseButtonClicked()
+    {
+        GameManager.Instance.ChangeState<PauseState>();
+    }
+    
+    public void OnRestartButtonClicked()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    
+    public void OnMainMenuButtonClicked()
+    {
+        GameManager.Instance.ChangeState<MainMenuState>();
+    }
+}
+```
+
+### 2. ECS模式 - 组件系统
+
+```csharp
+// 组件基类
+public abstract class GameComponent : MonoBehaviour
+{
+    protected GameObject gameObject => base.gameObject;
+    protected Transform transform => base.transform;
+    
+    public virtual void Initialize() { }
+    public virtual void UpdateComponent() { }
+    public virtual void FixedUpdateComponent() { }
+    public virtual void OnDestroyComponent() { }
+}
+
+// 实体管理器
+public class EntityManager : MonoBehaviour
+{
+    private static EntityManager _instance;
+    public static EntityManager Instance => _instance;
+    
+    private Dictionary<int, List<GameComponent>> entityComponents = 
+        new Dictionary<int, List<GameComponent>>();
+    
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    public void RegisterComponent(GameComponent component)
+    {
+        int entityId = component.gameObject.GetInstanceID();
+        
+        if (!entityComponents.ContainsKey(entityId))
+        {
+            entityComponents[entityId] = new List<GameComponent>();
+        }
+        
+        entityComponents[entityId].Add(component);
+    }
+    
+    public void UnregisterComponent(GameComponent component)
+    {
+        int entityId = component.gameObject.GetInstanceID();
+        
+        if (entityComponents.ContainsKey(entityId))
+        {
+            entityComponents[entityId].Remove(component);
+        }
+    }
+    
+    public T GetComponent<T>(int entityId) where T : GameComponent
+    {
+        if (entityComponents.ContainsKey(entityId))
+        {
+            foreach (var component in entityComponents[entityId])
+            {
+                if (component is T)
+                {
+                    return (T)component;
+                }
+            }
+        }
+        return null;
+    }
+    
+    public List<T> GetComponents<T>(int entityId) where T : GameComponent
+    {
+        var result = new List<T>();
+        
+        if (entityComponents.ContainsKey(entityId))
+        {
+            foreach (var component in entityComponents[entityId])
+            {
+                if (component is T)
+                {
+                    result.Add((T)component);
+                }
+            }
+        }
+        
+        return result;
+    }
+}
+
+// 具体组件实现
+public class HealthComponent : GameComponent
+{
+    public float maxHealth = 100f;
+    public float currentHealth;
+    
+    public event System.Action<float> OnHealthChanged;
+    public event System.Action OnDeath;
+    
+    public override void Initialize()
+    {
+        currentHealth = maxHealth;
+    }
+    
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        currentHealth = Mathf.Max(0, currentHealth);
+        
+        OnHealthChanged?.Invoke(currentHealth);
+        
+        if (currentHealth <= 0)
+        {
+            OnDeath?.Invoke();
+        }
+    }
+    
+    public void Heal(float amount)
+    {
+        currentHealth += amount;
+        currentHealth = Mathf.Min(currentHealth, maxHealth);
+        
+        OnHealthChanged?.Invoke(currentHealth);
+    }
+}
+
+public class MovementComponent : GameComponent
+{
+    public float moveSpeed = 5f;
+    public float rotationSpeed = 10f;
+    
+    private Vector3 moveDirection;
+    private Vector3 targetPosition;
+    
+    public void SetMoveDirection(Vector3 direction)
+    {
+        moveDirection = direction.normalized;
+    }
+    
+    public void SetTargetPosition(Vector3 position)
+    {
+        targetPosition = position;
+    }
+    
+    public override void UpdateComponent()
+    {
+        if (moveDirection != Vector3.zero)
+        {
+            transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+        }
+        
+        if (targetPosition != Vector3.zero)
+        {
+            Vector3 direction = targetPosition - transform.position;
+            if (direction.magnitude > 0.1f)
+            {
+                transform.Translate(direction.normalized * moveSpeed * Time.deltaTime, Space.World);
+            }
+        }
+    }
+}
+
+public class CombatComponent : GameComponent
+{
+    public float attackRange = 2f;
+    public int attackDamage = 10;
+    public float attackCooldown = 1f;
+    
+    private float lastAttackTime;
+    private HealthComponent healthComponent;
+    
+    public override void Initialize()
+    {
+        healthComponent = GetComponent<HealthComponent>();
+    }
+    
+    public bool CanAttack()
+    {
+        return Time.time - lastAttackTime >= attackCooldown;
+    }
+    
+    public void Attack(GameObject target)
+    {
+        if (!CanAttack()) return;
+        
+        float distance = Vector3.Distance(transform.position, target.transform.position);
+        
+        if (distance <= attackRange)
+        {
+            var targetHealth = target.GetComponent<HealthComponent>();
+            if (targetHealth != null)
+            {
+                targetHealth.TakeDamage(attackDamage);
+                lastAttackTime = Time.time;
+                
+                // 播放攻击动画
+                GetComponent<Animator>()?.SetTrigger("Attack");
+            }
+        }
+    }
+}
+
+// 系统基类
+public abstract class GameSystem : MonoBehaviour
+{
+    protected EntityManager entityManager;
+    
+    protected virtual void Awake()
+    {
+        entityManager = EntityManager.Instance;
+    }
+    
+    public virtual void UpdateSystem() { }
+    public virtual void FixedUpdateSystem() { }
+}
+
+// 战斗系统
+public class CombatSystem : GameSystem
+{
+    public override void UpdateSystem()
+    {
+        // 处理战斗逻辑
+        var combatComponents = FindObjectsOfType<CombatComponent>();
+        
+        foreach (var combat in combatComponents)
+        {
+            // AI攻击逻辑
+            if (combat.gameObject.CompareTag("Enemy"))
+            {
+                var player = GameObject.FindGameObjectWithTag("Player");
+                if (player != null)
+                {
+                    combat.Attack(player);
+                }
+            }
+        }
+    }
+}
+
+// 移动系统
+public class MovementSystem : GameSystem
+{
+    public override void UpdateSystem()
+    {
+        // 处理移动逻辑
+        var movementComponents = FindObjectsOfType<MovementComponent>();
+        
+        foreach (var movement in movementComponents)
+        {
+            movement.UpdateComponent();
+        }
+    }
+}
+```
+
+## 异步编程模式
+
+### 1. 异步资源加载
+
+```csharp
+// 异步资源管理器
+public class AsyncAssetLoader : MonoBehaviour
+{
+    private static AsyncAssetLoader _instance;
+    public static AsyncAssetLoader Instance => _instance;
+    
+    private Dictionary<string, UnityEngine.Object> loadedAssets = 
+        new Dictionary<string, UnityEngine.Object>();
+    
+    private Dictionary<string, System.Threading.Tasks.Task<UnityEngine.Object>> loadingTasks = 
+        new Dictionary<string, System.Threading.Tasks.Task<UnityEngine.Object>>();
+    
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    // 异步加载资源
+    public async System.Threading.Tasks.Task<T> LoadAssetAsync<T>(string path) where T : UnityEngine.Object
+    {
+        // 检查是否已加载
+        if (loadedAssets.ContainsKey(path) && loadedAssets[path] is T)
+        {
+            return (T)loadedAssets[path];
+        }
+        
+        // 检查是否正在加载
+        if (loadingTasks.ContainsKey(path))
+        {
+            return (T)await loadingTasks[path];
+        }
+        
+        // 开始加载
+        var loadTask = LoadAssetFromDiskAsync<T>(path);
+        loadingTasks[path] = loadTask;
+        
+        try
+        {
+            var asset = await loadTask;
+            loadedAssets[path] = asset;
+            return asset;
+        }
+        finally
+        {
+            loadingTasks.Remove(path);
+        }
+    }
+    
+    private async System.Threading.Tasks.Task<T> LoadAssetFromDiskAsync<T>(string path) where T : UnityEngine.Object
+    {
+        // 使用 Resources.LoadAsync
+        var request = Resources.LoadAsync<T>(path);
+        
+        while (!request.isDone)
+        {
+            await System.Threading.Tasks.Task.Yield();
+        }
+        
+        if (request.asset == null)
+        {
+            throw new System.Exception($"Failed to load asset: {path}");
+        }
+        
+        return (T)request.asset;
+    }
+    
+    // 预加载资源
+    public async System.Threading.Tasks.Task PreloadAssetsAsync<T>(string[] paths) where T : UnityEngine.Object
+    {
+        var tasks = new List<System.Threading.Tasks.Task<T>>();
+        
+        foreach (var path in paths)
+        {
+            tasks.Add(LoadAssetAsync<T>(path));
+        }
+        
+        await System.Threading.Tasks.Task.WhenAll(tasks);
+    }
+    
+    // 卸载资源
+    public void UnloadAsset(string path)
+    {
+        if (loadedAssets.ContainsKey(path))
+        {
+            loadedAssets.Remove(path);
+            Resources.UnloadUnusedAssets();
+        }
+    }
+    
+    // 清空所有资源
+    public void ClearAllAssets()
+    {
+        loadedAssets.Clear();
+        Resources.UnloadUnusedAssets();
+    }
+}
+
+// 使用示例
+public class SceneLoader : MonoBehaviour
+{
+    public string[] sceneAssetPaths;
+    
+    private async void Start()
+    {
+        await LoadSceneAssetsAsync();
+    }
+    
+    private async System.Threading.Tasks.Task LoadSceneAssetsAsync()
+    {
+        Debug.Log("开始加载场景资源...");
+        
+        var loadTasks = new List<System.Threading.Tasks.Task>();
+        
+        foreach (var path in sceneAssetPaths)
+        {
+            loadTasks.Add(AsyncAssetLoader.Instance.LoadAssetAsync<GameObject>(path));
+        }
+        
+        try
+        {
+            await System.Threading.Tasks.Task.WhenAll(loadTasks);
+            Debug.Log("场景资源加载完成！");
+            
+            // 实例化场景对象
+            foreach (var path in sceneAssetPaths)
+            {
+                var prefab = await AsyncAssetLoader.Instance.LoadAssetAsync<GameObject>(path);
+                Instantiate(prefab);
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"加载场景资源失败: {e.Message}");
+        }
+    }
+}
+```
+
+### 2. 异步任务队列
+
+```csharp
+// 异步任务队列
+public class AsyncTaskQueue : MonoBehaviour
+{
+    private static AsyncTaskQueue _instance;
+    public static AsyncTaskQueue Instance => _instance;
+    
+    private Queue<System.Func<System.Threading.Tasks.Task>> taskQueue = 
+        new Queue<System.Func<System.Threading.Tasks.Task>>();
+    
+    private bool isProcessing = false;
+    private int maxConcurrentTasks = 3;
+    private int currentTaskCount = 0;
+    
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    // 添加任务到队列
+    public void EnqueueTask(System.Func<System.Threading.Tasks.Task> task)
+    {
+        taskQueue.Enqueue(task);
+        
+        if (!isProcessing)
+        {
+            ProcessNextTask();
+        }
+    }
+    
+    private async void ProcessNextTask()
+    {
+        if (taskQueue.Count == 0 || currentTaskCount >= maxConcurrentTasks)
+        {
+            isProcessing = false;
+            return;
+        }
+        
+        isProcessing = true;
+        
+        while (taskQueue.Count > 0 && currentTaskCount < maxConcurrentTasks)
+        {
+            var task = taskQueue.Dequeue();
+            currentTaskCount++;
+            
+            // 执行任务
+            System.Threading.Tasks.Task.Run(async () => {
+                try
+                {
+                    await task();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Async task failed: {e.Message}");
+                }
+                finally
+                {
+                    currentTaskCount--;
+                    
+                    // 在主线程中处理下一个任务
+                    UnityMainThreadDispatcher.Instance.Enqueue(() => {
+                        ProcessNextTask();
+                    });
+                }
+            });
+        }
+    }
+}
+
+// 主线程调度器
+public class UnityMainThreadDispatcher : MonoBehaviour
+{
+    private static UnityMainThreadDispatcher _instance;
+    public static UnityMainThreadDispatcher Instance => _instance;
+    
+    private readonly System.Collections.Concurrent.ConcurrentQueue<System.Action> actionQueue = 
+        new System.Collections.Concurrent.ConcurrentQueue<System.Action>();
+    
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    private void Update()
+    {
+        while (actionQueue.TryDequeue(out var action))
+        {
+            try
+            {
+                action();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Main thread action failed: {e.Message}");
+            }
+        }
+    }
+    
+    public void Enqueue(System.Action action)
+    {
+        actionQueue.Enqueue(action);
+    }
+}
+
+// 使用示例
+public class GameDataManager : MonoBehaviour
+{
+    public async System.Threading.Tasks.Task SaveGameAsync(GameData data)
+    {
+        await System.Threading.Tasks.Task.Run(() => {
+            // 模拟保存游戏数据
+            System.Threading.Thread.Sleep(1000);
+            
+            // 在主线程中更新UI
+            UnityMainThreadDispatcher.Instance.Enqueue(() => {
+                UIManager.Instance.ShowMessage("游戏已保存");
+            });
+        });
+    }
+    
+    public async System.Threading.Tasks.Task LoadGameAsync()
+    {
+        await System.Threading.Tasks.Task.Run(() => {
+            // 模拟加载游戏数据
+            System.Threading.Thread.Sleep(2000);
+            
+            // 在主线程中更新游戏状态
+            UnityMainThreadDispatcher.Instance.Enqueue(() => {
+                GameManager.Instance.ChangeState<GameplayState>();
+            });
+        });
+    }
+}
+```
+
+## 性能优化模式
+
+### 1. 对象池模式
+
+```csharp
+// 通用对象池
+public class ObjectPool<T> where T : new()
+{
+    private Queue<T> pool = new Queue<T>();
+    private System.Func<T> createFunc;
+    private System.Action<T> resetAction;
+    private System.Action<T> onGetAction;
+    private System.Action<T> onReleaseAction;
+    
+    public int Count => pool.Count;
+    
+    public ObjectPool(System.Func<T> createFunc = null, System.Action<T> resetAction = null, 
+        System.Action<T> onGetAction = null, System.Action<T> onReleaseAction = null, 
+        int initialSize = 10)
+    {
+        this.createFunc = createFunc ?? (() => new T());
+        this.resetAction = resetAction;
+        this.onGetAction = onGetAction;
+        this.onReleaseAction = onReleaseAction;
+        
+        // 预填充池
+        for (int i = 0; i < initialSize; i++)
+        {
+            pool.Enqueue(this.createFunc());
+        }
+    }
+    
+    public T Get()
+    {
+        T item;
+        
+        if (pool.Count > 0)
+        {
+            item = pool.Dequeue();
+        }
+        else
+        {
+            item = createFunc();
+        }
+        
+        onGetAction?.Invoke(item);
+        return item;
+    }
+    
+    public void Release(T item)
+    {
+        resetAction?.Invoke(item);
+        onReleaseAction?.Invoke(item);
+        pool.Enqueue(item);
+    }
+    
+    public void Clear()
+    {
+        pool.Clear();
+    }
+}
+
+// Unity对象池
+public class UnityObjectPool<T> where T : MonoBehaviour
+{
+    private Queue<T> pool = new Queue<T>();
+    private T prefab;
+    private Transform parent;
+    private System.Action<T> resetAction;
+    private int initialSize;
+    
+    public UnityObjectPool(T prefab, Transform parent = null, System.Action<T> resetAction = null, 
+        int initialSize = 10)
+    {
+        this.prefab = prefab;
+        this.parent = parent;
+        this.resetAction = resetAction;
+        this.initialSize = initialSize;
+        
+        InitializePool();
+    }
+    
+    private void InitializePool()
+    {
+        for (int i = 0; i < initialSize; i++)
+        {
+            T obj = CreateNewObject();
+            obj.gameObject.SetActive(false);
+            pool.Enqueue(obj);
+        }
+    }
+    
+    private T CreateNewObject()
+    {
+        T obj = Instantiate(prefab, parent);
+        obj.gameObject.SetActive(false);
+        return obj;
+    }
+    
+    public T Get()
+    {
+        T obj;
+        
+        if (pool.Count > 0)
+        {
+            obj = pool.Dequeue();
+        }
+        else
+        {
+            obj = CreateNewObject();
+        }
+        
+        obj.gameObject.SetActive(true);
+        return obj;
+    }
+    
+    public void Release(T obj)
+    {
+        resetAction?.Invoke(obj);
+        obj.gameObject.SetActive(false);
+        pool.Enqueue(obj);
+    }
+    
+    public void Clear()
+    {
+        foreach (var obj in pool)
+        {
+            if (obj != null)
+            {
+                Destroy(obj.gameObject);
+            }
+        }
+        pool.Clear();
+    }
+}
+
+// 使用示例
+public class BulletPool : MonoBehaviour
+{
+    public Bullet bulletPrefab;
+    public int initialSize = 20;
+    
+    private UnityObjectPool<Bullet> bulletPool;
+    
+    private void Start()
+    {
+        bulletPool = new UnityObjectPool<Bullet>(
+            bulletPrefab, 
+            transform, 
+            ResetBullet, 
+            initialSize
+        );
+    }
+    
+    public Bullet SpawnBullet(Vector3 position, Quaternion rotation)
+    {
+        Bullet bullet = bulletPool.Get();
+        bullet.transform.position = position;
+        bullet.transform.rotation = rotation;
+        bullet.Initialize();
+        
+        return bullet;
+    }
+    
+    private void ResetBullet(Bullet bullet)
+    {
+        bullet.Reset();
+    }
+}
+
+public class Bullet : MonoBehaviour
+{
+    public float speed = 10f;
+    public float lifetime = 3f;
+    public int damage = 10;
+    
+    private Vector3 direction;
+    private float currentLifetime;
+    
+    public void Initialize()
+    {
+        currentLifetime = lifetime;
+        direction = transform.forward;
+    }
+    
+    public void SetDirection(Vector3 newDirection)
+    {
+        direction = newDirection.normalized;
+    }
+    
+    private void Update()
+    {
+        transform.Translate(direction * speed * Time.deltaTime, Space.World);
+        
+        currentLifetime -= Time.deltaTime;
+        if (currentLifetime <= 0)
+        {
+            Deactivate();
+        }
+    }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            var enemy = collision.gameObject.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+            }
+            
+            Deactivate();
+        }
+    }
+    
+    private void Deactivate()
+    {
+        BulletPool.Instance.Release(this);
+    }
+    
+    public void Reset()
+    {
+        direction = Vector3.zero;
+        currentLifetime = lifetime;
+    }
+}
+```
+
+## 总结
+
+C#在游戏开发中的设计模式和架构模式为我们提供了强大的工具来构建优雅、可维护的游戏代码。通过合理使用这些模式，我们可以：
+
+1. **提高代码复用性** - 通过工厂模式、对象池等减少重复代码
+2. **增强可维护性** - 通过MVC、观察者模式等分离关注点
+3. **提升扩展性** - 通过命令模式、策略模式等支持功能扩展
+4. **优化性能** - 通过对象池、异步编程等提升游戏性能
+5. **改善代码结构** - 通过ECS、状态模式等组织复杂逻辑
+
+这些模式不是银弹，需要根据具体项目需求选择合适的模式。关键是理解每个模式的适用场景，灵活运用来解决实际问题。
+
+记住，好的代码设计应该让代码更容易理解、测试和维护，而不是为了使用模式而使用模式。
