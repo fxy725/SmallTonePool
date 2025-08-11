@@ -1,0 +1,193 @@
+---
+title: "Next.js 14 开发个人博客的最佳实践"
+date: "2024-01-20"
+summary: "分享使用 Next.js 14 开发个人博客的经验，包括技术选型、性能优化和 SEO 配置等。"
+tags: ["Next.js", "React", "TypeScript", "博客开发"]
+published: true
+---
+
+# Next.js 14 开发个人博客的最佳实践
+
+最近使用 Next.js 14 重新开发了我的个人博客，在这个过程中积累了一些经验和心得。本文将分享一些最佳实践，希望能帮助到同样想用 Next.js 开发博客的朋友。
+
+## 技术选型
+
+### Next.js 14 的优势
+
+Next.js 14 相比之前的版本有很多改进：
+
+- **App Router**: 更好的路由组织和代码分割
+- **服务端组件**: 提升首屏加载性能
+- **Turbopack**: 更快的开发构建速度
+- **改进的图片优化**: 自动图片优化和 WebP 支持
+
+### 推荐的技术栈
+
+```tsx
+// 核心技术栈
+{
+  "framework": "Next.js 14",
+  "language": "TypeScript",
+  "styling": "Tailwind CSS",
+  "content": "MDX",
+  "deployment": "Vercel"
+}
+```
+
+## 项目结构设计
+
+一个清晰的目录结构对项目维护很重要：
+
+```
+src/
+├── app/              # App Router 页面
+├── components/       # 通用组件
+├── lib/             # 工具函数
+├── types/           # TypeScript 类型定义
+└── data/            # MDX 文章存放
+```
+
+## MDX 配置
+
+使用 MDX 可以让我们在 Markdown 中使用 React 组件：
+
+```tsx
+// next.config.ts
+import createMDX from '@next/mdx';
+
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [remarkToc],
+    rehypePlugins: [rehypeSlug, rehypeHighlight],
+  },
+});
+```
+
+## 性能优化
+
+### 1. 图片优化
+
+使用 Next.js 的 Image 组件：
+
+```tsx
+import Image from 'next/image';
+
+function PostImage({ src, alt }) {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={800}
+      height={400}
+      priority
+    />
+  );
+}
+```
+
+### 2. 字体优化
+
+使用 next/font 优化字体加载：
+
+```tsx
+import { Geist } from 'next/font/google';
+
+const geistSans = Geist({
+  subsets: ['latin'],
+  display: 'swap',
+});
+```
+
+### 3. 代码分割
+
+利用动态导入实现组件级别的代码分割：
+
+```tsx
+const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
+  loading: () => <div>Loading...</div>,
+});
+```
+
+## SEO 优化
+
+### 1. 元数据管理
+
+使用 Next.js 的 Metadata API：
+
+```tsx
+export const metadata: Metadata = {
+  title: "文章标题",
+  description: "文章描述",
+  openGraph: {
+    title: "文章标题",
+    description: "文章描述",
+    type: "article",
+  },
+};
+```
+
+### 2. 结构化数据
+
+为文章添加结构化数据：
+
+```tsx
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": post.title,
+  "datePublished": post.date,
+  "author": {
+    "@type": "Person",
+    "name": "作者名"
+  }
+};
+```
+
+### 3. 站点地图
+
+自动生成站点地图：
+
+```tsx
+// sitemap.ts
+export default function sitemap() {
+  const posts = getAllPosts();
+  const blogUrls = posts.map((post) => ({
+    url: `https://your-domain.com/blog/${post.slug}`,
+    lastModified: post.updated || post.date,
+  }));
+  
+  return [...blogUrls];
+}
+```
+
+## 部署和监控
+
+### Vercel 部署
+
+Vercel 是 Next.js 的最佳部署平台：
+
+- **自动部署**: Git 推送自动触发部署
+- **边缘网络**: 全球 CDN 加速
+- **函数支持**: 支持 Serverless Functions
+- **分析功能**: 提供性能分析
+
+### 性能监控
+
+使用 Vercel Analytics 监控网站性能：
+
+```tsx
+// @/components/Analytics.tsx
+'use client';
+
+import { Analytics } from '@vercel/analytics/react';
+
+export function Analytics() {
+  return <Analytics />;
+}
+```
+
+## 总结
+
+Next.js 14 为个人博客开发提供了很多便利，通过合理的技术选型和优化策略，我们可以构建出性能优秀、SEO 友好的博客网站。
+
+希望这些经验对大家有所帮助！

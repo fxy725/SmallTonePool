@@ -1,7 +1,20 @@
 import type { NextConfig } from "next";
+import createMDX from '@next/mdx';
+import remarkToc from 'remark-toc';
+import rehypeSlug from 'rehype-slug';
+import rehypeHighlight from 'rehype-highlight';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    mdxRs: true,
+  },
 };
 
-export default nextConfig;
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [remarkToc],
+    rehypePlugins: [rehypeSlug, rehypeHighlight],
+  },
+});
+
+export default withMDX(nextConfig);
