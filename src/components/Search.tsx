@@ -12,12 +12,16 @@ export function Search() {
   const router = useRouter();
 
   useEffect(() => {
-    if (query.trim()) {
-      const searchResults = searchPosts(query);
-      setResults(searchResults);
-    } else {
-      setResults([]);
-    }
+    const handleSearch = async () => {
+      if (query.trim()) {
+        const searchResults = await searchPosts(query);
+        setResults(searchResults);
+      } else {
+        setResults([]);
+      }
+    };
+    
+    handleSearch();
   }, [query]);
 
   const handleResultClick = (slug: string) => {

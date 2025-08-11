@@ -1,10 +1,10 @@
 interface StructuredDataProps {
   type: 'Blog' | 'BlogPosting' | 'BreadcrumbList';
-  data: any;
+  data: Record<string, unknown>;
 }
 
 export function StructuredData({ type, data }: StructuredDataProps) {
-  let structuredData: any;
+  let structuredData: Record<string, unknown>;
 
   switch (type) {
     case 'Blog':
@@ -51,11 +51,11 @@ export function StructuredData({ type, data }: StructuredDataProps) {
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://smalltone-blog.vercel.app/blog/${data.slug}`
+          "@id": `https://smalltone-blog.vercel.app/blog/${data.slug as string}`
         },
-        "keywords": data.tags.join(", "),
+        "keywords": (data.tags as string[]).join(", "),
         "articleSection": "Technology",
-        "wordCount": data.content.split(/\s+/).length
+        "wordCount": (data.content as string).split(/\s+/).length
       };
       break;
 
@@ -63,7 +63,7 @@ export function StructuredData({ type, data }: StructuredDataProps) {
       structuredData = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
-        "itemListElement": data.items.map((item: any, index: number) => ({
+        "itemListElement": (data.items as { name: string; url: string }[]).map((item, index: number) => ({
           "@type": "ListItem",
           "position": index + 1,
           "name": item.name,

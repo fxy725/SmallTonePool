@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 interface TagPageProps {
-  params: {
+  params: Promise<{
     tag: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -17,7 +17,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
-  const posts = await getPostsByTag(params.tag);
+  const { tag } = await params;
+  const posts = await getPostsByTag(tag);
   
   if (posts.length === 0) {
     return {
@@ -26,14 +27,15 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
   }
 
   return {
-    title: `#${params.tag} - 小石潭记`,
-    description: `查看标签为 ${params.tag} 的所有文章，共 ${posts.length} 篇`,
+    title: `#${tag} - 小石潭记`,
+    description: `查看标签为 ${tag} 的所有文章，共 ${posts.length} 篇`,
   };
 }
 
 export default async function TagPage({ params }: TagPageProps) {
-  const posts = await getPostsByTag(params.tag);
-  const tagName = decodeURIComponent(params.tag);
+  const { tag } = await params;
+  const posts = await getPostsByTag(tag);
+  const tagName = decodeURIComponent(tag);
 
   if (posts.length === 0) {
     notFound();

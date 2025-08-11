@@ -1,4 +1,4 @@
-import { MDXProvider } from '@mdx-js/react/lib';
+import { MDXProvider } from '@mdx-js/react';
 import { ComponentProps } from 'react';
 
 const components = {
