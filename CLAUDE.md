@@ -10,6 +10,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run lint` - Run ESLint
 - `npm run post` - Create new blog post interactively
 
+## Git Workflow
+
+- 提交变更至本地仓库时注释使用简体中文
+- 使用 `git status` 查看变更状态
+- 使用 `git diff` 查看具体修改内容
+- 使用 `git add .` 添加所有变更
+- 使用 `git commit -m "中文提交信息"` 提交变更
+- 使用 `git push origin master` 推送到远程仓库
+
+
+
+## 开发流程
+项目已配置 GitHub 与 Vercel 自动集成，采用以下工作流程：
+
+1. **本地开发** - 使用 `npm run dev` 开发功能
+2. **功能完成** - 实现好一定的功能后进行本地构建测试
+3. **本地构建** - 运行 `npm run build` 验证构建成功
+4. **修复错误** - 如果构建失败，根据错误信息修改代码
+5. **推送代码** - 构建成功后推送到 GitHub
+6. **自动部署** - Vercel 自动感知并部署最新版本
+
+
+
 ## Project Architecture
 
 This is a Next.js 15 blog using App Router with MDX for content management. The blog is called "小石潭记" (Small Stone Pool Records) and features:
@@ -62,3 +85,4 @@ interface PageProps {
 **Caching**: Posts are cached in memory to avoid repeated file system reads during development.
 
 **Chinese Content**: All content and UI is in Chinese, including date formatting and reading time display.
+- 提交变更至本地仓库时注释使用简体中文。

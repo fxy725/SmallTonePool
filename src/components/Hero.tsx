@@ -60,7 +60,6 @@ export function Hero() {
               <span className="px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full border border-gray-200/50 dark:border-gray-700/50">
                 📝 学习笔记
               </span>
-            </div>
           </div>
 
           {/* Description */}
