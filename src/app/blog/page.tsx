@@ -1,15 +1,44 @@
-import { getAllPosts } from "@/lib/posts";
+"use client";
+
+import { getAllPosts, getAllTags } from "@/lib/posts";
 import { PostCard } from "@/components/PostCard";
-import { Metadata } from "next";
+import { TagCloud } from "@/components/TagCloudClient";
+import { Post, Tag } from "@/types/post";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "所有文章 - 小石潭记",
-  description: "查看小石潭记博客的所有技术文章和心得总结",
-};
+function BlogContent() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const currentTag = searchParams.get("tag");
 
-export default async function BlogPage() {
-  const posts = await getAllPosts();
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [allPosts, allTags] = await Promise.all([
+          getAllPosts(),
+          getAllTags()
+        ]);
+        
+        // 如果有标签过滤，则过滤文章
+        const filteredPosts = currentTag 
+          ? allPosts.filter(post => post.tags.includes(currentTag))
+          : allPosts;
+        
+        setPosts(filteredPosts);
+        setTags(allTags);
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [currentTag]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -29,8 +58,30 @@ export default async function BlogPage() {
             </h1>
             
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              浏览所有技术心得与经验总结，共 {posts.length} 篇文章
+              {currentTag ? (
+                <>
+                  显示标签为 <span className="font-semibold text-blue-600 dark:text-blue-400">{currentTag}</span> 的文章，共 {posts.length} 篇
+                </>
+              ) : (
+                <>
+                  浏览所有技术心得与经验总结，共 {posts.length} 篇文章
+                </>
+              )}
             </p>
+            
+            {currentTag && (
+              <div className="mt-4">
+                <Link 
+                  href="/blog"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  清除过滤
+                </Link>
+              </div>
+            )}
             
             {/* Breadcrumb */}
             <nav className="flex justify-center mt-8">
@@ -52,9 +103,38 @@ export default async function BlogPage() {
         </div>
       </div>
 
+      {/* Tags Section */}
+      {!loading && tags.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                按标签筛选
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                点击标签查看相关文章
+              </p>
+            </div>
+            <TagCloud tags={tags} />
+          </div>
+        </div>
+      )}
+
       {/* Posts Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {posts.length > 0 ? (
+        {loading ? (
+          /* Loading State */
+          <div className="text-center py-20">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
+              <svg className="w-10 h-10 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+              加载中...
+            </h3>
+          </div>
+        ) : posts.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post, index) => (
               <div 
@@ -78,25 +158,61 @@ export default async function BlogPage() {
             </div>
             
             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              还没有文章
+              {currentTag ? '没有找到相关文章' : '还没有文章'}
             </h3>
             
             <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-              博客刚刚建立，精彩内容即将上线。敬请期待技术心得与经验总结！
+              {currentTag 
+                ? `没有找到标签为 "${currentTag}" 的文章，请尝试其他标签。`
+                : '博客刚刚建立，精彩内容即将上线。敬请期待技术心得与经验总结！'
+              }
             </p>
             
-            <Link 
-              href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300"
-            >
-              返回首页
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            </Link>
+            {currentTag ? (
+              <Link 
+                href="/blog"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300"
+              >
+                查看所有文章
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+              </Link>
+            ) : (
+              <Link 
+                href="/"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300"
+              >
+                返回首页
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+              </Link>
+            )}
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
+            <svg className="w-10 h-10 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+            加载中...
+          </h3>
+        </div>
+      </div>
+    }>
+      <BlogContent />
+    </Suspense>
   );
 }

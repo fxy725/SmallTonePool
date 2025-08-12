@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Post } from "@/types/post";
 import { useState } from "react";
 
@@ -10,6 +11,8 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -91,13 +94,27 @@ export function PostCard({ post }: PostCardProps) {
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {post.tags.slice(0, 3).map((tag, index) => (
-              <Link
+              <button
                 key={tag}
-                href={`/tags/${tag}`}
+                onClick={() => {
+                  if (pathname === '/blog') {
+                    // 如果在文章页，进行过滤
+                    const url = new URL(window.location.href);
+                    if (url.searchParams.get('tag') === tag) {
+                      url.searchParams.delete('tag');
+                    } else {
+                      url.searchParams.set('tag', tag);
+                    }
+                    router.push(url.pathname + url.search);
+                  } else {
+                    // 如果在其他页面，跳转到文章页并过滤
+                    router.push(`/blog?tag=${encodeURIComponent(tag)}`);
+                  }
+                }}
                 className={`px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 border border-gray-200 dark:border-gray-600 hover-scale ${isHovered ? `animate-bounce-in animation-delay-${index * 100}` : ''}`}
               >
-                #{tag}
-              </Link>
+                {tag}
+              </button>
             ))}
             {post.tags.length > 3 && (
               <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">

@@ -17,30 +17,29 @@ export function Header() {
   }, []);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-gray-700/50" 
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-gray-700/50"
         : "bg-transparent"
-    }`}>
+      }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Empty space where logo was */}
           <div className="w-32"></div>
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center justify-center flex-1">
             <div className="flex items-center space-x-16">
               <NavLink href="/">首页</NavLink>
               <NavLink href="/blog">文章</NavLink>
-              <NavLink href="/tags">标签</NavLink>
+              <NavLink href="/tags">关于</NavLink>
             </div>
           </nav>
-          
+
           {/* Search */}
           <div className="w-32 flex justify-end">
             <Search />
           </div>
-          
+
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 md:hidden">
             <button
@@ -58,14 +57,14 @@ export function Header() {
             </button>
           </div>
         </div>
-        
+
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <nav className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex flex-col space-y-3 items-center">
               <MobileNavLink href="/" onClick={() => setIsMenuOpen(false)}>首页</MobileNavLink>
               <MobileNavLink href="/blog" onClick={() => setIsMenuOpen(false)}>文章</MobileNavLink>
-              <MobileNavLink href="/tags" onClick={() => setIsMenuOpen(false)}>标签</MobileNavLink>
+              <MobileNavLink href="/tags" onClick={() => setIsMenuOpen(false)}>关于</MobileNavLink>
               <div className="pt-3 border-t border-gray-200 dark:border-gray-700 w-full max-w-xs">
                 <Search />
               </div>
@@ -79,7 +78,7 @@ export function Header() {
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link 
+    <Link
       href={href}
       className="relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-lg px-4 py-2"
     >
@@ -91,7 +90,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 function MobileNavLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
   return (
-    <Link 
+    <Link
       href={href}
       onClick={onClick}
       className="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium"
