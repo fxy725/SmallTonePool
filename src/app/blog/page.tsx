@@ -1,6 +1,5 @@
 "use client";
 
-import { getAllPosts, getAllTags } from "@/lib/posts";
 import { PostCard } from "@/components/PostCard";
 import { TagCloud } from "@/components/TagCloudClient";
 import { Post, Tag } from "@/types/post";
@@ -18,14 +17,17 @@ function BlogContent() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [allPosts, allTags] = await Promise.all([
-          getAllPosts(),
-          getAllTags()
+        const [postsResponse, tagsResponse] = await Promise.all([
+          fetch('/api/posts'),
+          fetch('/api/tags')
         ]);
+        
+        const allPosts = await postsResponse.json();
+        const allTags = await tagsResponse.json();
         
         // 如果有标签过滤，则过滤文章
         const filteredPosts = currentTag 
-          ? allPosts.filter(post => post.tags.includes(currentTag))
+          ? allPosts.filter((post: Post) => post.tags.includes(currentTag))
           : allPosts;
         
         setPosts(filteredPosts);

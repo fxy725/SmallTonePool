@@ -35,8 +35,13 @@ export function Header() {
             </div>
           </nav>
 
-          {/* Search */}
-          <div className="w-32 flex justify-end">
+          {/* Logo and Search */}
+          <div className="w-32 flex justify-end items-center gap-4">
+            <img 
+              src="/assets/Logo.png" 
+              alt="小石潭记 Logo" 
+              className="w-8 h-8 object-contain"
+            />
             <Search />
           </div>
 

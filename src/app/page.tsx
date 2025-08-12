@@ -1,11 +1,32 @@
+"use client";
+
 import Link from "next/link";
-import { getAllPosts } from "@/lib/posts";
 import { PostCard } from "@/components/PostCard";
 import { Hero } from "@/components/Hero";
+import { Post } from "@/types/post";
+import { useState, useEffect } from "react";
 
-export default async function Home() {
-  const posts = await getAllPosts();
-  const recentPosts = posts.slice(0, 6);
+export default function Home() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadPosts() {
+      try {
+        const response = await fetch('/api/posts');
+        const allPosts = await response.json();
+        setPosts(allPosts.slice(0, 6));
+      } catch (error) {
+        console.error("Failed to load posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadPosts();
+  }, []);
+
+  const recentPosts = posts;
 
   return (
     <div className="min-h-screen">
@@ -39,51 +60,66 @@ export default async function Home() {
           </div>
           
           {/* Posts Grid */}
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {recentPosts.map((post, index) => (
-              <div 
-                key={post.slug}
-                className={`transform transition-all duration-500 hover:scale-105 ${
-                  index % 3 === 0 ? 'animate-fade-in-up' : 
-                  index % 3 === 1 ? 'animate-fade-in-up animation-delay-200' : 
-                  'animate-fade-in-up animation-delay-400'
-                }`}
-              >
-                <PostCard post={post} />
-              </div>
-            ))}
-          </div>
-          
-          {/* Empty State */}
-          {posts.length === 0 && (
+          {loading ? (
             <div className="text-center py-16">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                <svg className="w-8 h-8 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                暂无文章
+                加载中...
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                敬请期待精彩内容...
-              </p>
             </div>
-          )}
-          
-          {/* View All Button */}
-          {posts.length > 6 && (
-            <div className="text-center mt-16">
-              <Link 
-                href="/blog"
-                className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-              >
-                查看所有文章
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
-            </div>
+          ) : (
+            <>
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {recentPosts.map((post, index) => (
+                  <div 
+                    key={post.slug}
+                    className={`transform transition-all duration-500 hover:scale-105 ${
+                      index % 3 === 0 ? 'animate-fade-in-up' : 
+                      index % 3 === 1 ? 'animate-fade-in-up animation-delay-200' : 
+                      'animate-fade-in-up animation-delay-400'
+                    }`}
+                  >
+                    <PostCard post={post} />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Empty State */}
+              {posts.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    暂无文章
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    敬请期待精彩内容...
+                  </p>
+                </div>
+              )}
+              
+              {/* View All Button */}
+              {posts.length > 0 && (
+                <div className="text-center mt-16">
+                  <Link 
+                    href="/blog"
+                    className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                  >
+                    查看所有文章
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
