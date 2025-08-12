@@ -28,17 +28,15 @@ export function Header() {
             <img 
               src="/assets/Logo.png" 
               alt="小石潭记 Logo" 
-              className="w-8 h-8 object-contain"
+              className="w-12 h-12 object-contain"
             />
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center justify-center flex-1">
-            <div className="flex items-center space-x-16">
-              <NavLink href="/">首页</NavLink>
-              <NavLink href="/blog">文章</NavLink>
-              <NavLink href="/tags">关于</NavLink>
-            </div>
+          <nav className="hidden md:flex items-center justify-between flex-1 px-8">
+            <NavLink href="/">首页</NavLink>
+            <NavLink href="/blog">文章</NavLink>
+            <NavLink href="/tags">关于</NavLink>
           </nav>
 
           {/* Search */}
