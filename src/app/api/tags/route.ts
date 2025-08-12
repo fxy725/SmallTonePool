@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getAllTags } from '@/lib/posts';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const tags = await getAllTags();
     return NextResponse.json(tags);
