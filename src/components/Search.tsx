@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { searchPosts } from "@/lib/posts";
 import { Post } from "@/types/post";
 
 export function Search() {
@@ -14,8 +13,26 @@ export function Search() {
   useEffect(() => {
     const handleSearch = async () => {
       if (query.trim()) {
-        const searchResults = await searchPosts(query);
-        setResults(searchResults);
+        try {
+          const response = await fetch(`/api/posts?search=${encodeURIComponent(query)}`);
+          const allPosts = await response.json();
+          
+          // 在客户端进行搜索过滤
+          const searchResults = allPosts.filter((post: Post) => {
+            const lowercaseQuery = query.toLowerCase();
+            return (
+              post.title.toLowerCase().includes(lowercaseQuery) ||
+              post.summary.toLowerCase().includes(lowercaseQuery) ||
+              post.content.toLowerCase().includes(lowercaseQuery) ||
+              post.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery))
+            );
+          });
+          
+          setResults(searchResults);
+        } catch (error) {
+          console.error("Search failed:", error);
+          setResults([]);
+        }
       } else {
         setResults([]);
       }

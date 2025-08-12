@@ -3,31 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 开发流程
-
-### 核心开发命令
-- `npm run dev` - 启动开发服务器（支持 Turbopack）
-- `npm run build` - 构建生产版本
-- `npm run start` - 启动生产服务器
-- `npm run lint` - 运行 ESLint 检查
-- `npm run post` - 交互式创建新博客文章
-
-### Git 工作流程
-- **提交信息**：使用简体中文编写提交信息
-- **状态查看**：`git status` 查看变更状态
-- **差异对比**：`git diff` 查看具体修改内容
-- **添加变更**：`git add .` 添加所有变更
-- **提交变更**：`git commit -m "中文提交信息"`
-- **推送代码**：`git push origin master` 推送到远程仓库
-
-### 部署流程
-项目已配置 GitHub 与 Vercel 自动集成：
-
-1. **本地开发** - 使用 `npm run dev` 开发功能
-2. **功能完成** - 实现功能后进行本地构建测试
-3. **本地构建** - 运行 `npm run build` 验证构建成功
-4. **修复错误** - 如果构建失败，根据错误信息修改代码
-5. **推送代码** - 构建成功后推送到 GitHub
-6. **自动部署** - Vercel 自动感知并部署最新版本
+- 
 
 ## 项目架构
 

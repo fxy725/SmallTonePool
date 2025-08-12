@@ -23,8 +23,14 @@ export function Header() {
       }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Empty space where logo was */}
-          <div className="w-32"></div>
+          {/* Logo */}
+          <div className="flex items-center gap-4">
+            <img 
+              src="/assets/Logo.png" 
+              alt="小石潭记 Logo" 
+              className="w-8 h-8 object-contain"
+            />
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center justify-center flex-1">
@@ -35,13 +41,8 @@ export function Header() {
             </div>
           </nav>
 
-          {/* Logo and Search */}
-          <div className="w-32 flex justify-end items-center gap-4">
-            <img 
-              src="/assets/Logo.png" 
-              alt="小石潭记 Logo" 
-              className="w-8 h-8 object-contain"
-            />
+          {/* Search */}
+          <div className="w-32 flex justify-end">
             <Search />
           </div>
 

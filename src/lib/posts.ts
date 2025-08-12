@@ -9,11 +9,6 @@ export async function getAllPosts(): Promise<Post[]> {
   }
 
   try {
-    // 在客户端环境中，返回空数组或从API获取
-    if (typeof window !== 'undefined') {
-      return [];
-    }
-
     // 动态导入只在服务端运行
     const fs = await import('fs');
     const path = await import('path');
@@ -60,11 +55,6 @@ export async function getAllPosts(): Promise<Post[]> {
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
-    // 在客户端环境中，返回null或从API获取
-    if (typeof window !== 'undefined') {
-      return null;
-    }
-
     // 动态导入只在服务端运行
     const fs = await import('fs');
     const path = await import('path');
