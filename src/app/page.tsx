@@ -4,11 +4,15 @@ import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { Hero } from "@/components/Hero";
 import { Post } from "@/types/post";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
     async function loadPosts() {
@@ -26,12 +30,36 @@ export default function Home() {
     loadPosts();
   }, []);
 
+  // 拖拽滚动处理函数
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // 滚动速度
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   const recentPosts = posts;
 
   return (
     <div className="min-h-screen">
       <Hero />
-      
+
       {/* Recent Posts Section */}
       <section className="relative py-20 bg-gray-50 dark:bg-gray-900/50">
         {/* Background Pattern */}
@@ -39,7 +67,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(147,51,234,0.1),transparent_50%)]"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16">
@@ -49,16 +77,13 @@ export default function Home() {
               </svg>
               最新发布
             </div>
-            
+
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
               最新文章
             </h2>
-            
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              分享我的技术心得与经验总结，记录编程路上的点滴成长
-            </p>
+
           </div>
-          
+
           {/* Posts Grid */}
           {loading ? (
             <div className="text-center py-16">
@@ -73,21 +98,48 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {recentPosts.map((post, index) => (
-                  <div 
-                    key={post.slug}
-                    className={`transform transition-all duration-500 hover:scale-105 ${
-                      index % 3 === 0 ? 'animate-fade-in-up' : 
-                      index % 3 === 1 ? 'animate-fade-in-up animation-delay-200' : 
-                      'animate-fade-in-up animation-delay-400'
-                    }`}
-                  >
-                    <PostCard post={post} />
+              {/* Horizontal Scroll Container */}
+              <div className="relative">
+                {/* Scroll Indicators */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                  <div className="w-8 h-16 bg-gradient-to-r from-gray-50 dark:from-gray-900/50 to-transparent"></div>
+                </div>
+                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                  <div className="w-8 h-16 bg-gradient-to-l from-gray-50 dark:from-gray-900/50 to-transparent"></div>
+                </div>
+
+                {/* Scrollable Posts */}
+                <div 
+                  ref={scrollContainerRef}
+                  className="overflow-x-auto pb-6 scrollbar-hide cursor-grab active:cursor-grabbing select-none"
+                  onMouseDown={handleMouseDown}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseUp={handleMouseUp}
+                  onMouseMove={handleMouseMove}
+                >
+                  <div className="flex gap-6 px-4" style={{ minWidth: 'max-content' }}>
+                    {recentPosts.map((post, index) => (
+                      <div
+                        key={post.slug}
+                        className="w-80 flex-shrink-0 transform transition-all duration-500 hover:scale-105"
+                      >
+                        <PostCard post={post} />
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* Scroll Hint */}
+                <div className="text-center mt-4">
+                  <div className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                    </svg>
+                    鼠标拖拽查看更多文章
+                  </div>
+                </div>
               </div>
-              
+
               {/* Empty State */}
               {posts.length === 0 && (
                 <div className="text-center py-16">
@@ -104,11 +156,11 @@ export default function Home() {
                   </p>
                 </div>
               )}
-              
+
               {/* View All Button */}
               {posts.length > 0 && (
                 <div className="text-center mt-16">
-                  <Link 
+                  <Link
                     href="/blog"
                     className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
                   >

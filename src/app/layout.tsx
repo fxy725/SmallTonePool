@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "小石潭记 - 技术心得与经验总结",
+  title: "小石潭记",
   description: "分享编程路上的点点滴滴，记录技术成长的心路历程",
   keywords: ["技术博客", "编程", "学习笔记", "经验总结", "前端开发", "后端开发"],
   authors: [{ name: "小石潭记" }],
@@ -73,7 +73,7 @@ export default function RootLayout({
         <main className="pt-16">
           {children}
         </main>
-        
+
         {/* 添加页脚 */}
         <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
