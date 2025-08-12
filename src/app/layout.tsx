@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { Header } from "@/components/Header";
-import { StructuredData } from "@/components/StructuredData";
+import { Header } from "@/components/layout/Header";
+import { StructuredData } from "@/components/seo/StructuredData";
 import "./globals.css";
 
 // 更优雅的字体选择
@@ -61,7 +61,7 @@ export default function RootLayout({
       <head>
         <StructuredData type="Blog" data={{}} />
         {/* 添加 favicon 等元标签 */}
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/assets/site-Logo.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#3b82f6" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
