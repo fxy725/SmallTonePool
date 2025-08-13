@@ -31,15 +31,15 @@ export function PostCard({ post }: PostCardProps) {
         >
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 opacity-5">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 animate-pulse-glow"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-600 animate-pulse-glow"></div>
                 <div className="absolute inset-0 brand-pattern-dots"></div>
             </div>
 
             {/* Gradient Overlay */}
-            <div className={`absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+            <div className={`absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
 
             {/* Top Accent Line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
 
             {/* 移除右上角漂浮泡泡 */}
 

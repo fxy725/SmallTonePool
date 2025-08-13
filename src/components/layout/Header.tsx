@@ -17,14 +17,14 @@ export function Header() {
 
     return (
         <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-            ? "bg-white/10 dark:bg-gray-900/5 backdrop-blur-xl shadow-md border-b border-white/10 dark:border-gray-700/10"
-            : "bg-transparent"
+            ? "bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl"
+            : "bg-white/5 dark:bg-gray-900/5 backdrop-blur-sm"
             }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-center items-center h-16">
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-12">
-                        <NavLink href="/">首页</NavLink>
+                        <NavLink href="/home">首页</NavLink>
                         <NavLink href="/blog">文章</NavLink>
                         <NavLink href="/about">关于</NavLink>
                     </nav>
@@ -51,7 +51,7 @@ export function Header() {
                 {isMenuOpen && (
                     <nav className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
                         <div className="flex flex-col space-y-3 items-center">
-                            <MobileNavLink href="/" onClick={() => setIsMenuOpen(false)}>首页</MobileNavLink>
+                            <MobileNavLink href="/home" onClick={() => setIsMenuOpen(false)}>首页</MobileNavLink>
                             <MobileNavLink href="/blog" onClick={() => setIsMenuOpen(false)}>文章</MobileNavLink>
                             <MobileNavLink href="/about" onClick={() => setIsMenuOpen(false)}>关于</MobileNavLink>
                         </div>
@@ -77,7 +77,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
             className="nav-link relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-lg px-2 py-2 select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
         >
             {children}
-            <span className="pointer-events-none absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 group-hover:w-full"></span>
+            <span className="pointer-events-none absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
         </Link>
     );
 }

@@ -1,27 +1,34 @@
 import { Post } from '@/types/blog';
+import path from 'path';
+import fs from 'fs';
 
 // 缓存文章数据
 let postsCache: Post[] | null = null;
 
 async function mdxToHtml(mdx: string): Promise<string> {
-    const { unified } = await import('unified');
-    const remarkParse = (await import('remark-parse')).default;
-    const remarkGfm = (await import('remark-gfm')).default;
-    const remarkRehype = (await import('remark-rehype')).default;
-    const rehypeStringify = (await import('rehype-stringify')).default;
-    const rehypeSlug = (await import('rehype-slug')).default;
-    const rehypeHighlight = (await import('rehype-highlight')).default;
+    try {
+        const { unified } = await import('unified');
+        const remarkParse = (await import('remark-parse')).default;
+        const remarkGfm = (await import('remark-gfm')).default;
+        const remarkRehype = (await import('remark-rehype')).default;
+        const rehypeStringify = (await import('rehype-stringify')).default;
+        const rehypeSlug = (await import('rehype-slug')).default;
+        const rehypeHighlight = (await import('rehype-highlight')).default;
 
-    const file = await unified()
-        .use(remarkParse)
-        .use(remarkGfm)
-        .use(remarkRehype)
-        .use(rehypeSlug)
-        .use(rehypeHighlight)
-        .use(rehypeStringify)
-        .process(mdx);
+        const file = await unified()
+            .use(remarkParse)
+            .use(remarkGfm)
+            .use(remarkRehype)
+            .use(rehypeSlug)
+            .use(rehypeHighlight)
+            .use(rehypeStringify)
+            .process(mdx);
 
-    return String(file);
+        return String(file);
+    } catch (error) {
+        console.error('Error processing MDX:', error);
+        return mdx; // fallback to original content
+    }
 }
 
 export async function getAllPosts(): Promise<Post[]> {
@@ -31,8 +38,6 @@ export async function getAllPosts(): Promise<Post[]> {
 
     try {
         // 动态导入只在服务端运行
-        const fs = await import('fs');
-        const path = await import('path');
         const grayMatter = await import('gray-matter');
 
         const postsDirectory = path.join(process.cwd(), 'src/data/posts');
@@ -81,8 +86,6 @@ export async function getAllPosts(): Promise<Post[]> {
 export async function getPostBySlug(slug: string): Promise<Post | null> {
     try {
         // 动态导入只在服务端运行
-        const fs = await import('fs');
-        const path = await import('path');
         const grayMatter = await import('gray-matter');
 
         const postsDirectory = path.join(process.cwd(), 'src/data/posts');

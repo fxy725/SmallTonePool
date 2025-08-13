@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { PostCard } from "@/components/blog/PostCard";
-import { Hero } from "@/components/home/Hero";
+import { Header } from "@/components/layout/Header";
 import { Post } from "@/types/blog";
 import { useState, useEffect, useRef } from "react";
 
@@ -13,8 +13,11 @@ export default function Home() {
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
+
         async function loadPosts() {
             try {
                 const response = await fetch('/api/posts');
@@ -58,7 +61,97 @@ export default function Home() {
 
     return (
         <div className="min-h-screen">
-            <Hero />
+            <Header />
+            {/* Hero Section - 直接内联 */}
+            <section className="relative min-h-screen flex justify-center overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900"></div>
+
+                {/* Animated Elements */}
+                <div className="absolute inset-0">
+                    <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 dark:bg-blue-800 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-pulse"></div>
+                    <div className="absolute top-40 right-10 w-72 h-72 bg-cyan-200 dark:bg-cyan-800 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
+                    <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-indigo-200 dark:bg-indigo-800 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>
+                </div>
+
+                {/* Floating Elements - render only on client after mounted to avoid hydration mismatch */}
+                {mounted && (
+                    <div className="absolute inset-0">
+                        {[...Array(20)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full opacity-20"
+                                style={{
+                                    top: `${Math.random() * 100}%`,
+                                    left: `${Math.random() * 100}%`,
+                                    animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+                                    animationDelay: `${Math.random() * 2}s`,
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
+
+                {/* Content */}
+                <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <div className={`space-y-8 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+
+                        {/* Logo */}
+                        <div className="max-w-3xl mx-auto pt-24">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src="/assets/Logo-horizontal.png"
+                                alt="Smalltone Logo"
+                                className="w-full h-auto max-w-md mx-auto"
+                            />
+                        </div>
+
+                        <div className="flex flex-wrap justify-center gap-2 text-lg md:text-xl text-gray-600 dark:text-gray-400 font-medium">
+                            <span className="px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full border border-gray-200/50 dark:border-gray-700/50">
+                                📚 项目介绍
+                            </span>
+                            <span className="px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full border border-gray-200/50 dark:border-gray-700/50">
+                                💡 技术探讨
+                            </span>
+                            <span className="px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full border border-gray-200/50 dark:border-gray-700/50">
+                                📝 个人简历
+                            </span>
+                        </div>
+
+                        {/* Description */}
+                        <div className="max-w-3xl mx-auto space-y-6">
+                            <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+                                分享编程路上的点点滴滴，记录技术成长的心路历程
+                            </p>
+                            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                                让每一次学习都有迹可循，让每个经验都能帮助他人，
+                                在代码的世界里，我们都是不断成长的探索者。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Scroll Indicator */}
+                <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 animate-bounce">
+                    <svg className="w-8 h-8 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </div>
+
+                {/* Custom Animation */}
+                <style jsx>{`
+            @keyframes float {
+              0%, 100% { transform: translateY(0px) rotate(0deg); }
+              50% { transform: translateY(-20px) rotate(180deg); }
+            }
+            .animation-delay-2000 {
+              animation-delay: 2s;
+            }
+            .animation-delay-4000 {
+              animation-delay: 4s;
+            }
+          `}</style>
+            </section>
 
             {/* Recent Posts Section */}
             <section className="relative py-20 bg-gray-50 dark:bg-gray-900/50">
@@ -77,8 +170,6 @@ export default function Home() {
                             </svg>
                             最新发布
                         </div>
-
-
                     </div>
 
                     {/* Posts Grid */}
@@ -159,7 +250,7 @@ export default function Home() {
                                 <div className="text-center mt-16">
                                     <Link
                                         href="/blog"
-                                        className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                                        className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
                                     >
                                         查看所有文章
                                         <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -53,9 +53,9 @@ export function StructuredData({ type, data }: StructuredDataProps) {
                     "@type": "WebPage",
                     "@id": `https://smalltone-blog.vercel.app/blog/${data.slug as string}`
                 },
-                "keywords": (data.tags as string[]).join(", "),
+                "keywords": data.tags && Array.isArray(data.tags) ? (data.tags as string[]).join(", ") : "",
                 "articleSection": "Technology",
-                "wordCount": (data.content as string).split(/\s+/).length
+                "wordCount": data.content ? (data.content as string).split(/\s+/).length : 0
             };
             break;
 

@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { getAllPosts, getAllTags } from '@/lib/content/posts'
+import { getAllPosts } from '@/lib/content/posts'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://smalltone-blog.vercel.app'
@@ -24,12 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'monthly' as const,
             priority: 0.7,
         },
-        {
-            url: `${baseUrl}/tags`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.6,
-        },
+
     ]
 
     // 博客文章
@@ -41,14 +36,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.9,
     }))
 
-    // 标签页面
-    const tags = await getAllTags()
-    const tagPages = tags.map((tag) => ({
-        url: `${baseUrl}/tags/${tag.name}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.6,
-    }))
-
-    return [...staticPages, ...blogPages, ...tagPages]
+    return [...staticPages, ...blogPages]
 }
