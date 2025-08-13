@@ -115,7 +115,7 @@ export default function Home() {
                                     onMouseMove={handleMouseMove}
                                 >
                                     <div className="flex gap-6 px-4" style={{ minWidth: 'max-content' }}>
-                                        {recentPosts.map((post, index) => (
+                                        {recentPosts.map((post) => (
                                             <div
                                                 key={post.slug}
                                                 className="w-80 flex-shrink-0 transform transition-all duration-500 hover:scale-105"

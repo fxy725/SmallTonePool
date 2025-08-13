@@ -45,6 +45,7 @@ export function Hero() {
 
                     {/* Logo */}
                     <div className="max-w-3xl mx-auto pt-24">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src="/assets/Logo-horizontal.png"
                             alt="Smalltone Logo"

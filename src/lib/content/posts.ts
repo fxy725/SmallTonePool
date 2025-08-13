@@ -5,12 +5,12 @@ let postsCache: Post[] | null = null;
 
 async function mdxToHtml(mdx: string): Promise<string> {
     const { unified } = await import('unified');
-    const remarkParse = (await import('remark-parse')).default as any;
-    const remarkGfm = (await import('remark-gfm')).default as any;
-    const remarkRehype = (await import('remark-rehype')).default as any;
-    const rehypeStringify = (await import('rehype-stringify')).default as any;
-    const rehypeSlug = (await import('rehype-slug')).default as any;
-    const rehypeHighlight = (await import('rehype-highlight')).default as any;
+    const remarkParse = (await import('remark-parse')).default;
+    const remarkGfm = (await import('remark-gfm')).default;
+    const remarkRehype = (await import('remark-rehype')).default;
+    const rehypeStringify = (await import('rehype-stringify')).default;
+    const rehypeSlug = (await import('rehype-slug')).default;
+    const rehypeHighlight = (await import('rehype-highlight')).default;
 
     const file = await unified()
         .use(remarkParse)
