@@ -9,6 +9,9 @@ import Link from "next/link";
 function BlogContent() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedTag, setSelectedTag] = useState<string>('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const postsPerPage = 12;
 
     useEffect(() => {
         async function loadPosts() {
@@ -26,10 +29,150 @@ function BlogContent() {
         loadPosts();
     }, []);
 
+    // 从URL参数获取标签
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tag = urlParams.get('tag') || '';
+        setSelectedTag(tag);
+        setCurrentPage(1); // 切换标签时重置到第一页
+    }, []);
+
+    // 获取所有标签
+    const allTags = Array.from(new Set(posts.flatMap(post => post.tags)));
+
+    // 根据标签筛选文章
+    const filteredPosts = selectedTag
+        ? posts.filter(post => post.tags.includes(selectedTag))
+        : posts;
+
+    // 分页计算
+    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+    const startIndex = (currentPage - 1) * postsPerPage;
+    const currentPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage);
+
+    // 处理标签点击
+    const handleTagClick = (tag: string) => {
+        const newTag = selectedTag === tag ? '' : tag;
+        setSelectedTag(newTag);
+        setCurrentPage(1);
+
+        // 更新URL
+        const url = new URL(window.location.href);
+        if (newTag) {
+            url.searchParams.set('tag', newTag);
+        } else {
+            url.searchParams.delete('tag');
+        }
+        window.history.pushState({}, '', url);
+    };
+
+    // 处理翻页
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             <Header />
 
+            {/* Tag Filter */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div className="flex flex-wrap gap-2 justify-center">
+                    <button
+                        onClick={() => handleTagClick('')}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedTag === ''
+                            ? 'bg-blue-600 text-white shadow-lg'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
+                            }`}
+                    >
+                        全部文章
+                    </button>
+                    {allTags.map((tag) => (
+                        <button
+                            key={tag}
+                            onClick={() => handleTagClick(tag)}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedTag === tag
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
+                                }`}
+                        >
+                            {tag}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                    <div className="flex justify-center items-center gap-2">
+                        <button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === 1
+                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                                }`}
+                        >
+                            上一页
+                        </button>
+
+                        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                            let pageNum;
+                            if (totalPages <= 5) {
+                                pageNum = i + 1;
+                            } else if (currentPage <= 3) {
+                                pageNum = i + 1;
+                            } else if (currentPage >= totalPages - 2) {
+                                pageNum = totalPages - 4 + i;
+                            } else {
+                                pageNum = currentPage - 2 + i;
+                            }
+
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => handlePageChange(pageNum)}
+                                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === pageNum
+                                        ? 'bg-blue-600 text-white shadow-lg'
+                                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                                        }`}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
+
+                        {totalPages > 5 && currentPage < totalPages - 2 && (
+                            <span className="px-3 py-2 text-gray-500 dark:text-gray-400">...</span>
+                        )}
+
+                        {totalPages > 5 && currentPage < totalPages - 1 && (
+                            <button
+                                onClick={() => handlePageChange(totalPages)}
+                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
+                                    ? 'bg-blue-600 text-white shadow-lg'
+                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                                    }`}
+                            >
+                                {totalPages}
+                            </button>
+                        )}
+
+                        <button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
+                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                                }`}
+                        >
+                            下一页
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Posts Grid */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -45,19 +188,92 @@ function BlogContent() {
                             加载中...
                         </h3>
                     </div>
-                ) : posts.length > 0 ? (
-                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {posts.map((post, index) => (
-                            <div
-                                key={post.slug}
-                                className={`transform transition-all duration-500 hover:scale-105 ${index < 6 ? 'animate-fade-in-up' : ''
-                                    }`}
-                                style={index >= 6 ? { animationDelay: `${(index - 6) * 0.1}s` } : {}}
-                            >
-                                <PostCard post={post} />
+                ) : currentPosts.length > 0 ? (
+                    <>
+                        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                            {currentPosts.map((post, index) => (
+                                <div
+                                    key={post.slug}
+                                    className={`transform transition-all duration-500 hover:scale-105 ${index < 6 ? 'animate-fade-in-up' : ''
+                                        }`}
+                                    style={index >= 6 ? { animationDelay: `${(index - 6) * 0.1}s` } : {}}
+                                >
+                                    <PostCard post={post} />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Bottom Pagination */}
+                        {totalPages > 1 && (
+                            <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+                                <div className="flex justify-center items-center gap-2">
+                                    <button
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === 1
+                                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                                            }`}
+                                    >
+                                        上一页
+                                    </button>
+
+                                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                                        let pageNum;
+                                        if (totalPages <= 5) {
+                                            pageNum = i + 1;
+                                        } else if (currentPage <= 3) {
+                                            pageNum = i + 1;
+                                        } else if (currentPage >= totalPages - 2) {
+                                            pageNum = totalPages - 4 + i;
+                                        } else {
+                                            pageNum = currentPage - 2 + i;
+                                        }
+
+                                        return (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => handlePageChange(pageNum)}
+                                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === pageNum
+                                                    ? 'bg-blue-600 text-white shadow-lg'
+                                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                                                    }`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        );
+                                    })}
+
+                                    {totalPages > 5 && currentPage < totalPages - 2 && (
+                                        <span className="px-3 py-2 text-gray-500 dark:text-gray-400">...</span>
+                                    )}
+
+                                    {totalPages > 5 && currentPage < totalPages - 1 && (
+                                        <button
+                                            onClick={() => handlePageChange(totalPages)}
+                                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
+                                                ? 'bg-blue-600 text-white shadow-lg'
+                                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                                                }`}
+                                        >
+                                            {totalPages}
+                                        </button>
+                                    )}
+
+                                    <button
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
+                                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                                            }`}
+                                    >
+                                        下一页
+                                    </button>
+                                </div>
                             </div>
-                        ))}
-                    </div>
+                        )}
+                    </>
                 ) : (
                     /* Empty State */
                     <div className="text-center py-20">
@@ -68,18 +284,18 @@ function BlogContent() {
                         </div>
 
                         <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                            还没有文章
+                            {selectedTag ? `没有找到标签为"${selectedTag}"的文章` : '还没有文章'}
                         </h3>
 
                         <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                            博客刚刚建立，精彩内容即将上线。敬请期待技术心得与经验总结！
+                            {selectedTag ? '尝试选择其他标签或查看全部文章。' : '博客刚刚建立，精彩内容即将上线。敬请期待技术心得与经验总结！'}
                         </p>
 
                         <Link
-                            href="/home"
+                            href={selectedTag ? "/blog" : "/home"}
                             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300"
                         >
-                            返回首页
+                            {selectedTag ? "查看全部文章" : "返回首页"}
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>

@@ -130,7 +130,7 @@ export default async function PostPage({ params }: PostPageProps) {
                                             key={tag}
                                             className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium"
                                         >
-                                            #{tag}
+                                            {tag}
                                         </span>
                                     ))}
                                 </div>
@@ -141,12 +141,12 @@ export default async function PostPage({ params }: PostPageProps) {
 
                 {/* Content */}
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div
-                            className="prose prose-lg dark:prose-invert max-w-none p-8 md:p-12"
-                            dangerouslySetInnerHTML={{ __html: post.content }}
-                        />
-                    </div>
+                    <div
+                        className="prose prose-lg dark:prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ 
+                            __html: post.content.replace(/<h1[^>]*>[\s\S]*?<\/h1>/, '') 
+                        }}
+                    />
 
                     {/* Navigation */}
                     <div className="mt-16 flex justify-center">
