@@ -14,6 +14,8 @@ export default function Home() {
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [mounted, setMounted] = useState(false);
+    const [forceDoubleClick, setForceDoubleClick] = useState(false);
+
 
     useEffect(() => {
         setMounted(true);
@@ -41,6 +43,19 @@ export default function Home() {
         setScrollLeft(scrollContainerRef.current.scrollLeft);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        // 在滚动容器上拦截左右箭头，作为这是滑动列表的标识
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            e.stopPropagation();
+            // 进行小幅滚动反馈
+            if (scrollContainerRef.current) {
+                const delta = e.key === 'ArrowLeft' ? -200 : 200;
+                scrollContainerRef.current.scrollBy({ left: delta, behavior: 'smooth' });
+            }
+        }
+    };
+
     const handleMouseLeave = () => {
         setIsDragging(false);
     };
@@ -57,10 +72,10 @@ export default function Home() {
         scrollContainerRef.current.scrollLeft = scrollLeft - walk;
     };
 
-    const recentPosts = posts;
+    const recentPosts = posts.slice(0, 5);
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             <Header />
             {/* Hero Section - 直接内联 */}
             <section className="relative min-h-screen flex justify-center overflow-hidden">
@@ -154,7 +169,7 @@ export default function Home() {
             </section>
 
             {/* Recent Posts Section */}
-            <section className="relative py-20 bg-gray-50 dark:bg-gray-900/50">
+            <section className="relative py-20 bg-gray-50 dark:bg-gray-900">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-30">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
@@ -189,43 +204,54 @@ export default function Home() {
                             {/* Horizontal Scroll Container */}
                             <div className="relative">
                                 {/* Scroll Indicators */}
-                                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
-                                    <div className="w-8 h-16 bg-gradient-to-r from-gray-50 dark:from-gray-900/50 to-transparent"></div>
+                                <div className="absolute -left-8 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                                    <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
                                 </div>
-                                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
-                                    <div className="w-8 h-16 bg-gradient-to-l from-gray-50 dark:from-gray-900/50 to-transparent"></div>
+                                <div className="absolute -right-8 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                                    <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
                                 </div>
 
                                 {/* Scrollable Posts */}
                                 <div
                                     ref={scrollContainerRef}
-                                    className="overflow-x-auto pb-6 scrollbar-hide cursor-grab active:cursor-grabbing select-none"
+                                    className="overflow-x-auto pb-6 scrollbar-hide cursor-grab active:cursor-grabbing select-none outline-none focus:outline-none"
                                     onMouseDown={handleMouseDown}
                                     onMouseLeave={handleMouseLeave}
                                     onMouseUp={handleMouseUp}
                                     onMouseMove={handleMouseMove}
+                                    onKeyDown={handleKeyDown}
+                                    tabIndex={0}
                                 >
-                                    <div className="flex gap-6 px-4" style={{ minWidth: 'max-content' }}>
+                                    <div className="flex gap-6" style={{ minWidth: 'max-content', paddingLeft: '0px', paddingRight: '0px' }}>
                                         {recentPosts.map((post) => (
-                                            <div
-                                                key={post.slug}
-                                                className="w-80 flex-shrink-0 transform transition-all duration-500 hover:scale-105"
-                                            >
-                                                <PostCard post={post} />
+                                            <div key={post.slug} className="w-80 flex-shrink-0">
+                                                <PostCard post={post} requireDoubleClick={true} />
                                             </div>
                                         ))}
+                                        {/* 查看更多“卡片” */}
+                                        <div className="w-80 flex-shrink-0">
+                                            <Link href="/blog" draggable={false}>
+                                                <article className="group relative bg-white/95 dark:bg-gray-800/95 rounded-xl border border-gray-200 dark:border-gray-700 h-full flex items-center justify-between p-6 cursor-pointer backdrop-blur-[1px] transition-all duration-300" draggable={false} onDragStart={(e) => e.preventDefault()}>
+                                                    <div className="flex-1">
+                                                        <div className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">查看更多文章</div>
+                                                        <div className="text-sm text-gray-500 dark:text-gray-400">探索全部内容</div>
+                                                    </div>
+                                                    <div className="ml-2">
+                                                        <svg className="w-6 h-6 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                        </svg>
+                                                    </div>
+                                                </article>
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Scroll Hint */}
-                                <div className="text-center mt-4">
-                                    <div className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
-                                        </svg>
-                                        鼠标拖拽查看更多文章
-                                    </div>
-                                </div>
+
                             </div>
 
                             {/* Empty State */}
@@ -245,24 +271,11 @@ export default function Home() {
                                 </div>
                             )}
 
-                            {/* View All Button */}
-                            {posts.length > 0 && (
-                                <div className="text-center mt-16">
-                                    <Link
-                                        href="/blog"
-                                        className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                                    >
-                                        查看所有文章
-                                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                        </svg>
-                                    </Link>
-                                </div>
-                            )}
+
                         </>
                     )}
                 </div>
-            </section>
-        </div>
+            </section >
+        </div >
     );
 }

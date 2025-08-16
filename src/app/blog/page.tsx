@@ -77,12 +77,12 @@ function BlogContent() {
             <Header />
 
             {/* Tag Filter */}
-            <div className="flex flex-wrap gap-3 justify-center py-20">
+            <div className="flex flex-wrap gap-3 justify-center pt-20 pb-2">
                 <button
                     onClick={() => handleTagClick('')}
                     className={`brand-tag-button ripple brand-water-ripple brand-stone-glow brand-wave-animation ${selectedTag === '' ? 'brand-tag-active' : ''}`}
                 >
-                    全部文章
+                    ALL
                 </button>
                 {allTags.map((tag) => (
                     <button
@@ -97,7 +97,7 @@ function BlogContent() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
                     <div className="brand-pagination">
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
@@ -155,7 +155,7 @@ function BlogContent() {
             )}
 
             {/* Posts Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8">
                 {loading ? (
                     <div className="text-center py-20">
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
@@ -173,17 +173,19 @@ function BlogContent() {
                             {currentPosts.map((post, index) => (
                                 <div
                                     key={post.slug}
-                                    className={`transform transition-all duration-500 hover:scale-105 ${index < 6 ? 'animate-fade-in-up' : ''}`}
+                                    className={`${index < 6 ? 'animate-fade-in-up' : ''}`}
                                     style={index >= 6 ? { animationDelay: `${(index - 6) * 0.1}s` } : {}}
                                 >
-                                    <PostCard post={post} />
+                                    <div className="bg-white/95 dark:bg-gray-800/95 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-[1px]">
+                                        <PostCard post={post} />
+                                    </div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Bottom Pagination */}
                         {totalPages > 1 && (
-                            <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+                            <div className="mt-16 pt-8">
                                 <div className="brand-pagination">
                                     <button
                                         onClick={() => handlePageChange(currentPage - 1)}
@@ -258,7 +260,7 @@ function BlogContent() {
 
                         <Link
                             href={selectedTag ? "/blog" : "/home"}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:shadow-lg hover:bg-blue-700 transition-all duration-300"
                         >
                             {selectedTag ? "查看全部文章" : "返回首页"}
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

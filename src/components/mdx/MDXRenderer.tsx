@@ -3,17 +3,17 @@ import { ComponentProps } from 'react';
 
 const components = {
     h1: ({ children }: ComponentProps<'h1'>) => (
-        <h1 className="text-3xl font-bold mt-8 mb-4 text-gray-900 dark:text-white text-hero">
+        <h1 className="text-3xl font-bold mt-8 mb-4 text-gray-900 dark:text-white text-hero relative inline-block">
             {children}
         </h1>
     ),
     h2: ({ children }: ComponentProps<'h2'>) => (
-        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-900 dark:text-white text-hero">
+        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-900 dark:text-white text-hero relative inline-block">
             {children}
         </h2>
     ),
     h3: ({ children }: ComponentProps<'h3'>) => (
-        <h3 className="text-xl font-semibold mt-5 mb-2 text-gray-900 dark:text-white text-hero">
+        <h3 className="text-xl font-semibold mt-5 mb-2 text-gray-900 dark:text-white text-hero relative inline-block">
             {children}
         </h3>
     ),

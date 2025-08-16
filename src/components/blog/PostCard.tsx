@@ -7,9 +7,10 @@ import { useState } from "react";
 
 interface PostCardProps {
     post: Post;
+    requireDoubleClick?: boolean;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
@@ -22,13 +23,35 @@ export function PostCard({ post }: PostCardProps) {
             day: 'numeric'
         });
     };
+    const [clickCount, setClickCount] = useState(0);
+    const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null);
+
 
     return (
-        <Link href={`/blog/${post.slug}`}>
+        <Link href={requireDoubleClick ? '#' : `/blog/${post.slug}`} draggable={false} onClick={(e) => {
+            if (requireDoubleClick) {
+                e.preventDefault();
+                setClickCount((c) => {
+                    const next = c + 1;
+                    if (clickTimer) {
+                        clearTimeout(clickTimer);
+                    }
+                    const timer = setTimeout(() => setClickCount(0), 400);
+                    setClickTimer(timer);
+                    if (next >= 2) {
+                        // 触发跳转
+                        window.location.href = `/blog/${post.slug}`;
+                    }
+                    return next;
+                });
+            }
+        }}>
             <article
-                className="group relative bg-white dark:bg-gray-800 rounded-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 interactive-card hover-lift cursor-pointer"
+                className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
             >
                 {/* Animated Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
@@ -58,7 +81,7 @@ export function PostCard({ post }: PostCardProps) {
 
                     {/* Title */}
                     <h3 className="text-xl font-bold mb-3 leading-tight">
-                        <span className="text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
+                        <span className="text-gray-900 dark:text-white line-clamp-2">
                             {post.title}
                         </span>
                     </h3>

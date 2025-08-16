@@ -75,7 +75,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                         {/* Breadcrumb */}
-                        <nav className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-8">
+                        <nav className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-8 mt-2">
                             <Link href="/home" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                 首页
                             </Link>
@@ -132,7 +132,7 @@ export default async function PostPage({ params }: PostPageProps) {
                                         <Link
                                             href={`/blog?tag=${encodeURIComponent(tag)}`}
                                             key={tag}
-                                            className="article-tag px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium select-none no-underline hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors duration-200"
+                                            className="article-tag px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium select-none no-underline transition-colors duration-200"
                                         >
                                             {tag}
                                         </Link>
@@ -156,12 +156,12 @@ export default async function PostPage({ params }: PostPageProps) {
                     <div className="mt-16 flex justify-center">
                         <Link
                             href="/blog"
-                            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                            className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-blue-700 transition-all duration-300"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
                             </svg>
-                            返回文章列表
+                            返回
                         </Link>
                     </div>
                 </div>

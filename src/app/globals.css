@@ -516,6 +516,30 @@ html {
   box-shadow: none !important;
 }
 
+/* Remove focus outline from brand tag buttons and pagination */
+.brand-tag-button,
+.brand-pagination-button {
+  outline: none !important;
+}
+
+.brand-tag-button:focus,
+.brand-tag-button:focus-visible,
+.brand-tag-button:focus-within,
+.brand-tag-button.brand-tag-active:focus,
+.brand-tag-button.brand-tag-active:focus-visible,
+.brand-tag-button.brand-tag-active:focus-within,
+.brand-pagination-button:focus,
+.brand-pagination-button:focus-visible,
+.brand-pagination-button:focus-within,
+.brand-pagination-button.brand-pagination-active:focus,
+.brand-pagination-button.brand-pagination-active:focus-visible,
+.brand-pagination-button.brand-pagination-active:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+
 /* Glass Effect */
 .glass {
   background: rgba(255, 255, 255, 0.1);
@@ -553,18 +577,6 @@ html {
   line-height: 1.3;
   color: var(--text-primary);
   letter-spacing: -0.025em;
-  position: relative;
-}
-
-.prose h2::after {
-  content: '';
-  position: absolute;
-  bottom: -0.5rem;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
-  border-radius: 2px;
 }
 
 .prose h3 {
@@ -1935,7 +1947,7 @@ html {
   font-size: 0.75rem !important;
   font-weight: 500 !important;
   cursor: pointer !important;
-  transition: all var(--transition-fast) !important;
+  transition: opacity var(--transition-fast) !important;
   border: 1px solid var(--accent-subtle) !important;
   opacity: 0 !important;
   z-index: 10 !important;
@@ -1944,6 +1956,10 @@ html {
 
 .prose pre:hover button.copy-button {
   opacity: 0.8 !important;
+}
+
+.prose pre button.copy-button:hover {
+  opacity: 1 !important;
 }
 
 .prose pre button.copy-button:hover {
@@ -2116,7 +2132,7 @@ html {
   box-shadow: var(--shadow-md);
   background: var(--bg-secondary);
   color: var(--text-primary);
-  border-color: var(--brand-primary);
+  border-color: var(--accent-subtle);
 }
 
 .brand-tag-button:hover::before {
@@ -2130,10 +2146,9 @@ html {
 
 /* Active tag state */
 .brand-tag-button.brand-tag-active {
-  background: var(--gradient-primary);
+  background: var(--brand-primary);
   color: var(--text-inverse);
   border-color: transparent;
-  box-shadow: var(--shadow-lg);
   font-weight: 600;
 }
 
@@ -2143,7 +2158,8 @@ html {
 
 .brand-tag-button.brand-tag-active:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Ripple effect for tag buttons */
@@ -2211,7 +2227,7 @@ html {
   box-shadow: var(--shadow-md);
   background: var(--bg-secondary);
   color: var(--text-primary);
-  border-color: var(--brand-primary);
+  border-color: var(--accent-subtle);
 }
 
 .brand-pagination-button:hover:not(:disabled)::before {
@@ -2225,10 +2241,9 @@ html {
 
 /* Active pagination button */
 .brand-pagination-button.brand-pagination-active {
-  background: var(--gradient-primary);
+  background: var(--brand-primary);
   color: var(--text-inverse);
   border-color: transparent;
-  box-shadow: var(--shadow-lg);
   font-weight: 600;
 }
 
@@ -2238,7 +2253,6 @@ html {
 
 .brand-pagination-button.brand-pagination-active:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
 }
 
 /* Disabled pagination button */
@@ -2318,14 +2332,14 @@ html {
   right: 0;
   bottom: 0;
   border-radius: inherit;
-  background: radial-gradient(circle at center, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+  background: transparent;
   opacity: 0;
   transition: opacity var(--transition-normal);
   pointer-events: none;
 }
 
 .brand-stone-glow:hover::after {
-  opacity: 1;
+  opacity: 0;
 }
 
 /* Gentle wave animation */
@@ -2412,19 +2426,4 @@ html {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   border-color: var(--brand-primary);
   color: var(--text-primary);
-}
-
-/* Active state enhancements */
-.brand-tag-button.brand-tag-active {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-  color: var(--text-inverse);
-  border-color: transparent;
-  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
-}
-
-.brand-pagination-button.brand-pagination-active {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-  color: var(--text-inverse);
-  border-color: transparent;
-  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
 }
