@@ -399,22 +399,6 @@ pre code {
   font-family: 'LXGW Marker Gothic', var(--font-display), var(--font-primary);
 }
 
-/* Article detail body: use LXGW WenKai Mono TC for content (excluding code blocks) */
-.article-detail {
-  --article-font-family: 'LXGW WenKai Mono TC', var(--font-content);
-}
-
-.article-detail .prose,
-.article-detail .prose p,
-.article-detail .prose h1,
-.article-detail .prose h2,
-.article-detail .prose h3,
-.article-detail .prose li,
-.article-detail .prose blockquote {
-  font-family: var(--article-font-family);
-  font-weight: 400;
-}
-
 /* Enhanced Text Styles */
 .heading-1 {
   font-family: var(--font-display);
@@ -570,14 +554,12 @@ html {
   color: var(--text-primary);
   letter-spacing: -0.025em;
   position: relative;
-  display: inline-block;
-  padding-bottom: 0.5rem;
 }
 
 .prose h2::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  bottom: -0.5rem;
   left: 0;
   width: 100%;
   height: 3px;
@@ -1868,6 +1850,78 @@ html {
 /* Code block copy button styling */
 .prose pre {
   position: relative;
+}
+
+/* Enhanced styles for code elements in headings */
+.prose h1 code {
+  font-size: 0.85em !important;
+  padding: 0.375rem 0.75rem !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  border-radius: 0.5rem !important;
+  color: rgb(59, 130, 246) !important;
+  font-weight: 600 !important;
+  font-family: var(--font-code) !important;
+  vertical-align: baseline !important;
+  margin: 0 0.25rem !important;
+}
+
+.prose h2 code {
+  font-size: 0.88em !important;
+  padding: 0.3rem 0.6rem !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  border-radius: 0.375rem !important;
+  color: rgb(59, 130, 246) !important;
+  font-weight: 600 !important;
+  font-family: var(--font-code) !important;
+  vertical-align: baseline !important;
+  margin: 0 0.2rem !important;
+}
+
+.prose h3 code,
+.prose h4 code,
+.prose h5 code,
+.prose h6 code {
+  font-size: 0.9em !important;
+  padding: 0.25rem 0.5rem !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  border-radius: 0.375rem !important;
+  color: rgb(59, 130, 246) !important;
+  font-weight: 600 !important;
+  font-family: var(--font-code) !important;
+  vertical-align: baseline !important;
+  margin: 0 0.15rem !important;
+}
+
+.dark .prose h1 code,
+.dark .prose h2 code,
+.dark .prose h3 code,
+.dark .prose h4 code,
+.dark .prose h5 code,
+.dark .prose h6 code {
+  background-color: rgba(96, 165, 250, 0.15) !important;
+  border-color: rgba(96, 165, 250, 0.3) !important;
+  color: rgb(96, 165, 250) !important;
+}
+
+/* Ensure regular paragraph code blocks maintain their style */
+.prose p code:not(h1 code):not(h2 code):not(h3 code):not(h4 code):not(h5 code):not(h6 code) {
+  font-size: 0.875em !important;
+  padding: 0.125rem 0.375rem !important;
+  background-color: rgba(156, 163, 175, 0.1) !important;
+  border: 1px solid rgba(156, 163, 175, 0.2) !important;
+  border-radius: 0.25rem !important;
+  color: rgb(75, 85, 99) !important;
+  font-weight: 500 !important;
+  font-family: var(--font-code) !important;
+}
+
+.dark .prose p code:not(h1 code):not(h2 code):not(h3 code):not(h4 code):not(h5 code):not(h6 code) {
+  background-color: rgba(156, 163, 175, 0.15) !important;
+  border-color: rgba(156, 163, 175, 0.3) !important;
+  color: rgb(209, 213, 219) !important;
 }
 
 .prose pre button.copy-button {

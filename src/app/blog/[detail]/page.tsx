@@ -92,15 +92,16 @@ export default async function PostPage({ params }: PostPageProps) {
                         </nav>
 
                         <div className="text-center">
-                            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                                {post.title}
+                            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white relative">
+                                <span className="relative z-10">{post.title}</span>
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 dark:from-blue-400/10 dark:to-cyan-400/10 rounded-lg -z-10"></div>
                             </h1>
 
                             <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
                                 {post.summary}
                             </p>
 
-                            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-500 dark:text-gray-400 mb-6">
                                 <div className="flex items-center gap-2">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -126,12 +127,12 @@ export default async function PostPage({ params }: PostPageProps) {
 
                             {/* Tags */}
                             {post.tags.length > 0 && (
-                                <div className="flex flex-wrap justify-center gap-2 mt-6">
+                                <div className="flex flex-wrap justify-center gap-2">
                                     {post.tags.map((tag) => (
                                         <Link
                                             href={`/blog?tag=${encodeURIComponent(tag)}`}
                                             key={tag}
-                                            className="article-tag px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium select-none no-underline hover:bg-blue-200 dark:hover:bg-blue-800/50"
+                                            className="article-tag px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium select-none no-underline hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors duration-200"
                                         >
                                             {tag}
                                         </Link>
@@ -142,10 +143,8 @@ export default async function PostPage({ params }: PostPageProps) {
                     </div>
                 </header>
 
-                
-
                 {/* Content */}
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 article-detail">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <div
                         className="prose prose-lg dark:prose-invert max-w-none"
                         dangerouslySetInnerHTML={{
