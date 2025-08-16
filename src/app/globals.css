@@ -117,7 +117,7 @@
   --font-secondary: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
   --font-display: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  
+
   --font-code: 'Cascadia Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
   --font-content: 'LXGW WenKai Mono TC', -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -334,8 +334,9 @@ body {
 }
 
 .text-code {
-  font-family: var(--font-mono);
-  font-weight: var(--font-normal);
+  font-family: var(--font-code);
+  font-weight: 400;
+  letter-spacing: var(--tracking-normal);
 }
 
 .text-serif {
@@ -348,16 +349,70 @@ body {
 
 
 
-.text-code {
-  font-family: var(--font-code);
-  font-weight: var(--font-normal);
-  letter-spacing: var(--tracking-normal);
-}
+/* (consolidated above) */
 
 .text-content {
   font-family: var(--font-content);
   font-weight: var(--font-normal);
   letter-spacing: var(--tracking-normal);
+}
+
+/* Normalize code token weights and ensure monospace font for all code blocks
+   Some highlight.js themes set bold weights for certain token types; override
+   so visual weight is consistent and uses the project's monospace font. */
+.prose pre,
+pre,
+.prose code,
+code {
+  font-family: var(--font-code) !important;
+}
+
+/* Force all highlighted token spans to use normal weight to avoid mixed boldness */
+.hljs,
+.hljs *,
+.prose pre code,
+pre code {
+  font-weight: 400 !important;
+}
+
+
+/* Header / hero navigation font (uses the bundled LXGW Marker Gothic) */
+.font-hero {
+  font-family: 'LXGW Marker Gothic', var(--font-display), var(--font-primary);
+  /* make header navigation larger and bolder */
+  font-weight: 550;
+  /* bolder than the default font-medium utility */
+  font-size: 1.25rem;
+  /* base size (≈ text-lg) for small screens */
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .font-hero {
+    font-size: 1.25rem;
+    /* slightly larger on md+ screens (≈ text-xl) */
+  }
+}
+
+/* Alias used in homepage Hero markup */
+.text-hero {
+  font-family: 'LXGW Marker Gothic', var(--font-display), var(--font-primary);
+}
+
+/* Article detail body: use LXGW WenKai Mono TC for content (excluding code blocks) */
+.article-detail {
+  --article-font-family: 'LXGW WenKai Mono TC', var(--font-content);
+}
+
+.article-detail .prose,
+.article-detail .prose p,
+.article-detail .prose h1,
+.article-detail .prose h2,
+.article-detail .prose h3,
+.article-detail .prose li,
+.article-detail .prose blockquote {
+  font-family: var(--article-font-family);
+  font-weight: 400;
 }
 
 /* Enhanced Text Styles */
@@ -473,8 +528,8 @@ html {
 /* Remove focus outline from article tags */
 .article-tag:focus,
 .article-tag:focus-visible {
-    outline: none !important;
-    box-shadow: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Glass Effect */
@@ -515,14 +570,16 @@ html {
   color: var(--text-primary);
   letter-spacing: -0.025em;
   position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
 }
 
 .prose h2::after {
   content: '';
   position: absolute;
-  bottom: -0.5rem;
+  bottom: 0;
   left: 0;
-  width: 3rem;
+  width: 100%;
   height: 3px;
   background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
   border-radius: 2px;
@@ -1878,7 +1935,7 @@ html {
 .hljs-selector-tag,
 .hljs-addition {
   color: var(--brand-primary) !important;
-  font-weight: 600 !important;
+  font-weight: 400 !important;
 }
 
 .hljs-number,
@@ -1888,6 +1945,7 @@ html {
 .hljs-doctag,
 .hljs-regexp {
   color: var(--success) !important;
+  font-weight: 400 !important;
 }
 
 .hljs-title,
@@ -1896,7 +1954,7 @@ html {
 .hljs-selector-id,
 .hljs-selector-class {
   color: var(--info) !important;
-  font-weight: 600 !important;
+  font-weight: 400 !important;
 }
 
 .hljs-attribute,
@@ -1906,6 +1964,7 @@ html {
 .hljs-class .hljs-title,
 .hljs-type {
   color: var(--warning) !important;
+  font-weight: 400 !important;
 }
 
 .hljs-symbol,
@@ -1917,25 +1976,29 @@ html {
 .hljs-selector-pseudo,
 .hljs-link {
   color: var(--accent-primary) !important;
+  font-weight: 400 !important;
 }
 
 .hljs-built_in,
 .hljs-deletion {
   color: var(--error) !important;
+  font-weight: 400 !important;
 }
 
 .hljs-formula {
   background: var(--bg-quaternary) !important;
   padding: 0.125rem 0.25rem !important;
   border-radius: 0.25rem !important;
+  font-weight: 400 !important;
 }
 
 .hljs-emphasis {
   font-style: italic !important;
+  font-weight: 400 !important;
 }
 
 .hljs-strong {
-  font-weight: 700 !important;
+  font-weight: 400 !important;
   color: var(--text-primary) !important;
 }
 
@@ -2153,9 +2216,12 @@ html {
 }
 
 @keyframes brand-pagination-float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-3px);
   }
@@ -2221,10 +2287,10 @@ html {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(14, 165, 233, 0.1) 50%, 
-    transparent 100%);
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(14, 165, 233, 0.1) 50%,
+      transparent 100%);
   transition: left var(--transition-slow);
 }
 
@@ -2236,9 +2302,9 @@ html {
 .brand-tag-container {
   position: relative;
   padding: 2rem;
-  background: linear-gradient(135deg, 
-    var(--bg-secondary) 0%, 
-    var(--bg-tertiary) 100%);
+  background: linear-gradient(135deg,
+      var(--bg-secondary) 0%,
+      var(--bg-tertiary) 100%);
   border-radius: 1rem;
   border: 1px solid var(--accent-subtle);
   box-shadow: var(--shadow-md);
@@ -2252,7 +2318,7 @@ html {
   right: 0;
   bottom: 0;
   background: radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.05) 0%, transparent 50%);
   border-radius: inherit;
   pointer-events: none;
 }
@@ -2274,10 +2340,10 @@ html {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    var(--brand-primary) 50%, 
-    transparent 100%);
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--brand-primary) 50%,
+      transparent 100%);
   opacity: 0.3;
 }
 

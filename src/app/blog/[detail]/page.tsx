@@ -123,29 +123,29 @@ export default async function PostPage({ params }: PostPageProps) {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Tags */}
+                            {post.tags.length > 0 && (
+                                <div className="flex flex-wrap justify-center gap-2 mt-6">
+                                    {post.tags.map((tag) => (
+                                        <Link
+                                            href={`/blog?tag=${encodeURIComponent(tag)}`}
+                                            key={tag}
+                                            className="article-tag px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium select-none no-underline hover:bg-blue-200 dark:hover:bg-blue-800/50"
+                                        >
+                                            {tag}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </header>
 
-                {/* Tags */}
-                {post.tags.length > 0 && (
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        <div className="flex flex-wrap justify-center gap-2">
-                            {post.tags.map((tag) => (
-                                <Link
-                                    href={`/blog?tag=${encodeURIComponent(tag)}`}
-                                    key={tag}
-                                    className="article-tag px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium select-none no-underline hover:bg-blue-200 dark:hover:bg-blue-800/50"
-                                >
-                                    {tag}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                
 
                 {/* Content */}
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 article-detail">
                     <div
                         className="prose prose-lg dark:prose-invert max-w-none"
                         dangerouslySetInnerHTML={{

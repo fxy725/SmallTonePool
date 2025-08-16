@@ -45,20 +45,20 @@ const components = {
 
         if (isInline) {
             return (
-                <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded text-sm text-code">
+                <code className="bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded text-sm text-code font-normal">
                     {children}
                 </code>
             );
         }
 
         return (
-            <code className="block bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto text-sm text-code border border-gray-200 dark:border-gray-700">
+            <code className="block bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto text-sm text-code border border-gray-200 dark:border-gray-700 font-normal">
                 {children}
             </code>
         );
     },
     pre: ({ children }: ComponentProps<'pre'>) => (
-        <pre className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-4 border border-gray-200 dark:border-gray-700 text-content">
+        <pre className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-4 border border-gray-200 dark:border-gray-700 text-code">
             {children}
         </pre>
     ),
