@@ -24,9 +24,9 @@ export function Header() {
                 <div className="flex justify-center items-center h-16">
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-12">
-                        <NavLink href="/home">首页</NavLink>
-                        <NavLink href="/blog">文章</NavLink>
-                        <NavLink href="/about">关于</NavLink>
+                        <NavLink href="/home" className="font-hero">首页</NavLink>
+                        <NavLink href="/blog" className="font-hero">文章</NavLink>
+                        <NavLink href="/about" className="font-hero">关于</NavLink>
                     </nav>
 
                     {/* Mobile Menu Button */}
@@ -51,9 +51,9 @@ export function Header() {
                 {isMenuOpen && (
                     <nav className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
                         <div className="flex flex-col space-y-3 items-center">
-                            <MobileNavLink href="/home" onClick={() => setIsMenuOpen(false)}>首页</MobileNavLink>
-                            <MobileNavLink href="/blog" onClick={() => setIsMenuOpen(false)}>文章</MobileNavLink>
-                            <MobileNavLink href="/about" onClick={() => setIsMenuOpen(false)}>关于</MobileNavLink>
+                            <MobileNavLink href="/home" onClick={() => setIsMenuOpen(false)} className="font-hero">首页</MobileNavLink>
+                            <MobileNavLink href="/blog" onClick={() => setIsMenuOpen(false)} className="font-hero">文章</MobileNavLink>
+                            <MobileNavLink href="/about" onClick={() => setIsMenuOpen(false)} className="font-hero">关于</MobileNavLink>
                         </div>
                     </nav>
                 )}
@@ -70,11 +70,11 @@ export function Header() {
     );
 }
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+function NavLink({ href, children, className = "" }: { href: string; children: React.ReactNode; className?: string }) {
     return (
         <Link
             href={href}
-            className="nav-link relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-lg px-2 py-2 select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
+            className={`nav-link relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-lg px-2 py-2 select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 ${className}`}
         >
             {children}
             <span className="pointer-events-none absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
@@ -82,12 +82,12 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     );
 }
 
-function MobileNavLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
+function MobileNavLink({ href, onClick, children, className = "" }: { href: string; onClick: () => void; children: React.ReactNode; className?: string }) {
     return (
         <Link
             href={href}
             onClick={onClick}
-            className="nav-link block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
+            className={`nav-link block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 ${className}`}
         >
             {children}
         </Link>

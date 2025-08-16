@@ -1,0 +1,68 @@
+---
+title: "C++ 与 Lua 集成：深入探讨"
+date: "2024-08-15"
+summary: "探索绑定 Lua 和 C++ 的复杂性，涵盖堆栈操作、错误处理和用户类型等主题。"
+tags: ["Lua", "C++"]
+published: true
+---
+
+# C++ 与 Lua 集成：深入探讨
+
+将 Lua 和 C++ 绑定在一起可以让你结合 C++ 的性能和脚本语言的灵活性。以下是对它如何工作的深入探究。
+
+## Lua 堆栈
+
+C++ 和 Lua 之间的通信通过虚拟堆栈进行。要从 C++ 调用 Lua 函数，你需要将函数及其参数推入堆栈，进行调用，然后从堆栈中检索结果。
+
+```cpp
+// 从 C++ 调用 Lua 函数
+void callLuaFunction(lua_State* L, const char* funcName, int arg1, int arg2)
+{
+    lua_getglobal(L, funcName);
+    lua_pushnumber(L, arg1);
+    lua_pushnumber(L, arg2);
+    if (lua_pcall(L, 2, 1, 0) != LUA_OK)
+    {
+        // 处理错误
+        const char* error = lua_tostring(L, -1);
+        fprintf(stderr, "调用函数 '%s' 时出错: %s\n", funcName, error);
+        lua_pop(L, 1); // 弹出错误消息
+    }
+    int result = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+}
+```
+
+## 使用用户类型暴露 C++ 类
+
+要将 C++ 类暴露给 Lua，你可以使用元表。元表就像一个类定义，保存可以在实例上调用的方法。
+
+```cpp
+// 为 Vector2 类创建用户类型的简化示例
+static int newVector2(lua_State* L)
+{
+    float x = luaL_checknumber(L, 1);
+    float y = luaL_checknumber(L, 2);
+    Vector2* vec = (Vector2*)lua_newuserdata(L, sizeof(Vector2));
+    vec->x = x;
+    vec->y = y;
+    luaL_getmetatable(L, "Vector2");
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
+static int vector2_add(lua_State* L)
+{
+    Vector2* a = (Vector2*)luaL_checkudata(L, 1, "Vector2");
+    Vector2* b = (Vector2*)luaL_checkudata(L, 2, "Vector2");
+    // ... 执行加法并推入结果 ...
+    return 1;
+}
+
+// 在你的注册函数中
+luaL_newmetatable(L, "Vector2");
+lua_pushstring(L, "__add");
+lua_pushcfunction(L, vector2_add);
+lua_settable(L, -3);
+// ... 以此类推
+```

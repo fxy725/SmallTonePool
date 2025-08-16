@@ -106,7 +106,7 @@ export default function Home() {
                             />
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-2 text-lg md:text-xl text-gray-600 dark:text-gray-400 font-medium">
+                        <div className="flex flex-wrap justify-center gap-2 text-lg md:text-xl text-gray-600 dark:text-gray-400 font-medium text-hero">
                             <span className="px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full border border-gray-200/50 dark:border-gray-700/50">
                                 📚 项目介绍
                             </span>
@@ -120,10 +120,10 @@ export default function Home() {
 
                         {/* Description */}
                         <div className="max-w-3xl mx-auto space-y-6">
-                            <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed text-hero">
                                 分享编程路上的点点滴滴，记录技术成长的心路历程
                             </p>
-                            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed text-hero">
                                 让每一次学习都有迹可循，让每个经验都能帮助他人，
                                 在代码的世界里，我们都是不断成长的探索者。
                             </p>

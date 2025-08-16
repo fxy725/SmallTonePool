@@ -1,0 +1,82 @@
+---
+title: "C++ 游戏引擎中的内存管理"
+date: "2024-08-12"
+summary: "深入探讨 C++ 游戏引擎的内存管理技术，包括自定义分配器和内存池。"
+tags: ["C++", "内存管理"]
+published: true
+---
+
+# C++ 游戏引擎中的内存管理
+
+对于用 C++ 编写的游戏引擎，高效的内存管理对性能和稳定性至关重要。本文涵盖了基本技术。
+
+## 自定义分配器
+
+### 堆栈分配器
+
+```cpp
+class StackAllocator
+{
+    void* m_start;
+    size_t m_size;
+    size_t m_offset;
+
+public:
+    StackAllocator(size_t size) : m_size(size), m_offset(0)
+    {
+        m_start = malloc(size);
+    }
+
+    void* alloc(size_t bytes)
+    {
+        if (m_offset + bytes > m_size) return nullptr;
+        void* ptr = (char*)m_start + m_offset;
+        m_offset += bytes;
+        return ptr;
+    }
+
+    void free(void* ptr) { /* 在堆栈分配器中并不简单 */ }
+
+    void clear() { m_offset = 0; }
+};
+```
+
+### 池分配器
+
+```cpp
+template <typename T>
+class PoolAllocator
+{
+    struct Node { Node* next; };
+    Node* m_freeList;
+
+public:
+    PoolAllocator(size_t count)
+    {
+        T* pool = (T*)malloc(sizeof(T) * count);
+        m_freeList = (Node*)pool;
+        Node* current = m_freeList;
+        for (size_t i = 0; i < count - 1; ++i)
+        {
+            current->next = (Node*)((char*)current + sizeof(T));
+            current = current->next;
+        }
+        current->next = nullptr;
+    }
+
+    T* alloc()
+    {
+        if (!m_freeList) return nullptr;
+        Node* head = m_freeList;
+        m_freeList = head->next;
+        return (T*)head;
+    }
+
+    void free(T* ptr)
+    {
+        Node* node = (Node*)ptr;
+        node->next = m_freeList;
+        m_freeList = node;
+    }
+};
+```

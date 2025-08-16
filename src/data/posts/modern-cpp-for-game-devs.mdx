@@ -1,0 +1,55 @@
+---
+title: "面向游戏开发者的现代 C++"
+date: "2024-08-16"
+summary: "如何使用现代 C++ 特性（C++11/14/17/20），如智能指针、Lambda 表达式和范围，编写更安全、更具表现力的游戏代码。"
+tags: ["C++", "性能优化"]
+published: true
+---
+
+# 面向游戏开发者的现代 C++
+
+现代 C++ 提供了丰富的特性，可以让游戏开发变得更安全、更快、更愉快。
+
+## 智能指针
+
+智能指针通过自动管理对象的生命周期来帮助防止内存泄漏。
+
+- **`std::unique_ptr`**：独占所有权。当指针超出作用域时，对象会被销毁。适用于管理游戏对象和组件的生命周期。
+- **`std::shared_ptr`**：通过引用计数实现共享所有权。当指向它的最后一个 `shared_ptr` 被销毁时，对象会被销毁。适用于在不同系统间共享的资源。
+
+```cpp
+// 使用 unique_ptr 管理游戏对象的示例
+class GameObject
+{
+public:
+    void update() { /* ... */ }
+};
+
+std::vector<std::unique_ptr<GameObject>> gameObjects;
+
+void gameLoop()
+{
+    for (auto& obj : gameObjects)
+    {
+        obj->update();
+    }
+}
+```
+
+## Lambda 表达式
+
+Lambda 表达式允许你内联编写匿名函数，非常适合回调和简短、独立的逻辑。
+
+```cpp
+// 为简单按钮回调使用 lambda
+Button* myButton = new Button();
+myButton->onClick([](){
+    std::cout << "按钮被点击!" << std::endl;
+});
+
+// 使用 lambda 按距离排序游戏对象
+std::sort(gameObjects.begin(), gameObjects.end(), 
+    [&](const auto& a, const auto& b) {
+        return distanceToPlayer(a) < distanceToPlayer(b);
+    });
+```

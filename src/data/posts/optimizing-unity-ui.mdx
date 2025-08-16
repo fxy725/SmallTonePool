@@ -1,0 +1,34 @@
+---
+title: "Unity UI 性能优化"
+date: "2024-08-13"
+summary: "学习如何优化 Unity UI 以减少绘制调用并提高性能，涵盖画布设置和批处理等主题。"
+tags: ["Unity", "性能优化"]
+published: true
+---
+
+# Unity UI 性能优化
+
+Unity 的 UI 系统功能强大，但如果使用不当，可能会成为性能瓶颈。以下是一些优化技巧。
+
+## 画布设置
+
+- **分割画布**：使用多个画布来分离静态和动态 UI 元素。这样可以防止单个元素更改时重新绘制整个画布。
+- **禁用 `Pixel Perfect`**：除非绝对必要，否则禁用画布上的 `Pixel Perfect` 选项，因为它可能会增加开销。
+
+## 减少绘制调用
+
+- **使用图集**：将多个 UI 纹理合并到单个图集中以减少绘制调用。
+- **避免布局组**：`VerticalLayoutGroup` 和 `HorizontalLayoutGroup` 很方便，但它们可能会导致大量重新计算。谨慎使用它们，并考虑在初始布局完成后禁用它们。
+
+```csharp
+// 在一帧后禁用布局组
+IEnumerator DisableLayoutGroup(LayoutGroup group)
+{
+    yield return new WaitForEndOfFrame();
+    if (group != null) group.enabled = false;
+}
+```
+
+## 图形射线检测器
+
+- **禁用射线检测目标**：对于不需要交互的 UI 元素（如文本标签或静态图像），禁用 `Raycast Target` 选项。这将把它们排除在射线检测检查之外，节省性能。

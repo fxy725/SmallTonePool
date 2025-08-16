@@ -77,43 +77,32 @@ function BlogContent() {
             <Header />
 
             {/* Tag Filter */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex flex-wrap gap-3 justify-center py-20">
+                <button
+                    onClick={() => handleTagClick('')}
+                    className={`brand-tag-button ripple brand-water-ripple brand-stone-glow brand-wave-animation ${selectedTag === '' ? 'brand-tag-active' : ''}`}
+                >
+                    全部文章
+                </button>
+                {allTags.map((tag) => (
                     <button
-                        onClick={() => handleTagClick('')}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedTag === ''
-                            ? 'bg-blue-600 text-white shadow-lg'
-                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
-                            }`}
+                        key={tag}
+                        onClick={() => handleTagClick(tag)}
+                        className={`brand-tag-button ripple brand-water-ripple brand-stone-glow brand-wave-animation ${selectedTag === tag ? 'brand-tag-active' : ''}`}
                     >
-                        全部文章
+                        {tag}
                     </button>
-                    {allTags.map((tag) => (
-                        <button
-                            key={tag}
-                            onClick={() => handleTagClick(tag)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedTag === tag
-                                ? 'bg-blue-600 text-white shadow-lg'
-                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
-                                }`}
-                        >
-                            {tag}
-                        </button>
-                    ))}
-                </div>
+                ))}
             </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-                    <div className="flex justify-center items-center gap-2">
+                    <div className="brand-pagination">
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === 1
-                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
-                                }`}
+                            className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === 1 ? '' : ''}`}
                         >
                             上一页
                         </button>
@@ -134,10 +123,7 @@ function BlogContent() {
                                 <button
                                     key={pageNum}
                                     onClick={() => handlePageChange(pageNum)}
-                                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === pageNum
-                                        ? 'bg-blue-600 text-white shadow-lg'
-                                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
-                                        }`}
+                                    className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === pageNum ? 'brand-pagination-active' : ''} ${currentPage === pageNum ? '' : ''}`}
                                 >
                                     {pageNum}
                                 </button>
@@ -145,16 +131,13 @@ function BlogContent() {
                         })}
 
                         {totalPages > 5 && currentPage < totalPages - 2 && (
-                            <span className="px-3 py-2 text-gray-500 dark:text-gray-400">...</span>
+                            <span className="brand-pagination-ellipsis">...</span>
                         )}
 
                         {totalPages > 5 && currentPage < totalPages - 1 && (
                             <button
                                 onClick={() => handlePageChange(totalPages)}
-                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
-                                    ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
-                                    }`}
+                                className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === totalPages ? 'brand-pagination-active' : ''} ${currentPage === totalPages ? '' : ''}`}
                             >
                                 {totalPages}
                             </button>
@@ -163,10 +146,7 @@ function BlogContent() {
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
-                                ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
-                                }`}
+                            className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === totalPages ? '' : ''}`}
                         >
                             下一页
                         </button>
@@ -177,7 +157,6 @@ function BlogContent() {
             {/* Posts Grid */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {loading ? (
-                    /* Loading State */
                     <div className="text-center py-20">
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
                             <svg className="w-10 h-10 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,8 +173,7 @@ function BlogContent() {
                             {currentPosts.map((post, index) => (
                                 <div
                                     key={post.slug}
-                                    className={`transform transition-all duration-500 hover:scale-105 ${index < 6 ? 'animate-fade-in-up' : ''
-                                        }`}
+                                    className={`transform transition-all duration-500 hover:scale-105 ${index < 6 ? 'animate-fade-in-up' : ''}`}
                                     style={index >= 6 ? { animationDelay: `${(index - 6) * 0.1}s` } : {}}
                                 >
                                     <PostCard post={post} />
@@ -206,14 +184,11 @@ function BlogContent() {
                         {/* Bottom Pagination */}
                         {totalPages > 1 && (
                             <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
-                                <div className="flex justify-center items-center gap-2">
+                                <div className="brand-pagination">
                                     <button
                                         onClick={() => handlePageChange(currentPage - 1)}
                                         disabled={currentPage === 1}
-                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === 1
-                                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
-                                            }`}
+                                        className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === 1 ? '' : ''}`}
                                     >
                                         上一页
                                     </button>
@@ -234,10 +209,7 @@ function BlogContent() {
                                             <button
                                                 key={pageNum}
                                                 onClick={() => handlePageChange(pageNum)}
-                                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === pageNum
-                                                    ? 'bg-blue-600 text-white shadow-lg'
-                                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
-                                                    }`}
+                                                className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === pageNum ? 'brand-pagination-active' : ''} ${currentPage === pageNum ? '' : ''}`}
                                             >
                                                 {pageNum}
                                             </button>
@@ -245,16 +217,13 @@ function BlogContent() {
                                     })}
 
                                     {totalPages > 5 && currentPage < totalPages - 2 && (
-                                        <span className="px-3 py-2 text-gray-500 dark:text-gray-400">...</span>
+                                        <span className="brand-pagination-ellipsis">...</span>
                                     )}
 
                                     {totalPages > 5 && currentPage < totalPages - 1 && (
                                         <button
                                             onClick={() => handlePageChange(totalPages)}
-                                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
-                                                ? 'bg-blue-600 text-white shadow-lg'
-                                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
-                                                }`}
+                                            className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === totalPages ? 'brand-pagination-active' : ''} ${currentPage === totalPages ? '' : ''}`}
                                         >
                                             {totalPages}
                                         </button>
@@ -263,10 +232,7 @@ function BlogContent() {
                                     <button
                                         onClick={() => handlePageChange(currentPage + 1)}
                                         disabled={currentPage === totalPages}
-                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentPage === totalPages
-                                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:shadow-md'
-                                            }`}
+                                        className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === totalPages ? '' : ''}`}
                                     >
                                         下一页
                                     </button>
@@ -275,7 +241,6 @@ function BlogContent() {
                         )}
                     </>
                 ) : (
-                    /* Empty State */
                     <div className="text-center py-20">
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
                             <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

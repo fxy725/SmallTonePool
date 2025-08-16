@@ -1,0 +1,76 @@
+---
+title: "使用 Lua 编写 AI 行为脚本"
+date: "2024-08-19"
+summary: "学习如何使用 Lua 编写灵活和动态的 AI 行为，从简单的状态机到更复杂的行为树。"
+tags: ["Lua", "C++"]
+published: true
+---
+
+# 使用 Lua 编写 AI 行为脚本
+
+Lua 是编写 AI 脚本的绝佳选择。其轻量级特性和与 C++ 的易集成性使其非常适合定义可以轻松调整和热重载的 AI 逻辑。
+
+## Lua 中的简单状态机
+
+```lua
+local AI = {}
+
+function AI:new(enemy)
+    local self = setmetatable({}, {__index = self})
+    self.enemy = enemy
+    self.state = "idle"
+    return self
+end
+
+function AI:update(dt)
+    if self.state == "idle" then
+        self:update_idle(dt)
+    elseif self.state == "chasing" then
+        self:update_chasing(dt)
+    end
+end
+
+function AI:update_idle(dt)
+    -- 如果玩家靠近，开始追逐
+    if self.enemy:isPlayerClose() then
+        self.state = "chasing"
+    end
+end
+
+function AI:update_chasing(dt)
+    -- 追逐玩家
+    self.enemy:moveToPlayer(dt)
+    -- 如果玩家远离，回到空闲状态
+    if not self.enemy:isPlayerClose() then
+        self.state = "idle"
+    end
+end
+
+return AI
+```
+
+## Lua 中的行为树
+
+更高级的方法是使用行为树。行为树是一个控制 AI 决策流程的节点树。
+
+```lua
+-- 简化的行为树节点结构
+local Selector = { type = "selector" }
+local Sequence = { type = "sequence" }
+local Action = { type = "action" }
+
+-- 行为树定义示例
+local tree = Selector:new({
+    Sequence:new({
+        Action:new("isHealthLow"),
+        Action:new("flee")
+    }),
+    Sequence:new({
+        Action:new("isPlayerClose"),
+        Action:new("attack")
+    }),
+    Action:new("patrol")
+})
+
+-- C++ 端将执行此树。
+```

@@ -1,5 +1,29 @@
 @import "tailwindcss";
-@import "highlight.js/styles/github-dark.css";
+@import "highlight.js/styles/atom-one-dark.css";
+
+@font-face {
+  font-family: 'LXGW Marker Gothic';
+  src: url('/fonts/LXGWMarkerGothic-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cascadia Mono';
+  src: url('/fonts/CascadiaMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Mono TC';
+  src: url('/fonts/LXGWWenKaiMonoTC-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* Enhanced Color System - Small Stone Pond Theme */
 :root {
@@ -93,6 +117,9 @@
   --font-secondary: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
   --font-display: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  --font-code: 'Cascadia Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+  --font-content: 'LXGW WenKai Mono TC', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Font Sizes */
   --text-xs: 0.75rem;
@@ -265,7 +292,7 @@
   }
 }
 
-@theme inline {
+:root {
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
   --font-sans: var(--font-primary);
@@ -315,6 +342,22 @@ body {
   font-family: var(--font-secondary);
   font-weight: var(--font-normal);
   font-style: normal;
+}
+
+
+
+
+
+.text-code {
+  font-family: var(--font-code);
+  font-weight: var(--font-normal);
+  letter-spacing: var(--tracking-normal);
+}
+
+.text-content {
+  font-family: var(--font-content);
+  font-weight: var(--font-normal);
+  letter-spacing: var(--tracking-normal);
 }
 
 /* Enhanced Text Styles */
@@ -418,6 +461,20 @@ html {
 :focus {
   outline: 2px solid var(--brand-primary);
   outline-offset: 2px;
+}
+
+/* Remove focus outline from specific elements */
+.copy-button:focus,
+.prose pre span:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove focus outline from article tags */
+.article-tag:focus,
+.article-tag:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 /* Glass Effect */
@@ -537,47 +594,40 @@ html {
 
 .prose code {
   color: var(--brand-primary);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.875rem;
-  background: var(--bg-tertiary);
+  background: var(--bg-secondary);
   padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
+  border-radius: 0.25rem;
   border: 1px solid var(--accent-subtle);
   font-family: var(--font-mono);
 }
 
 .prose pre {
-  background: var(--bg-tertiary);
-  border: 1px solid var(--accent-subtle);
-  border-radius: 0.75rem;
+  background: #f3f4f6 !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 0.5rem !important;
   overflow-x: auto;
-  font-weight: 400;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  line-height: 1.714;
+  font-weight: 400 !important;
+  color: var(--text-primary) !important;
+  font-size: 1rem !important;
+  line-height: 1.714 !important;
   margin: 2rem 0;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-md);
+  padding: 1.25rem !important;
   position: relative;
+  font-family: 'Cascadia Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', 'LXGW WenKai Mono TC', monospace !important;
 }
 
-.prose pre::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
-  border-radius: 0.75rem 0.75rem 0 0;
-}
 
 .prose pre code {
-  background: transparent;
-  border: none;
-  padding: 0;
-  color: inherit;
-  font-weight: 400;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  color: inherit !important;
+  font-weight: 400 !important;
+  font-family: 'Cascadia Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', 'LXGW WenKai Mono TC', monospace !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
 }
 
 .prose a {
@@ -684,12 +734,12 @@ html {
 }
 
 .dark .prose pre {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
+  background: #374151 !important;
+  border-color: #4b5563 !important;
 }
 
 .dark .prose code {
-  background: var(--bg-tertiary);
+  background: var(--bg-secondary);
   color: var(--brand-accent);
 }
 
@@ -703,6 +753,7 @@ html {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 /* Animation utilities */
@@ -1748,6 +1799,161 @@ html {
   }
 }
 
+/* Code block styles with highest priority */
+.prose pre,
+.prose pre code,
+.hljs {
+  font-size: 1rem !important;
+  font-family: 'Cascadia Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', 'LXGW WenKai Mono TC', monospace !important;
+  line-height: 1.714 !important;
+}
+
+/* Code block copy button styling */
+.prose pre {
+  position: relative;
+}
+
+.prose pre button.copy-button {
+  position: absolute !important;
+  top: 0.75rem !important;
+  right: 0.75rem !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-tertiary) !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 0.375rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all var(--transition-fast) !important;
+  border: 1px solid var(--accent-subtle) !important;
+  opacity: 0 !important;
+  z-index: 10 !important;
+  user-select: none !important;
+}
+
+.prose pre:hover button.copy-button {
+  opacity: 0.8 !important;
+}
+
+.prose pre button.copy-button:hover {
+  background: var(--brand-primary) !important;
+  color: var(--text-inverse) !important;
+  opacity: 1 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-sm) !important;
+  outline: none !important;
+}
+
+.prose pre button.copy-button:active {
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.prose pre button.copy-button.copied {
+  background: var(--success) !important;
+  color: var(--text-inverse) !important;
+  opacity: 1 !important;
+}
+
+/* Code block line numbers */
+.prose pre.line-numbers {
+  padding-left: 3.5rem !important;
+}
+
+.prose pre.line-numbers::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3rem;
+  background: var(--bg-quaternary);
+  border-right: 1px solid var(--accent-subtle);
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+/* Syntax highlighting enhancements - theme neutral */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+  color: var(--brand-primary) !important;
+  font-weight: 600 !important;
+}
+
+.hljs-number,
+.hljs-string,
+.hljs-meta .hljs-string,
+.hljs-literal,
+.hljs-doctag,
+.hljs-regexp {
+  color: var(--success) !important;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: var(--info) !important;
+  font-weight: 600 !important;
+}
+
+.hljs-attribute,
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-class .hljs-title,
+.hljs-type {
+  color: var(--warning) !important;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-subst,
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-link {
+  color: var(--accent-primary) !important;
+}
+
+.hljs-built_in,
+.hljs-deletion {
+  color: var(--error) !important;
+}
+
+.hljs-formula {
+  background: var(--bg-quaternary) !important;
+  padding: 0.125rem 0.25rem !important;
+  border-radius: 0.25rem !important;
+}
+
+.hljs-emphasis {
+  font-style: italic !important;
+}
+
+.hljs-strong {
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+/* Code block hover effects - removed for better theme compatibility */
+
+/* Inline code enhancements */
+.prose code {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--accent-subtle) !important;
+  color: var(--brand-primary) !important;
+  font-weight: 600 !important;
+  padding: 0.125rem 0.5rem !important;
+  border-radius: 0.375rem !important;
+  position: relative;
+}
+
+/* Dark mode syntax highlighting - now handled by theme variables */
+
 /* Hide horizontal scrollbar but keep scroll functionality */
 .scrollbar-hide {
   scrollbar-width: none;
@@ -1757,4 +1963,348 @@ html {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
   /* Chrome/Safari */
+}
+
+/* Brand tag buttons - Small Stone Pond Theme */
+.brand-tag-button {
+  position: relative;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--accent-subtle);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-primary);
+}
+
+.brand-tag-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left var(--transition-normal);
+}
+
+.brand-tag-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--brand-primary);
+}
+
+.brand-tag-button:hover::before {
+  left: 100%;
+}
+
+.brand-tag-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Active tag state */
+.brand-tag-button.brand-tag-active {
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: var(--shadow-lg);
+  font-weight: 600;
+}
+
+.brand-tag-button.brand-tag-active::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.brand-tag-button.brand-tag-active:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Ripple effect for tag buttons */
+.brand-tag-button.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.brand-tag-button.ripple:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* Brand pagination navigation - Small Stone Pond Theme */
+.brand-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.brand-pagination-button {
+  position: relative;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--accent-subtle);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  min-width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-primary);
+}
+
+.brand-pagination-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left var(--transition-normal);
+}
+
+.brand-pagination-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--brand-primary);
+}
+
+.brand-pagination-button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.brand-pagination-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Active pagination button */
+.brand-pagination-button.brand-pagination-active {
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: var(--shadow-lg);
+  font-weight: 600;
+}
+
+.brand-pagination-button.brand-pagination-active::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.brand-pagination-button.brand-pagination-active:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Disabled pagination button */
+.brand-pagination-button:disabled {
+  background: var(--bg-quaternary);
+  color: var(--text-muted);
+  border-color: transparent;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.brand-pagination-button:disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Pagination ellipsis */
+.brand-pagination-ellipsis {
+  padding: 0.5rem 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* Floating animation for pagination */
+.brand-pagination-float {
+  animation: brand-pagination-float 3s ease-in-out infinite;
+}
+
+@keyframes brand-pagination-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Water ripple effect for interactive elements */
+.brand-water-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-water-ripple::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.brand-water-ripple:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Stone pond glow effect */
+.brand-stone-glow {
+  position: relative;
+}
+
+.brand-stone-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at center, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  pointer-events: none;
+}
+
+.brand-stone-glow:hover::after {
+  opacity: 1;
+}
+
+/* Gentle wave animation */
+.brand-wave-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-wave-animation::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(14, 165, 233, 0.1) 50%, 
+    transparent 100%);
+  transition: left var(--transition-slow);
+}
+
+.brand-wave-animation:hover::before {
+  left: 100%;
+}
+
+/* Tag container with stone pond background */
+.brand-tag-container {
+  position: relative;
+  padding: 2rem;
+  background: linear-gradient(135deg, 
+    var(--bg-secondary) 0%, 
+    var(--bg-tertiary) 100%);
+  border-radius: 1rem;
+  border: 1px solid var(--accent-subtle);
+  box-shadow: var(--shadow-md);
+}
+
+.brand-tag-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.05) 0%, transparent 50%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Pagination container with subtle water effect */
+.brand-pagination-container {
+  position: relative;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 0.75rem;
+  border: 1px solid var(--accent-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-pagination-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--brand-primary) 50%, 
+    transparent 100%);
+  opacity: 0.3;
+}
+
+/* Enhanced hover states for better interactivity */
+.brand-tag-button:hover {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border-color: var(--brand-primary);
+  color: var(--text-primary);
+}
+
+.brand-pagination-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  border-color: var(--brand-primary);
+  color: var(--text-primary);
+}
+
+/* Active state enhancements */
+.brand-tag-button.brand-tag-active {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.brand-pagination-button.brand-pagination-active {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
 }

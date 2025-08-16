@@ -1,0 +1,69 @@
+---
+title: "C# 高级特性在游戏开发中的应用"
+date: "2024-08-11"
+summary: "探索 C# 的高级特性，如 async/await、LINQ 和模式匹配，以在 Unity 中编写更简洁、高效的代码。"
+tags: ["C#", "性能优化"]
+published: true
+---
+
+# 在游戏开发中利用 C# 高级特性
+
+C# 是一种功能强大的语言，超越了基本语法。本文探讨了一些高级特性，可以显著改善你在 Unity 中的游戏开发工作流程。
+
+## 用于非阻塞操作的 Async/Await
+
+```csharp
+// 异步加载场景而不冻结游戏
+public async Task LoadSceneAsync(string sceneName)
+{
+    var operation = SceneManager.LoadSceneAsync(sceneName);
+    while (!operation.isDone)
+    {
+        // 更新进度条
+        float progress = Mathf.Clamp01(operation.progress / 0.9f);
+        Debug.Log("加载进度: " + (progress * 100) + "%");
+        await Task.Yield();
+    }
+}
+```
+
+## 用于数据操作的 LINQ
+
+```csharp
+// 查找生命值低于特定阈值的所有敌人
+var lowHealthEnemies = allEnemies
+    .Where(enemy => enemy.Health < 20)
+    .OrderBy(enemy => enemy.Health)
+    .ToList();
+
+// 获取最近的 5 个物品的名称
+var closestItemNames = allItems
+    .OrderBy(item => Vector3.Distance(player.transform.position, item.transform.position))
+    .Take(5)
+    .Select(item => item.Name)
+    .ToArray();
+```
+
+## 用于更简洁代码的模式匹配
+
+```csharp
+// 使用模式匹配处理不同的强化类型
+public void ApplyPowerUp(PowerUp powerUp)
+{
+    switch (powerUp)
+    {
+        case HealthPowerUp hp:
+            player.Heal(hp.Amount);
+            break;
+        case SpeedPowerUp sp:
+            player.IncreaseSpeed(sp.Multiplier, sp.Duration);
+            break;
+        case ShieldPowerUp shp:
+            player.ActivateShield(shp.Strength);
+            break;
+        default:
+            Debug.LogWarning("未知的强化类型!");
+            break;
+    }
+}
+```

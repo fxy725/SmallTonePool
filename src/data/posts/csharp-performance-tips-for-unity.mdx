@@ -1,0 +1,59 @@
+---
+title: "Unity 中的 C# 性能优化技巧"
+date: "2024-08-20"
+summary: "一系列 C# 性能优化技巧和最佳实践，用于在 Unity 中编写高性能代码。"
+tags: ["C#", "Unity", "性能优化"]
+published: true
+---
+
+# Unity 中的 C# 性能优化技巧
+
+编写高效的 C# 代码是流畅游戏体验的关键。以下是一些需要牢记的技巧。
+
+## 避免在 `Update` 中进行昂贵的操作
+
+- **`GetComponent`**：调用 `GetComponent` 是昂贵的操作。在 `Awake` 或 `Start` 中缓存结果。
+- **`Camera.main`**：这在内部使用 `FindObjectWithTag`。缓存相机引用。
+- **Instantiate/Destroy**：重复创建和销毁对象会导致垃圾回收峰值。改用对象池。
+
+```csharp
+// 良好实践：缓存组件
+public class Player : MonoBehaviour
+{
+    private Rigidbody rb;
+    private Camera mainCamera;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        mainCamera = Camera.main;
+    }
+
+    void Update()
+    {
+        // 使用缓存的组件
+        rb.AddForce(Vector3.forward * 10f);
+    }
+}
+```
+
+## 结构体 vs. 类
+
+- **结构体**：值类型，存储在栈上。适用于小型、短生命周期的数据结构。避免垃圾回收。
+- **类**：引用类型，存储在堆上。适用于较大、更复杂的对象。
+
+## 字符串操作
+
+- **避免在循环中进行字符串连接**：重复连接字符串会产生大量垃圾。改用 `StringBuilder`。
+
+```csharp
+// 高效的字符串构建
+StringBuilder sb = new StringBuilder();
+for (int i = 0; i < 100; i++)
+{
+    sb.Append("数字: ");
+    sb.Append(i);
+    sb.AppendLine();
+}
+string result = sb.ToString();
+```

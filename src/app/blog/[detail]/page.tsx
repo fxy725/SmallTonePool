@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getPostBySlug, getAllPosts } from "@/lib/content/posts";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { Header } from "@/components/layout/Header";
+import { CodeBlockCopyButtons } from "@/components/mdx/CodeBlockCopyButtons";
 import Link from "next/link";
 
 interface PostPageProps {
@@ -67,6 +68,7 @@ export default async function PostPage({ params }: PostPageProps) {
                     }
                 }}
             />
+            <CodeBlockCopyButtons />
 
             <article className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 {/* Header */}
@@ -81,7 +83,7 @@ export default async function PostPage({ params }: PostPageProps) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                             <Link href="/blog" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                                所有文章
+                                文章
                             </Link>
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -121,30 +123,33 @@ export default async function PostPage({ params }: PostPageProps) {
                                     </div>
                                 )}
                             </div>
-
-                            {/* Tags */}
-                            {post.tags.length > 0 && (
-                                <div className="flex flex-wrap justify-center gap-2 mt-6">
-                                    {post.tags.map((tag) => (
-                                        <span
-                                            key={tag}
-                                            className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
                         </div>
                     </div>
                 </header>
+
+                {/* Tags */}
+                {post.tags.length > 0 && (
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <div className="flex flex-wrap justify-center gap-2">
+                            {post.tags.map((tag) => (
+                                <Link
+                                    href={`/blog?tag=${encodeURIComponent(tag)}`}
+                                    key={tag}
+                                    className="article-tag px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium select-none no-underline hover:bg-blue-200 dark:hover:bg-blue-800/50"
+                                >
+                                    {tag}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Content */}
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <div
                         className="prose prose-lg dark:prose-invert max-w-none"
-                        dangerouslySetInnerHTML={{ 
-                            __html: post.content.replace(/<h1[^>]*>[\s\S]*?<\/h1>/, '') 
+                        dangerouslySetInnerHTML={{
+                            __html: post.content.replace(/<h1[^>]*>[\s\S]*?<\/h1>/, '')
                         }}
                     />
 
