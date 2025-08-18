@@ -23,29 +23,12 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
             day: 'numeric'
         });
     };
-    const [clickCount, setClickCount] = useState(0);
-    const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null);
+    // const [clickCount, setClickCount] = useState(0);
+    // const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null);
 
 
     return (
-        <Link href={requireDoubleClick ? '#' : `/blog/${post.slug}`} draggable={false} onClick={(e) => {
-            if (requireDoubleClick) {
-                e.preventDefault();
-                setClickCount((c) => {
-                    const next = c + 1;
-                    if (clickTimer) {
-                        clearTimeout(clickTimer);
-                    }
-                    const timer = setTimeout(() => setClickCount(0), 400);
-                    setClickTimer(timer);
-                    if (next >= 2) {
-                        // 触发跳转
-                        window.location.href = `/blog/${post.slug}`;
-                    }
-                    return next;
-                });
-            }
-        }}>
+        <Link href={`/blog/${post.slug}`} draggable={false}>
             <article
                 className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
                 onMouseEnter={() => setIsHovered(true)}
@@ -56,12 +39,11 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
                 onDragEnd={(e) => e.preventDefault()}
-                onContextMenu={(e) => e.preventDefault()}
-                onSelectStart={(e) => e.preventDefault()}
-                onDoubleClick={(e) => e.preventDefault()}
-                onTouchStart={(e) => e.preventDefault()}
-                onTouchMove={(e) => e.preventDefault()}
-                onTouchEnd={(e) => e.preventDefault()}
+                onContextMenu={(e: any) => e.preventDefault()}
+                onDoubleClick={(e: any) => e.preventDefault()}
+                onTouchStart={(e: any) => e.preventDefault()}
+                onTouchMove={(e: any) => e.preventDefault()}
+                onTouchEnd={(e: any) => e.preventDefault()}
                 style={{
                     WebkitUserSelect: 'none',
                     MozUserSelect: 'none',
@@ -95,9 +77,8 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                 }}
                 onMouseDown={(e) => e.preventDefault()}
                 onMouseUp={(e) => e.preventDefault()}
-                onMouseMove={(e) => e.preventDefault()}
-                onSelectStart={(e) => e.preventDefault()}
-                onDoubleClick={(e) => e.preventDefault()}
+                onMouseMove={(e: any) => e.preventDefault()}
+                onDoubleClick={(e: any) => e.preventDefault()}
             >
                     {/* Meta Information */}
                     <div className="flex items-center gap-3 mb-4 text-sm text-gray-500 dark:text-gray-400 select-none user-select-none post-card-unselectable">

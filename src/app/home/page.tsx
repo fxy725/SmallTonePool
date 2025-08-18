@@ -102,11 +102,11 @@ export default function Home() {
         }
     };
 
-    const handleMouseLeave = () => {
-        setIsDragging(false);
-        // 重新开始自动滚动
-        setTimeout(() => setIsAutoScrolling(true), 1000);
-    };
+    // const handleMouseLeave = () => {
+    //     setIsDragging(false);
+    //     // 重新开始自动滚动
+    //     setTimeout(() => setIsAutoScrolling(true), 1000);
+    // };
 
     const handleMouseUp = () => {
         setIsDragging(false);

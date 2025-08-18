@@ -47,8 +47,7 @@ export function CopyButton({ text, children, className, successMessage = "已复
         try {
             await navigator.clipboard.writeText(text);
             setShowToast(true);
-        } catch (err) {
-            // 降级处理：使用 document.execCommand
+        } catch {/* 降级处理已注释掉 */
             const textArea = document.createElement('textarea');
             textArea.value = text;
             textArea.style.position = 'fixed';
