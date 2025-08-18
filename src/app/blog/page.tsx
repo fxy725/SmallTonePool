@@ -77,7 +77,7 @@ function BlogContent() {
             <Header />
 
             {/* Tag Filter */}
-            <div className="flex flex-wrap gap-3 justify-center pt-20 pb-2">
+            <div className="flex flex-wrap gap-3 justify-center pt-20 pb-2" style={{ fontFamily: 'var(--font-content)' }}>
                 <button
                     onClick={() => handleTagClick('')}
                     className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 ${selectedTag === '' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : ''}`}
@@ -98,7 +98,7 @@ function BlogContent() {
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-2" style={{ fontFamily: 'var(--font-content)' }}>
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
@@ -157,7 +157,7 @@ function BlogContent() {
             {/* Posts Grid */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8">
                 {loading ? (
-                    <div className="text-center py-20">
+                    <div className="text-center py-20" style={{ fontFamily: 'var(--font-content)' }}>
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
                             <svg className="w-10 h-10 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -191,7 +191,7 @@ function BlogContent() {
                         {/* Bottom Pagination */}
                         {totalPages > 1 && (
                             <div className="mt-16 pt-8">
-                                <div className="flex items-center justify-center gap-2">
+                                <div className="flex items-center justify-center gap-2" style={{ fontFamily: 'var(--font-content)' }}>
                                     <button
                                         onClick={() => handlePageChange(currentPage - 1)}
                                         disabled={currentPage === 1}
@@ -248,7 +248,7 @@ function BlogContent() {
                         )}
                     </>
                 ) : (
-                    <div className="text-center py-20">
+                    <div className="text-center py-20" style={{ fontFamily: 'var(--font-content)' }}>
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
                             <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
@@ -283,7 +283,7 @@ export default function BlogPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-                <div className="text-center">
+                <div className="text-center" style={{ fontFamily: 'var(--font-content)' }}>
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
                         <svg className="w-10 h-10 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

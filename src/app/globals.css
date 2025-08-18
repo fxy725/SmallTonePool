@@ -2593,6 +2593,34 @@ a:focus-visible,
   user-select: none !important;
   -webkit-touch-callout: none !important;
   -webkit-tap-highlight-color: transparent !important;
+  KhtmlUserSelect: none !important;
+  touch-action: none !important;
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+  -moz-user-drag: none !important;
+  -ms-user-drag: none !important;
+}
+
+/* 防止任何形式的选择 */
+.post-card-unselectable::selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.post-card-unselectable *::selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* 防止拖拽 */
+.post-card-unselectable,
+.post-card-unselectable * {
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+  draggable: false !important;
 }
 
 /* 确保文章详情页内容可以选中 */
