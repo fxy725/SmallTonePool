@@ -129,8 +129,8 @@ export default async function PostPage({ params }: PostPageProps) {
                         }}
                         style={{
                             // 让代码块可以选中
-                            '--prose-pre-bg': 'var(--bg-secondary)' as any,
-                            '--prose-code-bg': 'var(--bg-secondary)' as any,
+                            '--prose-pre-bg': 'var(--bg-secondary)',
+                            '--prose-code-bg': 'var(--bg-secondary)',
                             fontFamily: 'var(--font-content)'
                         } as React.CSSProperties}
                     />

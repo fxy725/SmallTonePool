@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Post } from "@/types/blog";
 import { useState } from "react";
+import React from "react";
 
 interface PostCardProps {
     post: Post;
@@ -39,11 +40,11 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
                 onDragEnd={(e) => e.preventDefault()}
-                onContextMenu={(e: any) => e.preventDefault()}
-                onDoubleClick={(e: any) => e.preventDefault()}
-                onTouchStart={(e: any) => e.preventDefault()}
-                onTouchMove={(e: any) => e.preventDefault()}
-                onTouchEnd={(e: any) => e.preventDefault()}
+                onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
+                onDoubleClick={(e: React.MouseEvent) => e.preventDefault()}
+                onTouchStart={(e: React.TouchEvent) => e.preventDefault()}
+                onTouchMove={(e: React.TouchEvent) => e.preventDefault()}
+                onTouchEnd={(e: React.TouchEvent) => e.preventDefault()}
                 style={{
                     WebkitUserSelect: 'none',
                     MozUserSelect: 'none',
@@ -77,8 +78,8 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                 }}
                 onMouseDown={(e) => e.preventDefault()}
                 onMouseUp={(e) => e.preventDefault()}
-                onMouseMove={(e: any) => e.preventDefault()}
-                onDoubleClick={(e: any) => e.preventDefault()}
+                onMouseMove={(e: React.MouseEvent) => e.preventDefault()}
+                onDoubleClick={(e: React.MouseEvent) => e.preventDefault()}
             >
                     {/* Meta Information */}
                     <div className="flex items-center gap-3 mb-4 text-sm text-gray-500 dark:text-gray-400 select-none user-select-none post-card-unselectable">
