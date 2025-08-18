@@ -73,7 +73,7 @@ export default async function PostPage({ params }: PostPageProps) {
             <article className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 {/* Header */}
                 <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700" style={{ fontFamily: 'var(--font-content)' }}>
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                         {/* Breadcrumb */}
                         <nav className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-8 mt-2">
                             <Link href="/home" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
@@ -104,7 +104,7 @@ export default async function PostPage({ params }: PostPageProps) {
                             
                             {/* Tags */}
                             {post.tags.length > 0 && (
-                                <div className="flex flex-wrap justify-center gap-2 mt-8">
+                                <div className="flex flex-wrap justify-center gap-2">
                                     {post.tags.map((tag) => (
                                         <Link
                                             href={`/blog?tag=${encodeURIComponent(tag)}`}
@@ -121,7 +121,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 </header>
 
                 {/* Content */}
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-12">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-6">
                     <div
                         className="prose prose-lg dark:prose-invert max-w-none text-content article-content-selectable"
                         dangerouslySetInnerHTML={{

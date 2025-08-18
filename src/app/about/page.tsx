@@ -26,54 +26,51 @@ export default function AboutPage() {
                         <p className="mt-4 text-lg text-gray-900 dark:text-white font-hero">小石潭记博客主 — AI爱好者 · 游戏开发者</p>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 text-content">记录学习笔记与项目展示，分享技术与思考</p>
 
-                        {/* QQ Contact */}
-                        <div className="mt-4 flex items-center justify-center gap-2">
-                            <span
-                                className="text-lg text-gray-600 dark:text-gray-300"
-                                style={{ fontFamily: 'var(--font-tech-stack)' }}
-                            >
-                                联系邮箱
-                            </span>
-                            <CopyButton
-                                text="849517015@qq.com"
-                                successMessage="已复制邮箱地址"
-                                className="flex items-center gap-1 px-4 py-2 bg-white hover:bg-gray-100 transition-colors"
-                                style={{ outline: 'none', boxShadow: 'none' }}
-                            >
-                                <Image src="/logos/QQ.svg" alt="QQ" width={20} height={20} className="flex-shrink-0" />
-                                <span className="font-pixel text-xl text-gray-800 dark:text-gray-200 leading-none">849517015@qq.com</span>
-                            </CopyButton>
+                        <div className="mt-6 flex flex-col items-center gap-6">
+                            {/* QQ Contact */}
+                            <div className="flex items-center justify-center gap-2">
+                                <span
+                                    className="text-lg text-gray-600 dark:text-gray-300"
+                                    style={{ fontFamily: 'var(--font-tech-stack)' }}
+                                >
+                                    联系邮箱
+                                </span>
+                                <CopyButton
+                                    text="849517015@qq.com"
+                                    successMessage="已复制邮箱地址"
+                                    className="flex items-center gap-1 px-4 py-2 bg-white hover:bg-gray-100 transition-colors"
+                                    style={{ outline: 'none', boxShadow: 'none' }}
+                                >
+                                    <Image src="/logos/QQ.svg" alt="QQ" width={20} height={20} className="flex-shrink-0" />
+                                    <span className="font-pixel text-xl text-gray-800 dark:text-gray-200 leading-none">849517015@qq.com</span>
+                                </CopyButton>
+                            </div>
+
+                            <div className="flex items-center justify-center ">
+                                <a href="https://space.bilibili.com/2045320027?spm_id_from=333.1007.0.0" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#fb7299] hover:bg-[#ff6b9d] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
+                                    <Image src="/logos/bilibili.svg" alt="Bilibili" width={20} height={20} className="flex-shrink-0 filter brightness-0 invert" />
+                                    <span className="font-pixel text-xl text-white leading-none">Bilibili</span>
+                                </a>
+
+                                <a href="https://github.com/fxy725" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#24292e] hover:bg-[#33363a] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
+                                    <Image src="/logos/GitHub.svg" alt="GitHub" width={20} height={20} className="flex-shrink-0 filter brightness-0 invert" />
+                                    <span className="font-pixel text-xl text-white leading-none">Github</span>
+                                </a>
+
+                                <a href="https://www.zhihu.com/people/39-64-49-19-97" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E40AF] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
+                                    <Image src="/logos/zhihu.svg" alt="Zhihu" width={20} height={20} className="flex-shrink-0 filter brightness-0 invert" />
+                                    <span className="font-pixel text-xl text-white leading-none">ZhiHu</span>
+                                </a>
+
+                                <a href="https://linux.do/u/kakaa/summary" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#ff8c00] hover:bg-[#ff9f33] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
+                                    <Image src="/logos/linux-do.svg" alt="Linux.do" width={20} height={20} className="flex-shrink-0" />
+                                    <span className="font-pixel text-xl text-white leading-none">Linux.do</span>
+                                </a>
+
+                            </div>
                         </div>
-
-                        <div className="mt-6 flex items-center justify-center gap-1">
-                            <a href="https://space.bilibili.com/2045320027?spm_id_from=333.1007.0.0" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#fb7299] hover:bg-[#ff6b9d] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
-                                <Image src="/logos/bilibili.svg" alt="Bilibili" width={20} height={20} className="flex-shrink-0 filter brightness-0 invert" />
-                                <span className="font-pixel text-xl text-white leading-none">Bilibili</span>
-                            </a>
-
-                            <a href="https://github.com/fxy725" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#24292e] hover:bg-[#33363a] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
-                                <Image src="/logos/GitHub.svg" alt="GitHub" width={20} height={20} className="flex-shrink-0 filter brightness-0 invert" />
-                                <span className="font-pixel text-xl text-white leading-none">Github</span>
-                            </a>
-
-                            <a href="https://www.zhihu.com/people/39-64-49-19-97" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E40AF] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
-                                <Image src="/logos/zhihu.svg" alt="Zhihu" width={20} height={20} className="flex-shrink-0 filter brightness-0 invert" />
-                                <span className="font-pixel text-xl text-white leading-none">ZhiHu</span>
-                            </a>
-
-                            <a href="https://linux.do/u/kakaa/summary" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#ff8c00] hover:bg-[#ff9f33] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
-                                <Image src="/logos/linux-do.svg" alt="Linux.do" width={20} height={20} className="flex-shrink-0" />
-                                <span className="font-pixel text-xl text-white leading-none">Linux.do</span>
-                            </a>
-
-                        </div>
-                    </div>
-                </section>
-
-                {/* Skills Section */}
-                <section className="p-6 md:p-8 bg-transparent rounded-none shadow-none -mt-8">
-                    <div className="flex flex-col items-center text-center">
-                        <div className="flex items-center justify-center">
+                        {/* Skills Section */}
+                        <div className="flex items-center justify-center mt-8">
                             <span
                                 className="mr-4 text-lg text-gray-600 dark:text-gray-300"
                                 style={{ fontFamily: 'var(--font-tech-stack)' }}
@@ -124,9 +121,8 @@ export default function AboutPage() {
                         </div>
                     </div>
                 </section>
-
                 {/* Projects Section */}
-                <section className="p-6 md:p-8 bg-transparent rounded-none shadow-none">
+                <div className="p-6 md:p-8 bg-transparent rounded-none shadow-none">
                     {/* 项目展示分割线 */}
                     <div className="relative mb-12">
                         <div className="absolute inset-0 flex items-center">
@@ -141,7 +137,7 @@ export default function AboutPage() {
                                     <div className="w-1 h-1 bg-indigo-400 rounded-full opacity-50"></div>
                                     <div className="w-1.5 h-1.5 bg-blue-300 rounded-full opacity-80"></div>
                                 </div>
-                                
+
                                 {/* 右侧小球群 */}
                                 <div className="flex gap-4">
                                     <div className="w-1.5 h-1.5 bg-indigo-300 rounded-full opacity-80"></div>
@@ -151,14 +147,14 @@ export default function AboutPage() {
                                     <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full opacity-80"></div>
                                 </div>
                             </div>
-                            
+
                             {/* 额外散布的小球 */}
                             <div className="absolute left-20 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-blue-400 rounded-full opacity-40"></div>
                             <div className="absolute left-32 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 bg-indigo-300 rounded-full opacity-30"></div>
                             <div className="absolute right-20 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-400 rounded-full opacity-40"></div>
                             <div className="absolute right-32 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 bg-blue-300 rounded-full opacity-30"></div>
                         </div>
-                        
+
                         <div className="relative flex justify-center items-center">
                             {/* 左侧装饰 */}
                             <div className="flex items-center gap-2 mr-4">
@@ -166,16 +162,16 @@ export default function AboutPage() {
                                 <div className="w-1 h-1 bg-blue-300 rounded-full"></div>
                                 <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
                             </div>
-                            
+
                             <span className="px-8 py-3 bg-white dark:bg-gray-900 shadow-lg rounded-full border-2 border-blue-200 dark:border-blue-800">
-                                <span 
+                                <span
                                     className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 dark:from-blue-400 dark:via-blue-300 dark:to-indigo-400 bg-clip-text text-transparent"
                                     style={{ fontFamily: 'LXGW Marker Gothic' }}
                                 >
                                     项目展示
                                 </span>
                             </span>
-                            
+
                             {/* 右侧装饰 */}
                             <div className="flex items-center gap-2 ml-4">
                                 <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
@@ -183,11 +179,11 @@ export default function AboutPage() {
                                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                             </div>
                         </div>
-                        
+
                         {/* 远处装饰性元素 */}
                         <div className="absolute left-1/4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-blue-300 rounded-full opacity-60"></div>
                         <div className="absolute right-1/4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-indigo-300 rounded-full opacity-60"></div>
-                        
+
                         {/* 更多散布的小球 */}
                         <div className="absolute left-16 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-blue-500 rounded-full opacity-50"></div>
                         <div className="absolute right-16 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-500 rounded-full opacity-50"></div>
@@ -288,7 +284,7 @@ export default function AboutPage() {
                             </Link>
                         </div>
                     </div>
-                </section>
+                </div>
             </div>
         </div>
     );
