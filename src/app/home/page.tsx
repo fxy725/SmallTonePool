@@ -179,11 +179,11 @@ export default function Home() {
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Section Header */}
                     <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium mb-6">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="inline-flex items-center gap-2">
+                            <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            最新发布
+                            <span className="text-blue-600 dark:text-blue-400" style={{ fontFamily: 'var(--font-tech-stack)' }}>最新发布</span>
                         </div>
                     </div>
 
@@ -226,27 +226,22 @@ export default function Home() {
                                     onKeyDown={handleKeyDown}
                                     tabIndex={0}
                                 >
-                                    <div className="flex gap-6" style={{ minWidth: 'max-content', paddingLeft: '0px', paddingRight: '0px' }}>
+                                    <div className="flex gap-6 animate-scroll-x" style={{ minWidth: 'max-content', paddingLeft: '0px', paddingRight: '0px' }}>
                                         {recentPosts.map((post) => (
                                             <div key={post.slug} className="w-80 flex-shrink-0">
                                                 <PostCard post={post} requireDoubleClick={true} />
                                             </div>
                                         ))}
-                                        {/* 查看更多“卡片” */}
-                                        <div className="w-80 flex-shrink-0">
-                                            <Link href="/blog" draggable={false}>
-                                                <article className="group relative bg-white/95 dark:bg-gray-800/95 rounded-xl border border-gray-200 dark:border-gray-700 h-full flex items-center justify-between p-6 cursor-pointer backdrop-blur-[1px] transition-all duration-300" draggable={false} onDragStart={(e) => e.preventDefault()}>
-                                                    <div className="flex-1">
-                                                        <div className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">查看更多文章</div>
-                                                        <div className="text-sm text-gray-500 dark:text-gray-400">探索全部内容</div>
-                                                    </div>
-                                                    <div className="ml-2">
-                                                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                                        </svg>
-                                                    </div>
-                                                </article>
-                                            </Link>
+                                        {/* 查看更多"卡片" */}
+                                        <div className="w-80 flex-shrink-0 flex items-center justify-center">
+                                            <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] text-gray-700 dark:text-gray-300">
+                                                <Link href="/blog" className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400" style={{ fontFamily: 'var(--font-tech-stack)' }} draggable={false}>
+                                                    查看更多文章
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -1831,6 +1831,24 @@ a:focus-visible,
   }
 }
 
+/* 水平滚动动画 */
+@keyframes scroll-x {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-x {
+  animation: scroll-x 20s linear infinite;
+}
+
+.animate-scroll-x:hover {
+  animation-play-state: paused;
+}
+
 .brand-pulse {
   animation: brand-pulse 2s ease-in-out infinite;
 }
@@ -1962,6 +1980,17 @@ a:focus-visible,
   font-size: 1rem !important;
   font-family: 'Cascadia Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', 'LXGW WenKai Mono TC', monospace !important;
   line-height: 1.714 !important;
+}
+
+/* 让代码块可以选中 */
+.prose.select-none pre,
+.prose.select-none pre code,
+.prose.select-none code,
+.prose.select-none .hljs {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
 }
 
 /* Code block copy button styling */

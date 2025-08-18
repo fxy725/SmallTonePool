@@ -46,7 +46,8 @@ src/
 │   ├── MDXRenderer.tsx     # MDX 组件样式
 │   ├── Search.tsx          # 搜索功能
 │   ├── StructuredData.tsx  # SEO 结构化数据
-│   └── TagCloud.tsx        # 标签云
+│   ├── TagCloud.tsx        # 标签云
+│   └── CopyButton.tsx      # 复制按钮组件
 ├── lib/
 │   └── posts.ts            # 核心文章管理逻辑
 ├── types/
@@ -71,3 +72,4 @@ src/
 6. **RSS 订阅** - 读者订阅
 7. **响应式设计** - 深色模式支持
 8. **自定义主题** - 小石潭视觉风格
+9. **优雅的复制提示** - 替代原生alert弹窗
