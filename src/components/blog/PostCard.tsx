@@ -47,11 +47,19 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
             }
         }}>
             <article
-                className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
+                className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
+                onContextMenu={(e) => e.preventDefault()}
+                onSelectStart={(e) => e.preventDefault()}
+                style={{
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none',
+                    userSelect: 'none'
+                }}
             >
                 {/* Animated Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
@@ -65,14 +73,14 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                 {/* Top Accent Line */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
 
-                <div className="relative p-6">
+                <div className="relative p-6 select-none" style={{ fontFamily: 'var(--font-content)' }}>
                     {/* Meta Information */}
-                    <div className="flex items-center gap-3 mb-4 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-3 mb-4 text-sm text-gray-500 dark:text-gray-400 select-none">
                         <time
                             dateTime={post.date}
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1 select-none"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 select-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             {formatDate(post.date)}
@@ -80,20 +88,20 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-xl font-bold mb-3 leading-tight">
-                        <span className="text-gray-900 dark:text-white line-clamp-2">
+                    <h3 className="text-xl font-bold mb-3 leading-tight select-none">
+                        <span className="text-gray-900 dark:text-white line-clamp-2 select-none">
                             {post.title}
                         </span>
                     </h3>
 
                     {/* Summary */}
-                    <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3">
+                    <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3 select-none">
                         {post.summary}
                     </p>
 
                     {/* Tags */}
                     {post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 select-none">
                             {post.tags.slice(0, 3).map((tag, index) => (
                                 <button
                                     key={tag}
@@ -114,13 +122,13 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                                             router.push(`/blog?tag=${encodeURIComponent(tag)}`);
                                         }
                                     }}
-                                    className={`px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 border border-gray-200 dark:border-gray-600 hover-scale ${isHovered ? `animate-bounce-in animation-delay-${index * 100}` : ''}`}
+                                    className={`px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 border border-gray-200 dark:border-gray-600 hover-scale select-none ${isHovered ? `animate-bounce-in animation-delay-${index * 100}` : ''}`}
                                 >
                                     {tag}
                                 </button>
                             ))}
                             {post.tags.length > 3 && (
-                                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 select-none">
                                     +{post.tags.length - 3}
                                 </span>
                             )}

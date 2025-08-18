@@ -14,8 +14,8 @@ export default function Home() {
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [mounted, setMounted] = useState(false);
-    const [forceDoubleClick, setForceDoubleClick] = useState(false);
-
+    const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
+    const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
     useEffect(() => {
         setMounted(true);
@@ -24,7 +24,7 @@ export default function Home() {
             try {
                 const response = await fetch('/api/posts');
                 const allPosts = await response.json();
-                setPosts(allPosts.slice(0, 6));
+                setPosts(allPosts.slice(0, 7));
             } catch (error) {
                 console.error("Failed to load posts:", error);
             } finally {
@@ -35,12 +35,51 @@ export default function Home() {
         loadPosts();
     }, []);
 
+    // 自动滚动逻辑
+    useEffect(() => {
+        if (!scrollContainerRef.current || !isAutoScrolling || loading) return;
+
+        const scrollContainer = scrollContainerRef.current;
+        const scrollAmount = 1; // 每次滚动的像素数
+        const scrollSpeed = 20; // 滚动速度（毫秒）
+
+        const autoScroll = () => {
+            if (!scrollContainer) return;
+
+            // 滚动容器
+            scrollContainer.scrollLeft += scrollAmount;
+
+            // 实现无缝循环滚动
+            if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth / 2) {
+                scrollContainer.scrollLeft = 0;
+            }
+
+            autoScrollRef.current = setTimeout(autoScroll, scrollSpeed);
+        };
+
+        autoScrollRef.current = setTimeout(autoScroll, scrollSpeed);
+
+        // 清理函数
+        return () => {
+            if (autoScrollRef.current) {
+                clearTimeout(autoScrollRef.current);
+            }
+        };
+    }, [isAutoScrolling, loading]);
+
     // 拖拽滚动处理函数
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!scrollContainerRef.current) return;
         setIsDragging(true);
         setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
         setScrollLeft(scrollContainerRef.current.scrollLeft);
+
+        // 停止自动滚动
+        setIsAutoScrolling(false);
+        if (autoScrollRef.current) {
+            clearTimeout(autoScrollRef.current);
+            autoScrollRef.current = null;
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -52,16 +91,27 @@ export default function Home() {
             if (scrollContainerRef.current) {
                 const delta = e.key === 'ArrowLeft' ? -200 : 200;
                 scrollContainerRef.current.scrollBy({ left: delta, behavior: 'smooth' });
+
+                // 停止自动滚动
+                setIsAutoScrolling(false);
+                if (autoScrollRef.current) {
+                    clearTimeout(autoScrollRef.current);
+                    autoScrollRef.current = null;
+                }
             }
         }
     };
 
     const handleMouseLeave = () => {
         setIsDragging(false);
+        // 重新开始自动滚动
+        setTimeout(() => setIsAutoScrolling(true), 1000);
     };
 
     const handleMouseUp = () => {
         setIsDragging(false);
+        // 重新开始自动滚动
+        setTimeout(() => setIsAutoScrolling(true), 1000);
     };
 
     const handleMouseMove = (e: React.MouseEvent) => {
@@ -72,7 +122,21 @@ export default function Home() {
         scrollContainerRef.current.scrollLeft = scrollLeft - walk;
     };
 
-    const recentPosts = posts.slice(0, 5);
+    // 鼠标悬停时暂停自动滚动
+    const handleMouseEnter = () => {
+        setIsAutoScrolling(false);
+        if (autoScrollRef.current) {
+            clearTimeout(autoScrollRef.current);
+            autoScrollRef.current = null;
+        }
+    };
+
+    // 鼠标离开时恢复自动滚动
+    const handleMouseLeaveContainer = () => {
+        setTimeout(() => setIsAutoScrolling(true), 1000);
+    };
+
+    const recentPosts = posts.slice(0, 7);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -218,35 +282,41 @@ export default function Home() {
                                 {/* Scrollable Posts */}
                                 <div
                                     ref={scrollContainerRef}
-                                    className="overflow-x-auto pb-6 scrollbar-hide cursor-grab active:cursor-grabbing select-none outline-none focus:outline-none"
+                                    className="overflow-x-auto pb-6 scrollbar-hide cursor-grab active:cursor-grabbing select-none outline-none focus:outline-none user-select-none post-card-unselectable"
                                     onMouseDown={handleMouseDown}
-                                    onMouseLeave={handleMouseLeave}
                                     onMouseUp={handleMouseUp}
                                     onMouseMove={handleMouseMove}
                                     onKeyDown={handleKeyDown}
+                                    onMouseEnter={handleMouseEnter}
+                                    onMouseLeave={handleMouseLeaveContainer}
                                     tabIndex={0}
+                                    onContextMenu={(e) => e.preventDefault()}
+                                    style={{
+                                        WebkitUserSelect: 'none',
+                                        MozUserSelect: 'none',
+                                        msUserSelect: 'none',
+                                        userSelect: 'none'
+                                    }}
                                 >
-                                    <div className="flex gap-6 animate-scroll-x" style={{ minWidth: 'max-content', paddingLeft: '0px', paddingRight: '0px' }}>
-                                        {recentPosts.map((post) => (
-                                            <div key={post.slug} className="w-80 flex-shrink-0">
+                                    <div className="flex gap-6" style={{ minWidth: 'max-content' }}>
+                                        {/* 动态生成无缝滚动列表 */}
+                                        {[...recentPosts, ...recentPosts].map((post, index) => (
+                                            <div key={`${post.slug}-${index}`} className="w-80 flex-shrink-0">
                                                 <PostCard post={post} requireDoubleClick={true} />
                                             </div>
                                         ))}
-                                        {/* 查看更多"卡片" */}
-                                        <div className="w-80 flex-shrink-0 flex items-center justify-center">
-                                            <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] text-gray-700 dark:text-gray-300">
-                                                <Link href="/blog" className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400" style={{ fontFamily: 'var(--font-tech-stack)' }} draggable={false}>
-                                                    查看更多文章
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                    </svg>
-                                                </Link>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
+                            </div>
 
-
+                            {/* 查看更多文章按钮 - 放在滑动列表下方 */}
+                            <div className="text-center mt-12">
+                                <Link href="/blog" className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 shadow-lg hover:shadow-xl" style={{ fontFamily: 'var(--font-tech-stack)' }}>
+                                    <span className="text-lg font-medium">查看更多文章</span>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </Link>
                             </div>
 
                             {/* Empty State */}
@@ -265,8 +335,6 @@ export default function Home() {
                                     </p>
                                 </div>
                             )}
-
-
                         </>
                     )}
                 </div>
