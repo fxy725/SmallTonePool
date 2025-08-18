@@ -169,7 +169,7 @@ export default function Home() {
             </section>
 
             {/* Recent Posts Section */}
-            <section className="relative py-20 bg-gray-50 dark:bg-gray-900">
+            <section className="relative py-20 bg-white dark:bg-gray-800">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-30">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
@@ -204,12 +204,12 @@ export default function Home() {
                             {/* Horizontal Scroll Container */}
                             <div className="relative">
                                 {/* Scroll Indicators */}
-                                <div className="absolute -left-8 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                                <div className="absolute -left-12 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
                                     <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </div>
-                                <div className="absolute -right-8 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                                <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
                                     <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
@@ -241,8 +241,8 @@ export default function Home() {
                                                         <div className="text-sm text-gray-500 dark:text-gray-400">探索全部内容</div>
                                                     </div>
                                                     <div className="ml-2">
-                                                        <svg className="w-6 h-6 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                                         </svg>
                                                     </div>
                                                 </article>

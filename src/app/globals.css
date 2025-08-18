@@ -512,10 +512,99 @@ html {
   color: var(--brand-primary);
 }
 
-/* Focus Styles */
+/* Focus Styles - Remove default blue outline from all buttons */
 :focus {
   outline: 2px solid var(--brand-primary);
   outline-offset: 2px;
+}
+
+/* Remove default focus outline from all buttons and interactive elements */
+button,
+.button,
+.btn,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+a[role="button"],
+[role="button"],
+.clickable,
+.interactive,
+a,
+.link,
+.nav-link,
+.menu-item,
+.tab-button,
+.card-button,
+.action-button,
+.icon-button,
+.text-button {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus,
+.button:focus,
+.btn:focus,
+input[type="button"]:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus,
+a[role="button"]:focus,
+[role="button"]:focus,
+.clickable:focus,
+.interactive:focus,
+a:focus,
+.link:focus,
+.nav-link:focus,
+.menu-item:focus,
+.tab-button:focus,
+.card-button:focus,
+.action-button:focus,
+.icon-button:focus,
+.text-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+button:focus-visible,
+.button:focus-visible,
+.btn:focus-visible,
+input[type="button"]:focus-visible,
+input[type="submit"]:focus-visible,
+input[type="reset"]:focus-visible,
+a[role="button"]:focus-visible,
+[role="button"]:focus-visible,
+.clickable:focus-visible,
+.interactive:focus-visible,
+a:focus-visible,
+.link:focus-visible,
+.nav-link:focus-visible,
+.menu-item:focus-visible,
+.tab-button:focus-visible,
+.card-button:focus-visible,
+.action-button:focus-visible,
+.icon-button:focus-visible,
+.text-button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* Global removal of default focus outlines */
+*:focus,
+*:focus-visible,
+*:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Specifically remove blue focus rings */
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: none !important;
 }
 
 /* Remove focus outline from specific elements */
@@ -1999,6 +2088,27 @@ html {
   opacity: 1 !important;
 }
 
+/* Small reusable icon-style copy button (for inline icon usage) */
+.icon-copy-button {
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  border: 1px solid var(--accent-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-copy-button.copied {
+  background: var(--success);
+  color: var(--text-inverse);
+}
+
 /* Code block line numbers */
 .prose pre.line-numbers {
   padding-left: 3.5rem !important;
@@ -2118,7 +2228,7 @@ html {
 .brand-tag-button {
   position: relative;
   padding: 0.5rem 1rem;
-  border-radius: 9999px;
+  border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.025em;
@@ -2126,37 +2236,18 @@ html {
   color: var(--text-secondary);
   border: 1px solid var(--accent-subtle);
   cursor: pointer;
-  transition: all var(--transition-normal);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal);
   font-family: var(--font-primary);
 }
 
-.brand-tag-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left var(--transition-normal);
-}
-
 .brand-tag-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
   background: var(--bg-secondary);
   color: var(--text-primary);
   border-color: var(--accent-subtle);
 }
 
-.brand-tag-button:hover::before {
-  left: 100%;
-}
-
 .brand-tag-button:active {
-  transform: translateY(0);
+  transform: none;
   box-shadow: none;
 }
 
@@ -2168,12 +2259,8 @@ html {
   font-weight: 600;
 }
 
-.brand-tag-button.brand-tag-active::before {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-}
-
 .brand-tag-button.brand-tag-active:hover {
-  transform: translateY(-2px);
+  transform: none;
   border-color: transparent !important;
   box-shadow: none !important;
 }
@@ -2216,9 +2303,7 @@ html {
   color: var(--text-secondary);
   border: 1px solid var(--accent-subtle);
   cursor: pointer;
-  transition: all var(--transition-normal);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal);
   min-width: 2.5rem;
   height: 2.5rem;
   display: flex;
@@ -2227,32 +2312,15 @@ html {
   font-family: var(--font-primary);
 }
 
-.brand-pagination-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left var(--transition-normal);
-}
-
 .brand-pagination-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
   background: var(--bg-secondary);
   color: var(--text-primary);
   border-color: var(--accent-subtle);
 }
 
-.brand-pagination-button:hover:not(:disabled)::before {
-  left: 100%;
-}
-
 .brand-pagination-button:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
+  transform: none;
+  box-shadow: none;
 }
 
 /* Active pagination button */
@@ -2263,12 +2331,8 @@ html {
   font-weight: 600;
 }
 
-.brand-pagination-button.brand-pagination-active::before {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-}
-
 .brand-pagination-button.brand-pagination-active:hover:not(:disabled) {
-  transform: translateY(-2px);
+  transform: none;
 }
 
 /* Disabled pagination button */
@@ -2282,7 +2346,7 @@ html {
 
 .brand-pagination-button:disabled:hover {
   transform: none;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 /* Pagination ellipsis */
@@ -2294,21 +2358,9 @@ html {
   user-select: none;
 }
 
-/* Floating animation for pagination */
+/* Floating animation for pagination - removed */
 .brand-pagination-float {
-  animation: brand-pagination-float 3s ease-in-out infinite;
-}
-
-@keyframes brand-pagination-float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-3px);
-  }
+  /* Animation removed */
 }
 
 /* Water ripple effect for interactive elements */

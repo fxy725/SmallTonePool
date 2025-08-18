@@ -127,12 +127,12 @@ export default async function PostPage({ params }: PostPageProps) {
 
                             {/* Tags */}
                             {post.tags.length > 0 && (
-                                <div className="flex flex-wrap justify-center gap-2">
+                                <div className="flex flex-wrap justify-center gap-2 mt-8">
                                     {post.tags.map((tag) => (
                                         <Link
                                             href={`/blog?tag=${encodeURIComponent(tag)}`}
                                             key={tag}
-                                            className="article-tag px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium select-none no-underline transition-colors duration-200"
+                                            className="article-tag px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium select-none no-underline transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                                         >
                                             {tag}
                                         </Link>
@@ -144,9 +144,9 @@ export default async function PostPage({ params }: PostPageProps) {
                 </header>
 
                 {/* Content */}
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 pt-24">
                     <div
-                        className="prose prose-lg dark:prose-invert max-w-none"
+                        className="prose prose-lg dark:prose-invert max-w-none text-content"
                         dangerouslySetInnerHTML={{
                             __html: post.content.replace(/<h1[^>]*>[\s\S]*?<\/h1>/, '')
                         }}
@@ -154,15 +154,14 @@ export default async function PostPage({ params }: PostPageProps) {
 
                     {/* Navigation */}
                     <div className="mt-16 flex justify-center">
-                        <Link
-                            href="/blog"
-                            className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-blue-700 transition-all duration-300"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
-                            </svg>
-                            返回
-                        </Link>
+                        <div className="inline-flex items-center gap-3 px-5 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                            <Link href="/blog" className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                                返回文章列表
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </article>

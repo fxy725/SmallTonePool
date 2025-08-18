@@ -80,7 +80,7 @@ function BlogContent() {
             <div className="flex flex-wrap gap-3 justify-center pt-20 pb-2">
                 <button
                     onClick={() => handleTagClick('')}
-                    className={`brand-tag-button ripple brand-water-ripple brand-stone-glow brand-wave-animation ${selectedTag === '' ? 'brand-tag-active' : ''}`}
+                    className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 ${selectedTag === '' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : ''}`}
                 >
                     ALL
                 </button>
@@ -88,7 +88,7 @@ function BlogContent() {
                     <button
                         key={tag}
                         onClick={() => handleTagClick(tag)}
-                        className={`brand-tag-button ripple brand-water-ripple brand-stone-glow brand-wave-animation ${selectedTag === tag ? 'brand-tag-active' : ''}`}
+                        className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 ${selectedTag === tag ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : ''}`}
                     >
                         {tag}
                     </button>
@@ -98,11 +98,11 @@ function BlogContent() {
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
-                    <div className="brand-pagination">
+                    <div className="flex items-center justify-center gap-2">
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === 1 ? '' : ''}`}
+                            className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                         >
                             上一页
                         </button>
@@ -123,7 +123,7 @@ function BlogContent() {
                                 <button
                                     key={pageNum}
                                     onClick={() => handlePageChange(pageNum)}
-                                    className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === pageNum ? 'brand-pagination-active' : ''} ${currentPage === pageNum ? '' : ''}`}
+                                    className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === pageNum ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                                 >
                                     {pageNum}
                                 </button>
@@ -131,13 +131,13 @@ function BlogContent() {
                         })}
 
                         {totalPages > 5 && currentPage < totalPages - 2 && (
-                            <span className="brand-pagination-ellipsis">...</span>
+                            <span className="px-3 py-1 text-gray-500 dark:text-gray-400 text-sm">...</span>
                         )}
 
                         {totalPages > 5 && currentPage < totalPages - 1 && (
                             <button
                                 onClick={() => handlePageChange(totalPages)}
-                                className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === totalPages ? 'brand-pagination-active' : ''} ${currentPage === totalPages ? '' : ''}`}
+                                className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === totalPages ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                             >
                                 {totalPages}
                             </button>
@@ -146,7 +146,7 @@ function BlogContent() {
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === totalPages ? '' : ''}`}
+                            className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                         >
                             下一页
                         </button>
@@ -186,11 +186,11 @@ function BlogContent() {
                         {/* Bottom Pagination */}
                         {totalPages > 1 && (
                             <div className="mt-16 pt-8">
-                                <div className="brand-pagination">
+                                <div className="flex items-center justify-center gap-2">
                                     <button
                                         onClick={() => handlePageChange(currentPage - 1)}
                                         disabled={currentPage === 1}
-                                        className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === 1 ? '' : ''}`}
+                                        className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                                     >
                                         上一页
                                     </button>
@@ -211,7 +211,7 @@ function BlogContent() {
                                             <button
                                                 key={pageNum}
                                                 onClick={() => handlePageChange(pageNum)}
-                                                className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === pageNum ? 'brand-pagination-active' : ''} ${currentPage === pageNum ? '' : ''}`}
+                                                className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === pageNum ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                                             >
                                                 {pageNum}
                                             </button>
@@ -219,13 +219,13 @@ function BlogContent() {
                                     })}
 
                                     {totalPages > 5 && currentPage < totalPages - 2 && (
-                                        <span className="brand-pagination-ellipsis">...</span>
+                                        <span className="px-3 py-1 text-gray-500 dark:text-gray-400 text-sm">...</span>
                                     )}
 
                                     {totalPages > 5 && currentPage < totalPages - 1 && (
                                         <button
                                             onClick={() => handlePageChange(totalPages)}
-                                            className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === totalPages ? 'brand-pagination-active' : ''} ${currentPage === totalPages ? '' : ''}`}
+                                            className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === totalPages ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                                         >
                                             {totalPages}
                                         </button>
@@ -234,7 +234,7 @@ function BlogContent() {
                                     <button
                                         onClick={() => handlePageChange(currentPage + 1)}
                                         disabled={currentPage === totalPages}
-                                        className={`brand-pagination-button brand-water-ripple brand-stone-glow ${currentPage === totalPages ? '' : ''}`}
+                                        className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                                     >
                                         下一页
                                     </button>

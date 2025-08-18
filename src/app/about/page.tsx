@@ -3,6 +3,7 @@
 import { Header } from "@/components/layout/Header";
 import Link from "next/link";
 import Image from 'next/image';
+import { useState } from 'react';
 
 
 export default function AboutPage() {
@@ -36,13 +37,44 @@ export default function AboutPage() {
                                 <span className="font-pixel text-xl text-white leading-none">Github</span>
                             </a>
 
-                            <a href="https://www.zhihu.com/people/39-64-49-19-97" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#49C0FB] hover:bg-[#5cc8ff] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
+                            <a href="https://www.zhihu.com/people/39-64-49-19-97" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E40AF] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
                                 <Image src="/logos/zhihu.svg" alt="Zhihu" width={20} height={20} className="flex-shrink-0 filter brightness-0 invert" />
                                 <span className="font-pixel text-xl text-white leading-none">ZhiHu</span>
                             </a>
+
+                            <a href="https://linux.do/u/kakaa/summary" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#ff8c00] hover:bg-[#ff9f33] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
+                                <Image src="/logos/linux-do.svg" alt="Linux.do" width={20} height={20} className="flex-shrink-0" />
+                                <span className="font-pixel text-xl text-white leading-none">Linux.do</span>
+                            </a>
+
                         </div>
                     </div>
                 </section>
+
+                {/* QQ Contact Button */}
+                <section className="p-6 md:p-8 bg-transparent rounded-none shadow-none -mt-8">
+                    <div className="flex flex-col items-center text-center">
+                        <div className="flex items-center gap-2">
+                            <span
+                                className="text-lg text-gray-600 dark:text-gray-300"
+                                style={{ fontFamily: 'LXGWMarkerGothic-Regular, sans-serif' }}
+                            >
+                                联系邮箱
+                            </span>
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText('849517015@qq.com');
+                                    alert('已复制邮箱地址');
+                                }}
+                                className="flex items-center gap-1 px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 dark:border-gray-600 transition-colors" style={{ outline: 'none', boxShadow: 'none' }}
+                            >
+                                <Image src="/logos/QQ.svg" alt="QQ" width={20} height={20} className="flex-shrink-0" />
+                                <span className="font-pixel text-xl text-gray-800 dark:text-gray-200 leading-none">849517015@qq.com</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Skills Section */}
                 <section className="p-6 md:p-8 bg-transparent rounded-none shadow-none -mt-16">
                     <div className="flex flex-col items-center text-center">
@@ -101,7 +133,7 @@ export default function AboutPage() {
                 {/* Projects Section */}
                 <section className="p-6 md:p-8 bg-transparent rounded-none shadow-none">
                     <div className="grid md:grid-cols-1 gap-6">
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-transparent rounded-none shadow-none">
+                        <div className="p-4 border-b-2 border-gray-300 dark:border-gray-600 bg-transparent rounded-none shadow-none" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
                             <div className="flex items-center gap-3 mb-4">
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">FarmingRPG</h3>
                                 <div className="ml-auto flex items-center gap-4">
@@ -112,9 +144,7 @@ export default function AboutPage() {
                                         <span className="text-sm">源码</span>
                                     </a>
                                     <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 cursor-not-allowed">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.507 2.246 1.56 3.773v7.286c-.054 1.51-.578 2.769-1.574 3.773-.995 1.003-2.247 1.506-3.773 1.56H5.333c-1.51-.054-2.769-.578-3.773-1.574C.556 19.043.053 17.79 0 16.267V8.98c.054-1.51.578-2.769 1.574-3.773C2.57 4.203 3.822 3.7 5.333 3.647h12.48zm.854 1.514H5.333c-.976.036-1.775.336-2.397.899-.622.562-.936 1.345-.942 2.347v7.286c.036.976.336 1.775.899 2.397.562.622 1.345.936 2.347.942h13.286c.976-.036 1.775-.336 2.397-.899.622-.562.936-1.345.942-2.347V8.98c-.036-.976-.336-1.775-.899-2.397-.622-.622-1.372-.936-2.347-.942zM12 7.893c.876 0 1.726.165 2.548.493.822.329 1.527.793 2.117 1.393.59.599 1.05 1.305 1.38 2.118.329.813.493 1.663.493 2.548 0 .893-.165 1.743-.493 2.548-.329.804-.793 1.5-1.38 2.083-.59.583-1.295 1.038-2.117 1.367-.822.329-1.672.493-2.548.493-.876 0-1.726-.165-2.548-.493-.822-.329-1.527-.793-2.117-1.393-.59-.599-1.05-1.305-1.38-2.118-.329-.813-.493-1.663-.493-2.548 0-.893.165-1.743.493-2.548.329-.804.793-1.5 1.38-2.083.59-.583 1.295-1.038 2.117-1.367.822-.329 1.672-.493 2.548-.493zm0 1.514c-.711 0-1.39.13-2.037.393-.647.262-1.207.626-1.68 1.093-.473.466-.844 1.025-1.113 1.676-.27.65-.404 1.343-.404 2.08 0 .72.135 1.41.404 2.07.27.66.64 1.225 1.113 1.693.473.468 1.033.831 1.68 1.093.647.262 1.326.393 2.037.393.711 0 1.39-.13 2.037-.393.647-.262 1.207-.626 1.68-1.093.473-.466.844-1.025 1.113-1.676.27-.65.404-1.343.404-2.08 0-.72-.135-1.41-.404-2.07-.27-.66-.64-1.225-1.113-1.693-.473-.468-1.033-.831-1.68-1.093-.647-.262-1.326-.393-2.037-.393zm8.893-1.333c.329 0 .604.109.827.327.222.218.333.493.333.827 0 .334-.111.61-.333.827-.223.218-.498.327-.827.327-.334 0-.61-.109-.827-.327-.218-.218-.327-.493-.327-.827 0-.334.109-.61.327-.827.218-.218.493-.327.827-.327z"/>
-                                        </svg>
+                                        <Image src="/logos/bilibili.svg" alt="演示" width={16} height={16} className="flex-shrink-0" />
                                         <span className="text-sm">演示</span>
                                     </div>
                                 </div>
@@ -130,7 +160,7 @@ export default function AboutPage() {
                             </div>
                         </div>
 
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-transparent rounded-none shadow-none">
+                        <div className="p-4 border-b-2 border-gray-300 dark:border-gray-600 bg-transparent rounded-none shadow-none" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
                             <div className="flex items-center gap-3 mb-4">
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">SpaceSurvivor</h3>
                                 <div className="ml-auto flex items-center gap-4">
@@ -141,9 +171,7 @@ export default function AboutPage() {
                                         <span className="text-sm">源码</span>
                                     </a>
                                     <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 cursor-not-allowed">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.507 2.246 1.56 3.773v7.286c-.054 1.51-.578 2.769-1.574 3.773-.995 1.003-2.247 1.506-3.773 1.56H5.333c-1.51-.054-2.769-.578-3.773-1.574C.556 19.043.053 17.79 0 16.267V8.98c.054-1.51.578-2.769 1.574-3.773C2.57 4.203 3.822 3.7 5.333 3.647h12.48zm.854 1.514H5.333c-.976.036-1.775.336-2.397.899-.622.562-.936 1.345-.942 2.347v7.286c.036.976.336 1.775.899 2.397.562.622 1.345.936 2.347.942h13.286c.976-.036 1.775-.336 2.397-.899.622-.562.936-1.345.942-2.347V8.98c-.036-.976-.336-1.775-.899-2.397-.622-.622-1.372-.936-2.347-.942zM12 7.893c.876 0 1.726.165 2.548.493.822.329 1.527.793 2.117 1.393.59.599 1.05 1.305 1.38 2.118.329.813.493 1.663.493 2.548 0 .893-.165 1.743-.493 2.548-.329.804-.793 1.5-1.38 2.083-.59.583-1.295 1.038-2.117 1.367-.822.329-1.672.493-2.548.493-.876 0-1.726-.165-2.548-.493-.822-.329-1.527-.793-2.117-1.393-.59-.599-1.05-1.305-1.38-2.118-.329-.813-.493-1.663-.493-2.548 0-.72.165-1.41.493-2.07.329-.66.793-1.225 1.38-2.083.59-.583 1.295-1.038 2.117-1.367.822-.329 1.672-.493 2.548-.493zm0 1.514c-.711 0-1.39.13-2.037.393-.647.262-1.207.626-1.68 1.093-.473.466-.844 1.025-1.113 1.676-.27.65-.404 1.343-.404 2.08 0 .72.135 1.41.404 2.07.27.66.64 1.225 1.113 1.693.473.468 1.033.831 1.68 1.093.647.262 1.326.393 2.037.393.711 0 1.39-.13 2.037-.393.647-.262 1.207-.626 1.68-1.093.473-.466.844-1.025 1.113-1.676.27-.65.404-1.343.404-2.08 0-.72-.135-1.41-.404-2.07-.27-.66-.64-1.225-1.113-1.693-.473-.468-1.033-.831-1.68-1.093-.647-.262-1.326-.393-2.037-.393zm8.893-1.333c.329 0 .604.109.827.327.222.218.333.493.333.827 0 .334-.111.61-.333.827-.223.218-.498.327-.827.327-.334 0-.61-.109-.827-.327-.218-.218-.327-.493-.327-.827 0-.334.109-.61.327-.827.218-.218.493-.327.827-.327z"/>
-                                        </svg>
+                                        <Image src="/logos/bilibili.svg" alt="演示" width={16} height={16} className="flex-shrink-0" />
                                         <span className="text-sm">演示</span>
                                     </div>
                                 </div>
@@ -159,7 +187,7 @@ export default function AboutPage() {
                             </div>
                         </div>
 
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-transparent rounded-none shadow-none">
+                        <div className="p-4 bg-transparent rounded-none shadow-none" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
                             <div className="flex items-center gap-3 mb-4">
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">SmallPoolTone</h3>
                                 <div className="ml-auto flex items-center gap-4">
@@ -170,9 +198,7 @@ export default function AboutPage() {
                                         <span className="text-sm">源码</span>
                                     </a>
                                     <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 cursor-not-allowed">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.507 2.246 1.56 3.773v7.286c-.054 1.51-.578 2.769-1.574 3.773-.995 1.003-2.247 1.506-3.773 1.56H5.333c-1.51-.054-2.769-.578-3.773-1.574C.556 19.043.053 17.79 0 16.267V8.98c.054-1.51.578-2.769 1.574-3.773C2.57 4.203 3.822 3.7 5.333 3.647h12.48zm.854 1.514H5.333c-.976.036-1.775.336-2.397.899-.622.562-.936 1.345-.942 2.347v7.286c.036.976.336 1.775.899 2.397.562.622 1.345.936 2.347.942h13.286c.976-.036 1.775-.336 2.397-.899.622-.562.936-1.345.942-2.347V8.98c-.036-.976-.336-1.775-.899-2.397-.622-.622-1.372-.936-2.347-.942zM12 7.893c.876 0 1.726.165 2.548.493.822.329 1.527.793 2.117 1.393.59.599 1.05 1.305 1.38 2.118.329.813.493 1.663.493 2.548 0 .893-.165 1.743-.493 2.548-.329.804-.793 1.5-1.38 2.083-.59.583-1.295 1.038-2.117 1.367-.822.329-1.672.493-2.548.493-.876 0-1.726-.165-2.548-.493-.822-.329-1.527-.793-2.117-1.393-.59-.599-1.05-1.305-1.38-2.118-.329-.813-.493-1.663-.493-2.548 0-.72.165-1.41.493-2.07.329-.66.793-1.225 1.38-2.083.59-.583 1.295-1.038 2.117-1.367.822-.329 1.672-.493 2.548-.493zm0 1.514c-.711 0-1.39.13-2.037.393-.647.262-1.207.626-1.68 1.093-.473.466-.844 1.025-1.113 1.676-.27.65-.404 1.343-.404 2.08 0 .72.135 1.41.404 2.07.27.66.64 1.225 1.113 1.693.473.468 1.033.831 1.68 1.093.647.262 1.326.393 2.037.393.711 0 1.39-.13 2.037-.393.647-.262 1.207-.626 1.68-1.093.473.466.844 1.025 1.113 1.676.27.65.404 1.343.404 2.08 0-.72-.135-1.41-.404-2.07-.27-.66-.64-1.225-1.113-1.693-.473-.468-1.033-.831-1.68-1.093-.647-.262-1.326-.393-2.037-.393zm8.893-1.333c.329 0 .604.109.827.327.222.218.333.493.333.827 0 .334-.111.61-.333.827-.223.218-.498.327-.827.327-.334 0-.61-.109-.827-.327-.218-.218-.327-.493-.327-.827 0-.334.109-.61.327-.827.218-.218.493-.327.827-.327z"/>
-                                        </svg>
+                                        <Image src="/logos/bilibili.svg" alt="演示" width={16} height={16} className="flex-shrink-0" />
                                         <span className="text-sm">演示</span>
                                     </div>
                                 </div>
@@ -188,29 +214,10 @@ export default function AboutPage() {
                             </div>
                         </div>
                     </div>
-                </section>
 
-                {/* Contact Section */}
-                <section className="p-6 md:p-8 bg-transparent rounded-none shadow-none">
-                    <div className="text-center">
-                        <p className="text-gray-600 dark:text-gray-300 mb-4">
-                            有任何问题或想要交流技术话题，欢迎通过邮箱联系我：
-                        </p>
-                        <a href="mailto:849517015@qq.com" className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            849517015@qq.com
-                        </a>
-                    </div>
-                </section>
-
-
-                {/* Simple Contact CTA */}
-                <section className="py-10">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    {/* Simple Contact CTA */}
+                    <div className="text-center mt-8">
                         <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] text-gray-700 dark:text-gray-300">
-                            <span>想进一步交流？</span>
                             <Link href="/blog" className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400">
                                 查看近期文章
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
