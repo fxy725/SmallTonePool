@@ -129,6 +129,7 @@
   --font-code: 'Cascadia Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
   --font-content: 'LXGW WenKai Mono TC', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-pixel: 'Jacquard 24 Charted', monospace;
+  --font-tech-stack: 'LXGW Marker Gothic', sans-serif;
 
   /* Font Sizes */
   --text-xs: 0.75rem;
@@ -2428,6 +2429,53 @@ html {
       var(--brand-primary) 50%,
       transparent 100%);
   opacity: 0.3;
+}
+
+.skill-tag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  overflow: visible;
+  z-index: 1;
+  /* allow background to be set per-tag (colors/gradients) and let pseudo-elements inherit it */
+}
+
+/* Left triangular notch rendered behind content so it won't cover icons/text */
+.skill-tag::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  /* how deep the triangle intrudes */
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  background: inherit;
+  clip-path: polygon(100% 0%, 0 50%, 100% 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Right small triangle to create chevron look (optional, sits above background) */
+.skill-tag::after {
+  content: '';
+  position: absolute;
+  right: -10px;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background: inherit;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Ensure icon/text inside a skill-tag sit above the decorative triangles */
+.skill-tag>* {
+  position: relative;
+  z-index: 2;
 }
 
 /* Enhanced hover states for better interactivity */
