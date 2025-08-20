@@ -16,6 +16,8 @@ export default function Home() {
     const [mounted, setMounted] = useState(false);
     const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+    const oneSetWidthRef = useRef(0);
+    const SPEED_PX_PER_SEC = 800; // 自动滚动速度（像素/秒）
 
     useEffect(() => {
         setMounted(true);
@@ -34,6 +36,39 @@ export default function Home() {
 
         loadPosts();
     }, []);
+
+    // 精确测量一组宽度，并初始化至中间组的起点
+    useEffect(() => {
+        if (!scrollContainerRef.current || loading || posts.length === 0) return;
+
+        const container = scrollContainerRef.current;
+
+        const measure = () => {
+            try {
+                const items = container.querySelectorAll('[data-scroll-item="true"]');
+                if (items.length >= posts.length * 2) {
+                    const first = items[0] as HTMLElement;
+                    const secondGroupFirst = items[posts.length] as HTMLElement;
+                    const width = secondGroupFirst.offsetLeft - first.offsetLeft;
+                    if (width > 0) {
+                        oneSetWidthRef.current = width;
+                        container.style.scrollBehavior = 'auto';
+                        container.scrollLeft = width;
+                    }
+                } else {
+                    const fallback = (320 + 24) * posts.length;
+                    oneSetWidthRef.current = fallback;
+                    container.style.scrollBehavior = 'auto';
+                    container.scrollLeft = fallback;
+                }
+            } catch {
+                // 忽略测量失败
+            }
+        };
+
+        const raf = requestAnimationFrame(measure);
+        return () => cancelAnimationFrame(raf);
+    }, [posts.length, loading]);
 
     // 全局鼠标事件处理，确保拖拽在鼠标离开容器时也能正常工作
     useEffect(() => {
@@ -64,63 +99,44 @@ export default function Home() {
         };
     }, [isDragging, startX, scrollLeft]);
 
-    // 自动滚动逻辑 - 使用 requestAnimationFrame 优化性能
+    // 自动滚动逻辑 - 基于 deltaTime 的速度控制，并在边界处瞬时重置
     useEffect(() => {
         if (!scrollContainerRef.current || !isAutoScrolling || loading || posts.length === 0) return;
 
-        const scrollContainer = scrollContainerRef.current;
-        const scrollSpeed = 1; // 每帧滚动像素数，降低以提高平滑度
-        let animationId: number;
-        let isActive = true;
+        const container = scrollContainerRef.current;
+        let animationId = 0;
         let lastTime = 0;
+        let isActive = true;
 
-        const autoScroll = (currentTime: number) => {
-            if (!isActive || !scrollContainer) return;
+        const step = (currentTime: number) => {
+            if (!isActive) return;
 
-            // 控制帧率，每16ms执行一次（约60fps）
-            if (currentTime - lastTime >= 16) {
-                try {
-                    // 计算单个帖子卡片的宽度（包括间距）
-                    const cardWidth = 320 + 24; // 80*4 = 320px + 6*4 = 24px gap
-                    const totalCards = posts.length;
-                    const oneSetWidth = cardWidth * totalCards;
+            if (lastTime === 0) {
+                lastTime = currentTime;
+            } else {
+                const dt = (currentTime - lastTime) / 1000; // 秒
+                const distance = SPEED_PX_PER_SEC * dt;
+                // 临时禁用平滑，防止累积的平滑过渡导致回弹
+                container.style.scrollBehavior = 'auto';
+                container.scrollLeft += distance;
 
-                    // 滚动容器
-                    scrollContainer.scrollLeft += scrollSpeed;
-
-                    // 无缝循环逻辑 - 当滚动完第一组内容时重置
-                    if (scrollContainer.scrollLeft >= oneSetWidth) {
-                        // 平滑重置到开始位置，避免跳跃
-                        scrollContainer.scrollLeft = 0;
-                    }
-
-                    lastTime = currentTime;
-                } catch (error) {
-                    console.debug('自动滚动错误:', error);
-                    isActive = false;
+                const oneSet = oneSetWidthRef.current || (320 + 24) * posts.length;
+                if (container.scrollLeft >= oneSet * 2) {
+                    // 跳回一组的同位置
+                    container.scrollLeft = container.scrollLeft - oneSet;
                 }
+
+                lastTime = currentTime;
             }
 
-            // 继续动画循环
-            if (isActive) {
-                animationId = requestAnimationFrame(autoScroll);
-            }
+            animationId = requestAnimationFrame(step);
         };
 
-        // 延迟启动，避免初始加载时的卡顿
-        const startDelay = setTimeout(() => {
-            if (isActive) {
-                animationId = requestAnimationFrame(autoScroll);
-            }
-        }, 1000);
+        animationId = requestAnimationFrame(step);
 
-        // 清理函数
         return () => {
             isActive = false;
-            clearTimeout(startDelay);
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-            }
+            cancelAnimationFrame(animationId);
         };
     }, [isAutoScrolling, loading, posts.length]);
 
@@ -382,7 +398,8 @@ export default function Home() {
                                         MozUserSelect: 'none',
                                         msUserSelect: 'none',
                                         userSelect: 'none',
-                                        scrollBehavior: isDragging ? 'auto' : 'smooth',
+                                        // 禁用平滑滚动，避免 reset 时的回弹
+                                        scrollBehavior: 'auto',
                                         // 优化滚动性能
                                         WebkitOverflowScrolling: 'touch',
                                         willChange: 'scroll-position',
@@ -394,9 +411,9 @@ export default function Home() {
                                     }}
                                 >
                                     <div className="flex gap-6" style={{ minWidth: 'max-content' }}>
-                                        {/* 动态生成无缝滚动列表 */}
-                                        {[...recentPosts, ...recentPosts].map((post, index) => (
-                                            <div key={`${post.slug}-${index}`} className="w-80 flex-shrink-0">
+                                        {/* 使用三组内容确保更稳定的无缝滚动 */}
+                                        {[...recentPosts, ...recentPosts, ...recentPosts].map((post, index) => (
+                                            <div data-scroll-item="true" key={`${post.slug}-${index}`} className="w-80 flex-shrink-0">
                                                 <PostCard post={post} requireDoubleClick={true} />
                                             </div>
                                         ))}
