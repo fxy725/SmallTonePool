@@ -17,7 +17,9 @@ export default function Home() {
     const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
     const oneSetWidthRef = useRef(0);
-    const SPEED_PX_PER_SEC = 800; // 自动滚动速度（像素/秒）
+    const SPEED_PX_PER_SEC = 140; // 自动滚动速度（像素/秒）
+    const dragMovedRef = useRef(false); // 拖拽移动阈值标记，避免误触点击
+    const DRAG_CLICK_SUPPRESS_THRESHOLD_PX = 8; // 拖拽判定阈值（像素）
 
     useEffect(() => {
         setMounted(true);
@@ -150,6 +152,8 @@ export default function Home() {
 
         // 立即停止自动滚动
         setIsAutoScrolling(false);
+        // 重置拖拽移动标记
+        dragMovedRef.current = false;
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -173,6 +177,14 @@ export default function Home() {
             setIsDragging(false);
             // 延迟恢复自动滚动，给用户时间完成操作
             setTimeout(() => setIsAutoScrolling(true), 2000);
+            // 抑制下一次点击：在极端情况下做全局兜底
+            if (dragMovedRef.current) {
+                (window as any).__suppressNextPostClick__ = true;
+                // 短时间后清理标记
+                setTimeout(() => {
+                    (window as any).__suppressNextPostClick__ = false;
+                }, 300);
+            }
         }
     };
 
@@ -180,8 +192,13 @@ export default function Home() {
         if (!isDragging || !scrollContainerRef.current) return;
         e.preventDefault();
         const x = e.pageX - scrollContainerRef.current.offsetLeft;
-        const walk = (x - startX) * 1.5; // 调整滚动速度，降低敏感度
+        const delta = x - startX;
+        const walk = delta * 1.5; // 调整滚动速度，降低敏感度
         scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+        // 若移动超出阈值，标记为拖拽，后续点击将被抑制
+        if (Math.abs(delta) > DRAG_CLICK_SUPPRESS_THRESHOLD_PX) {
+            dragMovedRef.current = true;
+        }
     };
 
     // 鼠标悬停时暂停自动滚动
@@ -393,6 +410,14 @@ export default function Home() {
                                     onMouseLeave={handleMouseLeaveContainer}
                                     tabIndex={0}
                                     onContextMenu={(e) => e.preventDefault()}
+                                    onClickCapture={(e) => {
+                                        // 若刚发生拖拽，则抑制本次点击，避免误入详情页
+                                        if (dragMovedRef.current) {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            dragMovedRef.current = false;
+                                        }
+                                    }}
                                     style={{
                                         WebkitUserSelect: 'none',
                                         MozUserSelect: 'none',

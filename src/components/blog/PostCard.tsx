@@ -29,7 +29,14 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
 
 
     return (
-        <Link href={`/blog/${post.slug}`} draggable={false}>
+        <Link href={`/blog/${post.slug}`} draggable={false} onClick={(e) => {
+            // 若外层容器在拖拽中设置了抑制标记，这里仍会被捕获，保底阻止
+            if ((window as any).__suppressNextPostClick__) {
+                e.preventDefault();
+                e.stopPropagation();
+                (window as any).__suppressNextPostClick__ = false;
+            }
+        }}>
             <article
                 className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
                 onMouseEnter={() => setIsHovered(true)}
@@ -67,20 +74,20 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                 {/* Top Accent Line */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
 
-                <div 
-                className="relative p-6 select-none user-select-none post-card-unselectable" 
-                style={{ 
-                    fontFamily: 'var(--font-content)',
-                    WebkitUserSelect: 'none',
-                    MozUserSelect: 'none',
-                    msUserSelect: 'none',
-                    userSelect: 'none'
-                }}
-                onMouseDown={(e) => e.preventDefault()}
-                onMouseUp={(e) => e.preventDefault()}
-                onMouseMove={(e: React.MouseEvent) => e.preventDefault()}
-                onDoubleClick={(e: React.MouseEvent) => e.preventDefault()}
-            >
+                <div
+                    className="relative p-6 select-none user-select-none post-card-unselectable"
+                    style={{
+                        fontFamily: 'var(--font-content)',
+                        WebkitUserSelect: 'none',
+                        MozUserSelect: 'none',
+                        msUserSelect: 'none',
+                        userSelect: 'none'
+                    }}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onMouseUp={(e) => e.preventDefault()}
+                    onMouseMove={(e: React.MouseEvent) => e.preventDefault()}
+                    onDoubleClick={(e: React.MouseEvent) => e.preventDefault()}
+                >
                     {/* Meta Information */}
                     <div className="flex items-center gap-3 mb-4 text-sm text-gray-500 dark:text-gray-400 select-none user-select-none post-card-unselectable">
                         <time
@@ -111,8 +118,8 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                     {post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 select-none user-select-none post-card-unselectable" style={{ pointerEvents: 'none' }}>
                             {post.tags.slice(0, 3).map((tag, index) => (
-                                <div 
-                                    key={tag} 
+                                <div
+                                    key={tag}
                                     className="inline-block"
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -132,7 +139,7 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                                         }
                                     }}
                                 >
-                                    <span 
+                                    <span
                                         className={`px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 border border-gray-200 dark:border-gray-600 hover-scale select-none user-select-none post-card-unselectable inline-block ${isHovered ? `animate-bounce-in animation-delay-${index * 100}` : ''}`}
                                         style={{ pointerEvents: 'none' }}
                                     >
