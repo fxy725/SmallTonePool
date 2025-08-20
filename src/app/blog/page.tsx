@@ -97,7 +97,7 @@ function BlogContent() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
                     <div className="flex items-center justify-center gap-2" style={{ fontFamily: 'var(--font-content)' }}>
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
@@ -190,7 +190,7 @@ function BlogContent() {
 
                         {/* Bottom Pagination */}
                         {totalPages > 1 && (
-                            <div className="mt-16 pt-8">
+                            <div className="mt-8 pt-4">
                                 <div className="flex items-center justify-center gap-2" style={{ fontFamily: 'var(--font-content)' }}>
                                     <button
                                         onClick={() => handlePageChange(currentPage - 1)}
