@@ -17,9 +17,12 @@ export default function Home() {
     const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
     const oneSetWidthRef = useRef(0);
-    const SPEED_PX_PER_SEC = 140; // 自动滚动速度（像素/秒）
+    const SPEED_PX_PER_SEC = 120; // 自动滚动速度（像素/秒）
     const dragMovedRef = useRef(false); // 拖拽移动阈值标记，避免误触点击
     const DRAG_CLICK_SUPPRESS_THRESHOLD_PX = 8; // 拖拽判定阈值（像素）
+    const isHoveringRef = useRef(false); // 记录鼠标是否悬停，避免误恢复自动滚动
+    const isPageScrollingRef = useRef(false); // 记录页面是否处于垂直滚动中
+    const pageScrollIdleTimerRef = useRef<NodeJS.Timeout | null>(null); // 垂直滚动停止后的恢复定时器
 
     useEffect(() => {
         setMounted(true);
@@ -118,15 +121,10 @@ export default function Home() {
             } else {
                 const dt = (currentTime - lastTime) / 1000; // 秒
                 const distance = SPEED_PX_PER_SEC * dt;
-                // 临时禁用平滑，防止累积的平滑过渡导致回弹
-                container.style.scrollBehavior = 'auto';
-                container.scrollLeft += distance;
-
+                // 一次读取与一次写入，避免交错读写引发布局抖动
+                const nextLeft = container.scrollLeft + distance;
                 const oneSet = oneSetWidthRef.current || (320 + 24) * posts.length;
-                if (container.scrollLeft >= oneSet * 2) {
-                    // 跳回一组的同位置
-                    container.scrollLeft = container.scrollLeft - oneSet;
-                }
+                container.scrollLeft = nextLeft >= oneSet * 2 ? nextLeft - oneSet : nextLeft;
 
                 lastTime = currentTime;
             }
@@ -141,6 +139,60 @@ export default function Home() {
             cancelAnimationFrame(animationId);
         };
     }, [isAutoScrolling, loading, posts.length]);
+
+    // 监听窗口垂直滚动：滚动过程中暂停自动横向滚动，空闲后延时恢复
+    useEffect(() => {
+        const handleWindowScroll = () => {
+            if (pageScrollIdleTimerRef.current) {
+                clearTimeout(pageScrollIdleTimerRef.current);
+            }
+            // 若当前正在自动滚动，则先暂停
+            if (isAutoScrolling) {
+                setIsAutoScrolling(false);
+            }
+            isPageScrollingRef.current = true;
+            pageScrollIdleTimerRef.current = setTimeout(() => {
+                isPageScrollingRef.current = false;
+                if (!isDragging && !isHoveringRef.current) {
+                    setIsAutoScrolling(true);
+                }
+            }, 250);
+        };
+
+        window.addEventListener('scroll', handleWindowScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', handleWindowScroll);
+            if (pageScrollIdleTimerRef.current) {
+                clearTimeout(pageScrollIdleTimerRef.current);
+                pageScrollIdleTimerRef.current = null;
+            }
+        };
+    }, [isDragging, isAutoScrolling]);
+
+    // 仅当列表可见时才允许自动滚动，避免视区外的无效动画占用主线程
+    useEffect(() => {
+        if (!scrollContainerRef.current) return;
+        const container = scrollContainerRef.current;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                if (!entry) return;
+                const isVisible = entry.isIntersecting && entry.intersectionRatio > 0.2;
+                if (!isVisible) {
+                    if (isAutoScrolling) setIsAutoScrolling(false);
+                } else {
+                    if (!isDragging && !isHoveringRef.current && !isPageScrollingRef.current && !isAutoScrolling) {
+                        setIsAutoScrolling(true);
+                    }
+                }
+            },
+            { threshold: [0, 0.2, 0.5, 1] }
+        );
+
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, [isDragging, isAutoScrolling]);
 
     // 拖拽滚动处理函数 - 优化版本
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -203,6 +255,7 @@ export default function Home() {
 
     // 鼠标悬停时暂停自动滚动
     const handleMouseEnter = () => {
+        isHoveringRef.current = true;
         if (!isDragging) {
             setIsAutoScrolling(false);
         }
@@ -210,7 +263,8 @@ export default function Home() {
 
     // 鼠标离开时恢复自动滚动
     const handleMouseLeaveContainer = () => {
-        if (!isDragging) {
+        isHoveringRef.current = false;
+        if (!isDragging && !isPageScrollingRef.current) {
             setTimeout(() => setIsAutoScrolling(true), 1000);
         }
     };
