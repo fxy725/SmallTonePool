@@ -75,7 +75,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700" style={{ fontFamily: 'var(--font-content)' }}>
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                         {/* Breadcrumb */}
-                        <nav className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-8 mt-2">
+                        <nav className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-8 mt-12">
                             <Link href="/home" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                 首页
                             </Link>
@@ -101,7 +101,7 @@ export default async function PostPage({ params }: PostPageProps) {
                                 {post.summary}
                             </p>
 
-                            
+
                             {/* Tags */}
                             {post.tags.length > 0 && (
                                 <div className="flex flex-wrap justify-center gap-2">

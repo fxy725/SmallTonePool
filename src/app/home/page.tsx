@@ -363,10 +363,10 @@ export default function Home() {
                     {/* Section Header */}
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2">
-                            <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span className="text-blue-600 dark:text-blue-400" style={{ fontFamily: 'var(--font-tech-stack)' }}>最新发布</span>
+                            <span className="text-gray-700 dark:text-gray-300" style={{ fontFamily: 'var(--font-tech-stack)' }}>最新发布</span>
                         </div>
                     </div>
 
@@ -448,7 +448,7 @@ export default function Home() {
 
                             {/* 查看更多文章按钮 - 放在滑动列表下方 */}
                             <div className="text-center mt-12">
-                                <Link href="/blog" className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 shadow-lg hover:shadow-xl" style={{ fontFamily: 'var(--font-tech-stack)' }}>
+                                <Link href="/blog" className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] text-blue-700 dark:text-blue-300 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 shadow-lg hover:shadow-xl" style={{ fontFamily: 'var(--font-tech-stack)' }}>
                                     <span className="text-lg font-medium">查看更多文章</span>
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
