@@ -26,7 +26,7 @@ export default function Home() {
                 const allPosts = await response.json();
                 setPosts(allPosts.slice(0, 7));
             } catch (error) {
-                console.error("Failed to load posts:", error);
+                console.error("加载文章失败:", error);
             } finally {
                 setLoading(false);
             }
@@ -35,51 +35,105 @@ export default function Home() {
         loadPosts();
     }, []);
 
-    // 自动滚动逻辑
+    // 全局鼠标事件处理，确保拖拽在鼠标离开容器时也能正常工作
     useEffect(() => {
-        if (!scrollContainerRef.current || !isAutoScrolling || loading) return;
-
-        const scrollContainer = scrollContainerRef.current;
-        const scrollAmount = 1; // 每次滚动的像素数
-        const scrollSpeed = 20; // 滚动速度（毫秒）
-
-        const autoScroll = () => {
-            if (!scrollContainer) return;
-
-            // 滚动容器
-            scrollContainer.scrollLeft += scrollAmount;
-
-            // 实现无缝循环滚动
-            if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth / 2) {
-                scrollContainer.scrollLeft = 0;
+        const handleGlobalMouseUp = () => {
+            if (isDragging) {
+                setIsDragging(false);
+                setTimeout(() => setIsAutoScrolling(true), 2000);
             }
-
-            autoScrollRef.current = setTimeout(autoScroll, scrollSpeed);
         };
 
-        autoScrollRef.current = setTimeout(autoScroll, scrollSpeed);
+        const handleGlobalMouseMove = (e: MouseEvent) => {
+            if (isDragging && scrollContainerRef.current) {
+                e.preventDefault();
+                const x = e.pageX - scrollContainerRef.current.offsetLeft;
+                const walk = (x - startX) * 1.5;
+                scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+            }
+        };
+
+        if (isDragging) {
+            document.addEventListener('mouseup', handleGlobalMouseUp);
+            document.addEventListener('mousemove', handleGlobalMouseMove);
+        }
+
+        return () => {
+            document.removeEventListener('mouseup', handleGlobalMouseUp);
+            document.removeEventListener('mousemove', handleGlobalMouseMove);
+        };
+    }, [isDragging, startX, scrollLeft]);
+
+    // 自动滚动逻辑 - 使用 requestAnimationFrame 优化性能
+    useEffect(() => {
+        if (!scrollContainerRef.current || !isAutoScrolling || loading || posts.length === 0) return;
+
+        const scrollContainer = scrollContainerRef.current;
+        const scrollSpeed = 1; // 每帧滚动像素数，降低以提高平滑度
+        let animationId: number;
+        let isActive = true;
+        let lastTime = 0;
+
+        const autoScroll = (currentTime: number) => {
+            if (!isActive || !scrollContainer) return;
+
+            // 控制帧率，每16ms执行一次（约60fps）
+            if (currentTime - lastTime >= 16) {
+                try {
+                    // 计算单个帖子卡片的宽度（包括间距）
+                    const cardWidth = 320 + 24; // 80*4 = 320px + 6*4 = 24px gap
+                    const totalCards = posts.length;
+                    const oneSetWidth = cardWidth * totalCards;
+
+                    // 滚动容器
+                    scrollContainer.scrollLeft += scrollSpeed;
+
+                    // 无缝循环逻辑 - 当滚动完第一组内容时重置
+                    if (scrollContainer.scrollLeft >= oneSetWidth) {
+                        // 平滑重置到开始位置，避免跳跃
+                        scrollContainer.scrollLeft = 0;
+                    }
+
+                    lastTime = currentTime;
+                } catch (error) {
+                    console.debug('自动滚动错误:', error);
+                    isActive = false;
+                }
+            }
+
+            // 继续动画循环
+            if (isActive) {
+                animationId = requestAnimationFrame(autoScroll);
+            }
+        };
+
+        // 延迟启动，避免初始加载时的卡顿
+        const startDelay = setTimeout(() => {
+            if (isActive) {
+                animationId = requestAnimationFrame(autoScroll);
+            }
+        }, 1000);
 
         // 清理函数
         return () => {
-            if (autoScrollRef.current) {
-                clearTimeout(autoScrollRef.current);
+            isActive = false;
+            clearTimeout(startDelay);
+            if (animationId) {
+                cancelAnimationFrame(animationId);
             }
         };
-    }, [isAutoScrolling, loading]);
+    }, [isAutoScrolling, loading, posts.length]);
 
-    // 拖拽滚动处理函数
+    // 拖拽滚动处理函数 - 优化版本
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!scrollContainerRef.current) return;
+        e.preventDefault();
         setIsDragging(true);
         setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
         setScrollLeft(scrollContainerRef.current.scrollLeft);
 
-        // 停止自动滚动
+        // 立即停止自动滚动
         setIsAutoScrolling(false);
-        if (autoScrollRef.current) {
-            clearTimeout(autoScrollRef.current);
-            autoScrollRef.current = null;
-        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -94,46 +148,38 @@ export default function Home() {
 
                 // 停止自动滚动
                 setIsAutoScrolling(false);
-                if (autoScrollRef.current) {
-                    clearTimeout(autoScrollRef.current);
-                    autoScrollRef.current = null;
-                }
             }
         }
     };
 
-    // const handleMouseLeave = () => {
-    //     setIsDragging(false);
-    //     // 重新开始自动滚动
-    //     setTimeout(() => setIsAutoScrolling(true), 1000);
-    // };
-
     const handleMouseUp = () => {
-        setIsDragging(false);
-        // 重新开始自动滚动
-        setTimeout(() => setIsAutoScrolling(true), 1000);
+        if (isDragging) {
+            setIsDragging(false);
+            // 延迟恢复自动滚动，给用户时间完成操作
+            setTimeout(() => setIsAutoScrolling(true), 2000);
+        }
     };
 
     const handleMouseMove = (e: React.MouseEvent) => {
         if (!isDragging || !scrollContainerRef.current) return;
         e.preventDefault();
         const x = e.pageX - scrollContainerRef.current.offsetLeft;
-        const walk = (x - startX) * 2; // 滚动速度
+        const walk = (x - startX) * 1.5; // 调整滚动速度，降低敏感度
         scrollContainerRef.current.scrollLeft = scrollLeft - walk;
     };
 
     // 鼠标悬停时暂停自动滚动
     const handleMouseEnter = () => {
-        setIsAutoScrolling(false);
-        if (autoScrollRef.current) {
-            clearTimeout(autoScrollRef.current);
-            autoScrollRef.current = null;
+        if (!isDragging) {
+            setIsAutoScrolling(false);
         }
     };
 
     // 鼠标离开时恢复自动滚动
     const handleMouseLeaveContainer = () => {
-        setTimeout(() => setIsAutoScrolling(true), 1000);
+        if (!isDragging) {
+            setTimeout(() => setIsAutoScrolling(true), 1000);
+        }
     };
 
     const recentPosts = posts.slice(0, 7);
@@ -229,6 +275,46 @@ export default function Home() {
             .animation-delay-4000 {
               animation-delay: 4s;
             }
+
+            /* 优化滚动容器性能 */
+            .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+
+            /* 优化拖拽体验 */
+            .cursor-grab {
+              cursor: grab;
+            }
+            .cursor-grabbing {
+              cursor: grabbing;
+            }
+
+            /* 防止闪烁和卡顿 - 增强版 */
+            .post-card-unselectable {
+              -webkit-backface-visibility: hidden;
+              -moz-backface-visibility: hidden;
+              -ms-backface-visibility: hidden;
+              backface-visibility: hidden;
+              -webkit-perspective: 1000px;
+              -moz-perspective: 1000px;
+              -ms-perspective: 1000px;
+              perspective: 1000px;
+              /* 优化滚动性能 */
+              will-change: transform;
+              transform: translateZ(0);
+              /* 防止拖拽时的选择 */
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+              /* 优化触摸体验 */
+              -webkit-touch-callout: none;
+              -webkit-tap-highlight-color: transparent;
+            }
           `}</style>
             </section>
 
@@ -282,7 +368,7 @@ export default function Home() {
                                 {/* Scrollable Posts */}
                                 <div
                                     ref={scrollContainerRef}
-                                    className="overflow-x-auto pb-6 scrollbar-hide cursor-grab active:cursor-grabbing select-none outline-none focus:outline-none user-select-none post-card-unselectable"
+                                    className={`overflow-x-auto pb-6 scrollbar-hide select-none outline-none focus:outline-none user-select-none post-card-unselectable ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
                                     onMouseDown={handleMouseDown}
                                     onMouseUp={handleMouseUp}
                                     onMouseMove={handleMouseMove}
@@ -295,7 +381,16 @@ export default function Home() {
                                         WebkitUserSelect: 'none',
                                         MozUserSelect: 'none',
                                         msUserSelect: 'none',
-                                        userSelect: 'none'
+                                        userSelect: 'none',
+                                        scrollBehavior: isDragging ? 'auto' : 'smooth',
+                                        // 优化滚动性能
+                                        WebkitOverflowScrolling: 'touch',
+                                        willChange: 'scroll-position',
+                                        // 硬件加速
+                                        transform: 'translateZ(0)',
+                                        // 防止拖拽时的文本选择
+                                        WebkitTouchCallout: 'none',
+                                        WebkitTapHighlightColor: 'transparent'
                                     }}
                                 >
                                     <div className="flex gap-6" style={{ minWidth: 'max-content' }}>
