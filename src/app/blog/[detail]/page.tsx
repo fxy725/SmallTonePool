@@ -131,7 +131,10 @@ export default async function PostPage({ params }: PostPageProps) {
                             // 让代码块可以选中
                             '--prose-pre-bg': 'var(--bg-secondary)',
                             '--prose-code-bg': 'var(--bg-secondary)',
-                            fontFamily: 'var(--font-content)'
+                            fontFamily: 'var(--font-content)',
+                            // 确保深色模式下的代码块样式正确
+                            '--hljs-bg': 'var(--bg-secondary)',
+                            '--hljs-color': 'var(--text-primary)'
                         } as React.CSSProperties}
                     />
 

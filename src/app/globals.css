@@ -764,8 +764,8 @@ a:focus-visible,
 }
 
 .prose pre {
-  background: #f3f4f6 !important;
-  border: 2px solid #e5e7eb !important;
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--accent-subtle) !important;
   border-radius: 0.5rem !important;
   overflow-x: auto;
   font-weight: 400 !important;
@@ -898,8 +898,13 @@ a:focus-visible,
 }
 
 .dark .prose pre {
-  background: #374151 !important;
-  border-color: #4b5563 !important;
+  background: var(--bg-secondary) !important;
+  border-color: var(--accent-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark .prose pre code {
+  color: var(--text-primary) !important;
 }
 
 .dark .prose code {
@@ -1844,6 +1849,7 @@ a:focus-visible,
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -2233,6 +2239,70 @@ a:focus-visible,
 .hljs-strong {
   font-weight: 400 !important;
   color: var(--text-primary) !important;
+}
+
+/* Enhanced dark mode syntax highlighting */
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-addition {
+  color: var(--brand-accent) !important;
+}
+
+.dark .hljs-number,
+.dark .hljs-string,
+.dark .hljs-meta .hljs-string,
+.dark .hljs-literal,
+.dark .hljs-doctag,
+.dark .hljs-regexp {
+  color: var(--success) !important;
+}
+
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-name,
+.dark .hljs-selector-id,
+.dark .hljs-selector-class {
+  color: var(--info) !important;
+}
+
+.dark .hljs-attribute,
+.dark .hljs-attr,
+.dark .hljs-variable,
+.dark .hljs-template-variable,
+.dark .hljs-class .hljs-title,
+.dark .hljs-type {
+  color: var(--warning) !important;
+}
+
+.dark .hljs-symbol,
+.dark .hljs-bullet,
+.dark .hljs-subst,
+.dark .hljs-meta,
+.dark .hljs-meta .hljs-keyword,
+.dark .hljs-selector-attr,
+.dark .hljs-selector-pseudo,
+.dark .hljs-link {
+  color: var(--accent-secondary) !important;
+}
+
+.dark .hljs-built_in,
+.dark .hljs-deletion {
+  color: var(--error) !important;
+}
+
+.dark .hljs-formula {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+.dark .hljs-comment,
+.dark .hljs-quote {
+  color: var(--text-muted) !important;
+  font-style: italic !important;
+}
+
+.dark .hljs-punctuation {
+  color: var(--text-tertiary) !important;
 }
 
 /* Code block hover effects - removed for better theme compatibility */
