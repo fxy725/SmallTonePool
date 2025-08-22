@@ -14,7 +14,7 @@ export default function Home() {
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [mounted, setMounted] = useState(false);
-    const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
+
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
     const oneSetWidthRef = useRef(0);
     const SPEED_PX_PER_SEC = 120; // 自动滚动速度（像素/秒）
@@ -231,10 +231,10 @@ export default function Home() {
             setTimeout(() => setIsAutoScrolling(true), 2000);
             // 抑制下一次点击：在极端情况下做全局兜底
             if (dragMovedRef.current) {
-                (window as any).__suppressNextPostClick__ = true;
+                (window as Window & { __suppressNextPostClick__?: boolean }).__suppressNextPostClick__ = true;
                 // 短时间后清理标记
                 setTimeout(() => {
-                    (window as any).__suppressNextPostClick__ = false;
+                    (window as Window & { __suppressNextPostClick__?: boolean }).__suppressNextPostClick__ = false;
                 }, 300);
             }
         }

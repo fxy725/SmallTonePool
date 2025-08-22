@@ -31,10 +31,10 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
     return (
         <Link href={`/blog/${post.slug}`} draggable={false} onClick={(e) => {
             // 若外层容器在拖拽中设置了抑制标记，这里仍会被捕获，保底阻止
-            if ((window as any).__suppressNextPostClick__) {
+            if ((window as Window & { __suppressNextPostClick__?: boolean }).__suppressNextPostClick__) {
                 e.preventDefault();
                 e.stopPropagation();
-                (window as any).__suppressNextPostClick__ = false;
+                (window as Window & { __suppressNextPostClick__?: boolean }).__suppressNextPostClick__ = false;
             }
         }}>
             <article
