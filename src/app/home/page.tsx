@@ -8,7 +8,6 @@ import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
     const [posts, setPosts] = useState<Post[]>([]);
-    const [loading, setLoading] = useState(true);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -34,8 +33,6 @@ export default function Home() {
                 setPosts(allPosts.slice(0, 7));
             } catch (error) {
                 console.error("加载文章失败:", error);
-            } finally {
-                setLoading(false);
             }
         }
 
@@ -44,7 +41,7 @@ export default function Home() {
 
     // 精确测量一组宽度，并初始化至中间组的起点
     useEffect(() => {
-        if (!scrollContainerRef.current || loading || posts.length === 0) return;
+        if (!scrollContainerRef.current || posts.length === 0) return;
 
         const container = scrollContainerRef.current;
 
@@ -73,7 +70,7 @@ export default function Home() {
 
         const raf = requestAnimationFrame(measure);
         return () => cancelAnimationFrame(raf);
-    }, [posts.length, loading]);
+    }, [posts.length]);
 
     // 全局鼠标事件处理，确保拖拽在鼠标离开容器时也能正常工作
     useEffect(() => {
@@ -106,7 +103,7 @@ export default function Home() {
 
     // 自动滚动逻辑 - 基于 deltaTime 的速度控制，并在边界处瞬时重置
     useEffect(() => {
-        if (!scrollContainerRef.current || !isAutoScrolling || loading || posts.length === 0) return;
+        if (!scrollContainerRef.current || !isAutoScrolling || posts.length === 0) return;
 
         const container = scrollContainerRef.current;
         let animationId = 0;
@@ -138,7 +135,7 @@ export default function Home() {
             isActive = false;
             cancelAnimationFrame(animationId);
         };
-    }, [isAutoScrolling, loading, posts.length]);
+    }, [isAutoScrolling, posts.length]);
 
     // 监听窗口垂直滚动：滚动过程中暂停自动横向滚动，空闲后延时恢复
     useEffect(() => {
@@ -425,109 +422,81 @@ export default function Home() {
                     </div>
 
                     {/* Posts Grid */}
-                    {loading ? (
-                        <div className="text-center py-16">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
-                                <svg className="w-8 h-8 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <>
+                        {/* Horizontal Scroll Container */}
+                        <div className="relative">
+                            {/* Scroll Indicators */}
+                            <div className="absolute -left-12 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                                <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                加载中...
-                            </h3>
+                            <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                                <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
+
+                            {/* Scrollable Posts */}
+                            <div
+                                ref={scrollContainerRef}
+                                className={`overflow-x-auto pb-6 scrollbar-hide select-none outline-none focus:outline-none user-select-none post-card-unselectable ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseMove={handleMouseMove}
+                                onKeyDown={handleKeyDown}
+                                onMouseEnter={handleMouseEnter}
+                                onMouseLeave={handleMouseLeaveContainer}
+                                tabIndex={0}
+                                onContextMenu={(e) => e.preventDefault()}
+                                onClickCapture={(e) => {
+                                    // 若刚发生拖拽，则抑制本次点击，避免误入详情页
+                                    if (dragMovedRef.current) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        dragMovedRef.current = false;
+                                    }
+                                }}
+                                style={{
+                                    WebkitUserSelect: 'none',
+                                    MozUserSelect: 'none',
+                                    msUserSelect: 'none',
+                                    userSelect: 'none',
+                                    // 禁用平滑滚动，避免 reset 时的回弹
+                                    scrollBehavior: 'auto',
+                                    // 优化滚动性能
+                                    WebkitOverflowScrolling: 'touch',
+                                    willChange: 'scroll-position',
+                                    // 硬件加速
+                                    transform: 'translateZ(0)',
+                                    // 防止拖拽时的文本选择
+                                    WebkitTouchCallout: 'none',
+                                    WebkitTapHighlightColor: 'transparent'
+                                }}
+                            >
+                                <div className="flex gap-6" style={{ minWidth: 'max-content' }}>
+                                    {/* 使用三组内容确保更稳定的无缝滚动 */}
+                                    {[...recentPosts, ...recentPosts, ...recentPosts].map((post, index) => (
+                                        <div data-scroll-item="true" key={`${post.slug}-${index}`} className="w-80 flex-shrink-0">
+                                            <PostCard post={post} requireDoubleClick={true} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                    ) : (
-                        <>
-                            {/* Horizontal Scroll Container */}
-                            <div className="relative">
-                                {/* Scroll Indicators */}
-                                <div className="absolute -left-12 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
-                                    <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                    </svg>
-                                </div>
-                                <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
-                                    <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </div>
 
-                                {/* Scrollable Posts */}
-                                <div
-                                    ref={scrollContainerRef}
-                                    className={`overflow-x-auto pb-6 scrollbar-hide select-none outline-none focus:outline-none user-select-none post-card-unselectable ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-                                    onMouseDown={handleMouseDown}
-                                    onMouseUp={handleMouseUp}
-                                    onMouseMove={handleMouseMove}
-                                    onKeyDown={handleKeyDown}
-                                    onMouseEnter={handleMouseEnter}
-                                    onMouseLeave={handleMouseLeaveContainer}
-                                    tabIndex={0}
-                                    onContextMenu={(e) => e.preventDefault()}
-                                    onClickCapture={(e) => {
-                                        // 若刚发生拖拽，则抑制本次点击，避免误入详情页
-                                        if (dragMovedRef.current) {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            dragMovedRef.current = false;
-                                        }
-                                    }}
-                                    style={{
-                                        WebkitUserSelect: 'none',
-                                        MozUserSelect: 'none',
-                                        msUserSelect: 'none',
-                                        userSelect: 'none',
-                                        // 禁用平滑滚动，避免 reset 时的回弹
-                                        scrollBehavior: 'auto',
-                                        // 优化滚动性能
-                                        WebkitOverflowScrolling: 'touch',
-                                        willChange: 'scroll-position',
-                                        // 硬件加速
-                                        transform: 'translateZ(0)',
-                                        // 防止拖拽时的文本选择
-                                        WebkitTouchCallout: 'none',
-                                        WebkitTapHighlightColor: 'transparent'
-                                    }}
-                                >
-                                    <div className="flex gap-6" style={{ minWidth: 'max-content' }}>
-                                        {/* 使用三组内容确保更稳定的无缝滚动 */}
-                                        {[...recentPosts, ...recentPosts, ...recentPosts].map((post, index) => (
-                                            <div data-scroll-item="true" key={`${post.slug}-${index}`} className="w-80 flex-shrink-0">
-                                                <PostCard post={post} requireDoubleClick={true} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+                        {/* 查看更多文章按钮 - 放在滑动列表下方 */}
+                        <div className="text-center mt-12">
+                            <Link href="/blog" className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] text-blue-700 dark:text-blue-300 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 shadow-lg hover:shadow-xl" style={{ fontFamily: 'var(--font-tech-stack)' }}>
+                                <span className="text-lg font-medium">查看更多文章</span>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </Link>
+                        </div>
 
-                            {/* 查看更多文章按钮 - 放在滑动列表下方 */}
-                            <div className="text-center mt-12">
-                                <Link href="/blog" className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] text-blue-700 dark:text-blue-300 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 shadow-lg hover:shadow-xl" style={{ fontFamily: 'var(--font-tech-stack)' }}>
-                                    <span className="text-lg font-medium">查看更多文章</span>
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </Link>
-                            </div>
 
-                            {/* Empty State */}
-                            {posts.length === 0 && (
-                                <div className="text-center py-16">
-                                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
-                                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
-                                        </svg>
-                                    </div>
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                        暂无文章
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-400">
-                                        敬请期待精彩内容...
-                                    </p>
-                                </div>
-                            )}
-                        </>
-                    )}
+                    </>
                 </div>
             </section >
         </div >
