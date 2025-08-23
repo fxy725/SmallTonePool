@@ -4,6 +4,7 @@ import { StructuredData } from "@/components/seo/StructuredData";
 import { Header } from "@/components/layout/Header";
 import { CodeBlockCopyButtons } from "@/components/mdx/CodeBlockCopyButtons";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 
 interface PostPageProps {
     params: Promise<{
@@ -13,14 +14,26 @@ interface PostPageProps {
 
 export async function generateStaticParams() {
     const posts = await getAllPosts();
-    return posts.map((post) => ({
-        detail: post.slug,
-    }));
+    return posts
+        .filter(post => post.published)
+        .map((post) => ({
+            detail: post.slug,
+        }));
 }
+
+// 使用缓存的数据获取函数，避免重复调用
+const getCachedPostData = unstable_cache(
+    async (slug: string) => await getPostBySlug(slug),
+    ['post-data'],
+    {
+        revalidate: false, // 静态生成，不需要重新验证
+        tags: ['posts'] // 用于手动重新验证
+    }
+);
 
 export async function generateMetadata({ params }: PostPageProps) {
     const { detail } = await params;
-    const post = await getPostBySlug(detail);
+    const post = await getCachedPostData(detail);
 
     if (!post) {
         return {
@@ -43,7 +56,8 @@ export async function generateMetadata({ params }: PostPageProps) {
 
 export default async function PostPage({ params }: PostPageProps) {
     const { detail } = await params;
-    const post = await getPostBySlug(detail);
+    // 使用缓存的函数获取数据，避免重复处理
+    const post = await getCachedPostData(detail);
 
     if (!post) {
         notFound();

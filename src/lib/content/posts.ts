@@ -2,10 +2,29 @@ import { Post } from '@/types/blog';
 import path from 'path';
 import fs from 'fs';
 
-// 缓存文章数据
-let postsCache: Post[] | null = null;
+// 统一的缓存池
+interface CachePool {
+    posts: Post[] | null;
+    postMap: Map<string, Post> | null;
+    mdxContent: Map<string, string> | null;
+}
 
-async function mdxToHtml(mdx: string): Promise<string> {
+// 缓存文章数据
+const cachePool = {
+    posts: null,
+    postMap: null,
+    mdxContent: null
+} as CachePool;
+
+async function mdxToHtml(mdx: string, cacheKey?: string): Promise<string> {
+    // 如果提供了缓存键，尝试从缓存获取
+    if (cacheKey && cachePool.mdxContent) {
+        const cached = cachePool.mdxContent.get(cacheKey);
+        if (cached) {
+            return cached;
+        }
+    }
+
     try {
         const { unified } = await import('unified');
         const remarkParse = (await import('remark-parse')).default;
@@ -24,7 +43,17 @@ async function mdxToHtml(mdx: string): Promise<string> {
             .use(rehypeStringify)
             .process(mdx);
 
-        return String(file);
+        const result = String(file);
+
+        // 如果提供了缓存键，保存到缓存
+        if (cacheKey) {
+            if (!cachePool.mdxContent) {
+                cachePool.mdxContent = new Map();
+            }
+            cachePool.mdxContent.set(cacheKey, result);
+        }
+
+        return result;
     } catch (error) {
         console.error('Error processing MDX:', error);
         return mdx; // fallback to original content
@@ -32,8 +61,8 @@ async function mdxToHtml(mdx: string): Promise<string> {
 }
 
 export async function getAllPosts(): Promise<Post[]> {
-    if (postsCache) {
-        return postsCache;
+    if (cachePool.posts) {
+        return cachePool.posts;
     }
 
     try {
@@ -43,6 +72,7 @@ export async function getAllPosts(): Promise<Post[]> {
         const postsDirectory = path.join(process.cwd(), 'src/data/posts');
 
         if (!fs.existsSync(postsDirectory)) {
+            cachePool.posts = [];
             return [];
         }
 
@@ -56,9 +86,11 @@ export async function getAllPosts(): Promise<Post[]> {
                     const fileContents = fs.readFileSync(fullPath, 'utf8');
                     const matterResult = grayMatter.default(fileContents);
 
-                    const html = await mdxToHtml(matterResult.content);
+                    // 使用缓存键来避免重复处理MDX
+                    const cacheKey = `mdx_${slug}`;
+                    const html = await mdxToHtml(matterResult.content, cacheKey);
 
-                    return {
+                    const post: Post = {
                         slug,
                         title: matterResult.data.title || slug,
                         date: matterResult.data.date || new Date().toISOString(),
@@ -69,25 +101,47 @@ export async function getAllPosts(): Promise<Post[]> {
                         published: matterResult.data.published !== false,
                         readingTime: calculateReadingTime(matterResult.content),
                     };
+
+                    return post;
                 })
         );
 
-        postsCache = allPostsData
+        const filteredPosts = allPostsData
             .filter(post => post.published)
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-        return postsCache;
+        // 更新缓存池
+        cachePool.posts = filteredPosts;
+        cachePool.postMap = new Map(filteredPosts.map(post => [post.slug, post]));
+
+        return filteredPosts;
     } catch (error) {
         console.error('Error loading posts:', error);
+        cachePool.posts = [];
         return [];
     }
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
     try {
-        // 动态导入只在服务端运行
-        const grayMatter = await import('gray-matter');
+        // 首先尝试从缓存池获取
+        if (cachePool.postMap) {
+            const cachedPost = cachePool.postMap.get(slug);
+            if (cachedPost && cachedPost.published) {
+                return cachedPost;
+            }
+        }
 
+        // 如果缓存中没有，尝试从缓存的文章列表中查找
+        if (cachePool.posts) {
+            const cachedPost = cachePool.posts.find(post => post.slug === slug);
+            if (cachedPost && cachedPost.published) {
+                return cachedPost;
+            }
+        }
+
+        // 如果缓存中没有，才重新读取文件
+        const grayMatter = await import('gray-matter');
         const postsDirectory = path.join(process.cwd(), 'src/data/posts');
         const fullPath = path.join(postsDirectory, `${slug}.mdx`);
 
@@ -98,9 +152,16 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         const fileContents = fs.readFileSync(fullPath, 'utf8');
         const matterResult = grayMatter.default(fileContents);
 
-        const html = await mdxToHtml(matterResult.content);
+        // 检查是否已发布
+        if (matterResult.data.published === false) {
+            return null;
+        }
 
-        return {
+        // 使用缓存键来避免重复处理MDX
+        const cacheKey = `mdx_${slug}`;
+        const html = await mdxToHtml(matterResult.content, cacheKey);
+
+        const post: Post = {
             slug,
             title: matterResult.data.title || slug,
             date: matterResult.data.date || new Date().toISOString(),
@@ -108,9 +169,16 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
             summary: matterResult.data.summary || '',
             content: html,
             tags: matterResult.data.tags || [],
-            published: matterResult.data.published !== false,
+            published: true,
             readingTime: calculateReadingTime(matterResult.content),
         };
+
+        // 更新缓存池
+        if (cachePool.postMap) {
+            cachePool.postMap.set(slug, post);
+        }
+
+        return post;
     } catch (error) {
         console.error('Error loading post:', error);
         return null;

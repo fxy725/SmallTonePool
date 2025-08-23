@@ -3,28 +3,76 @@
 import { PostCard } from "@/components/blog/PostCard";
 import { Header } from "@/components/layout/Header";
 import { Post } from "@/types/blog";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, useMemo, useCallback } from "react";
 
 function BlogContent() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [selectedTag, setSelectedTag] = useState<string>('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
     const postsPerPage = 12;
 
+    // 优化数据加载 - 添加预加载
     useEffect(() => {
         async function loadPosts() {
             try {
-                const response = await fetch('/api/posts');
+                setIsLoading(true);
+                // 使用预加载的 fetch 请求
+                const response = await fetch('/api/posts', {
+                    priority: 'high',
+                    cache: 'force-cache'
+                });
                 const allPosts = await response.json();
                 setPosts(allPosts);
             } catch (error) {
                 console.error("Failed to load posts:", error);
+            } finally {
+                setIsLoading(false);
             }
         }
 
         loadPosts();
     }, []);
+
+    // 使用 useMemo 优化计算
+    const allTags = useMemo(() =>
+        Array.from(new Set(posts.flatMap(post => post.tags))),
+        [posts]
+    );
+
+    // 根据标签筛选文章 - 使用 useMemo 优化
+    const filteredPosts = useMemo(() =>
+        selectedTag
+            ? posts.filter(post => post.tags.includes(selectedTag))
+            : posts,
+        [posts, selectedTag]
+    );
+
+    // 分页计算 - 使用 useMemo 优化
+    const paginationData = useMemo(() => {
+        const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+        const startIndex = (currentPage - 1) * postsPerPage;
+        const currentPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage);
+        return { totalPages, currentPosts };
+    }, [filteredPosts, currentPage, postsPerPage]);
+
+    const { totalPages, currentPosts } = paginationData;
+
+    // 当当前页改变时预加载下一页
+    useEffect(() => {
+        const currentTotalPages = Math.ceil(filteredPosts.length / postsPerPage);
+        if (currentPage < currentTotalPages) {
+            const nextPagePosts = filteredPosts.slice(
+                (currentPage) * postsPerPage,
+                (currentPage + 1) * postsPerPage
+            );
+            // 预加载下一页文章的缩略图等资源
+            nextPagePosts.forEach(post => {
+                const img = new Image();
+                img.src = `/api/og?title=${encodeURIComponent(post.title)}`;
+            });
+        }
+    }, [currentPage, filteredPosts, postsPerPage]);
 
     // 从URL参数获取标签
     useEffect(() => {
@@ -34,21 +82,8 @@ function BlogContent() {
         setCurrentPage(1); // 切换标签时重置到第一页
     }, []);
 
-    // 获取所有标签
-    const allTags = Array.from(new Set(posts.flatMap(post => post.tags)));
-
-    // 根据标签筛选文章
-    const filteredPosts = selectedTag
-        ? posts.filter(post => post.tags.includes(selectedTag))
-        : posts;
-
-    // 分页计算
-    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-    const startIndex = (currentPage - 1) * postsPerPage;
-    const currentPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage);
-
-    // 处理标签点击
-    const handleTagClick = (tag: string) => {
+    // 处理标签点击 - 使用 useCallback 优化
+    const handleTagClick = useCallback((tag: string) => {
         const newTag = selectedTag === tag ? '' : tag;
         setSelectedTag(newTag);
         setCurrentPage(1);
@@ -61,13 +96,13 @@ function BlogContent() {
             url.searchParams.delete('tag');
         }
         window.history.pushState({}, '', url);
-    };
+    }, [selectedTag]);
 
-    // 处理翻页
-    const handlePageChange = (page: number) => {
+    // 处理翻页 - 使用 useCallback 优化
+    const handlePageChange = useCallback((page: number) => {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -92,8 +127,8 @@ function BlogContent() {
                 ))}
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
+            {/* Pagination - 使用 useMemo 优化 */}
+            {totalPages > 1 && !isLoading && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
                     <div className="flex items-center justify-center gap-2" style={{ fontFamily: 'var(--font-content)' }}>
                         <button
@@ -104,19 +139,35 @@ function BlogContent() {
                             上一页
                         </button>
 
-                        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                            let pageNum;
-                            if (totalPages <= 5) {
-                                pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                                pageNum = i + 1;
-                            } else if (currentPage >= totalPages - 2) {
-                                pageNum = totalPages - 4 + i;
+                        {(() => {
+                            const pageNumbers = [];
+                            const maxVisiblePages = 5;
+
+                            if (totalPages <= maxVisiblePages) {
+                                // 如果总页数小于等于最大可见页数，显示所有页码
+                                for (let i = 1; i <= totalPages; i++) {
+                                    pageNumbers.push(i);
+                                }
                             } else {
-                                pageNum = currentPage - 2 + i;
+                                // 否则只显示当前页附近的页码
+                                let startPage = Math.max(1, currentPage - 2);
+                                let endPage = Math.min(totalPages, currentPage + 2);
+
+                                // 调整范围以始终显示5个页码（如果可能的话）
+                                if (endPage - startPage + 1 < maxVisiblePages) {
+                                    if (startPage === 1) {
+                                        endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                                    } else if (endPage === totalPages) {
+                                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                                    }
+                                }
+
+                                for (let i = startPage; i <= endPage; i++) {
+                                    pageNumbers.push(i);
+                                }
                             }
 
-                            return (
+                            return pageNumbers.map(pageNum => (
                                 <button
                                     key={pageNum}
                                     onClick={() => handlePageChange(pageNum)}
@@ -124,8 +175,8 @@ function BlogContent() {
                                 >
                                     {pageNum}
                                 </button>
-                            );
-                        })}
+                            ));
+                        })()}
 
                         {totalPages > 5 && currentPage < totalPages - 2 && (
                             <span className="px-3 py-1 text-gray-500 dark:text-gray-400 text-sm">...</span>
@@ -153,27 +204,42 @@ function BlogContent() {
 
             {/* Posts Grid */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8">
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {currentPosts.map((post, index) => (
-                        <div
-                            key={post.slug}
-                            className={`${index < 6 ? 'animate-fade-in-up' : ''}`}
-                            style={index >= 6 ? { animationDelay: `${(index - 6) * 0.1}s` } : {}}
-                        >
-                            <div className="bg-white/95 dark:bg-gray-800/95 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable" style={{
-                                WebkitUserSelect: 'none',
-                                MozUserSelect: 'none',
-                                msUserSelect: 'none',
-                                userSelect: 'none'
-                            }}>
-                                <PostCard post={post} />
+                {isLoading ? (
+                    <div className="flex justify-center items-center py-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                    </div>
+                ) : (
+                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        {currentPosts.map((post, index) => (
+                            <div
+                                key={post.slug}
+                                className={`${index < 6 ? 'animate-fade-in-up' : ''}`}
+                                style={index >= 6 ? { animationDelay: `${(index - 6) * 0.1}s` } : {}}
+                            >
+                                <div className="bg-white/95 dark:bg-gray-800/95 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable" style={{
+                                    WebkitUserSelect: 'none',
+                                    MozUserSelect: 'none',
+                                    msUserSelect: 'none',
+                                    userSelect: 'none'
+                                }}>
+                                    <PostCard post={post} />
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
 
-                {/* Bottom Pagination */}
-                {totalPages > 1 && (
+                {/* Empty state */}
+                {!isLoading && currentPosts.length === 0 && (
+                    <div className="text-center py-20">
+                        <div className="text-gray-500 dark:text-gray-400 text-lg">
+                            {selectedTag ? `没有找到标签 "${selectedTag}" 相关的文章` : '暂无文章'}
+                        </div>
+                    </div>
+                )}
+
+                {/* Bottom Pagination - 使用相同的优化逻辑 */}
+                {totalPages > 1 && !isLoading && (
                     <div className="mt-8 pt-4">
                         <div className="flex items-center justify-center gap-2" style={{ fontFamily: 'var(--font-content)' }}>
                             <button
@@ -184,19 +250,32 @@ function BlogContent() {
                                 上一页
                             </button>
 
-                            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                                let pageNum;
-                                if (totalPages <= 5) {
-                                    pageNum = i + 1;
-                                } else if (currentPage <= 3) {
-                                    pageNum = i + 1;
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNum = totalPages - 4 + i;
+                            {(() => {
+                                const pageNumbers = [];
+                                const maxVisiblePages = 5;
+
+                                if (totalPages <= maxVisiblePages) {
+                                    for (let i = 1; i <= totalPages; i++) {
+                                        pageNumbers.push(i);
+                                    }
                                 } else {
-                                    pageNum = currentPage - 2 + i;
+                                    let startPage = Math.max(1, currentPage - 2);
+                                    let endPage = Math.min(totalPages, currentPage + 2);
+
+                                    if (endPage - startPage + 1 < maxVisiblePages) {
+                                        if (startPage === 1) {
+                                            endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                                        } else if (endPage === totalPages) {
+                                            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                                        }
+                                    }
+
+                                    for (let i = startPage; i <= endPage; i++) {
+                                        pageNumbers.push(i);
+                                    }
                                 }
 
-                                return (
+                                return pageNumbers.map(pageNum => (
                                     <button
                                         key={pageNum}
                                         onClick={() => handlePageChange(pageNum)}
@@ -204,8 +283,8 @@ function BlogContent() {
                                     >
                                         {pageNum}
                                     </button>
-                                );
-                            })}
+                                ));
+                            })()}
 
                             {totalPages > 5 && currentPage < totalPages - 2 && (
                                 <span className="px-3 py-1 text-gray-500 dark:text-gray-400 text-sm">...</span>
