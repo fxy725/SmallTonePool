@@ -1,10 +1,21 @@
-import { notFound } from "next/navigation";
-import { getPostBySlug, getAllPosts } from "@/lib/content/posts";
+
 import { StructuredData } from "@/components/seo/StructuredData";
 import { Header } from "@/components/layout/Header";
 import { CodeBlockCopyButtons } from "@/components/mdx/CodeBlockCopyButtons";
+import { PostNotFound } from "@/components/error/PostNotFound";
 import Link from "next/link";
 import { unstable_cache } from "next/cache";
+import path from "path";
+import fs from "fs";
+import { Post } from "@/types/blog";
+import matter from "gray-matter";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
+import rehypeSlug from "rehype-slug";
+import rehypeHighlight from "rehype-highlight";
 
 interface PostPageProps {
     params: Promise<{
@@ -12,32 +23,80 @@ interface PostPageProps {
     }>;
 }
 
-export async function generateStaticParams() {
-    const posts = await getAllPosts();
-    return posts
-        .filter(post => post.published)
-        .map((post) => ({
-            detail: post.slug,
-        }));
+// 动态读取MDX文件的函数
+async function readMDXFile(slug: string): Promise<string> {
+    const postsDirectory = path.join(process.cwd(), 'src/data/posts');
+    const fullPath = path.join(postsDirectory, `${slug}.mdx`);
+
+    if (!fs.existsSync(fullPath)) {
+        throw new Error('File not found');
+    }
+
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    return fileContents;
 }
 
-// 使用缓存的数据获取函数，避免重复调用
-const getCachedPostData = unstable_cache(
-    async (slug: string) => await getPostBySlug(slug),
-    ['post-data'],
+// 动态处理MDX内容
+async function processMDXContent(mdxContent: string): Promise<string> {
+    const file = await unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkRehype)
+        .use(rehypeSlug)
+        .use(rehypeHighlight)
+        .use(rehypeStringify)
+        .process(mdxContent);
+
+    return String(file);
+}
+
+// 动态获取文章数据（带缓存）
+const getDynamicPostData = unstable_cache(
+    async (slug: string): Promise<Post | null> => {
+        try {
+            const mdxContent = await readMDXFile(slug);
+            const matterResult = matter(mdxContent);
+
+            // 检查是否已发布
+            if (matterResult.data.published === false) {
+                return null;
+            }
+
+            const html = await processMDXContent(matterResult.content);
+
+            return {
+                slug,
+                title: matterResult.data.title || slug,
+                date: matterResult.data.date || new Date().toISOString(),
+                updated: matterResult.data.updated,
+                summary: matterResult.data.summary || '',
+                content: html,
+                tags: matterResult.data.tags || [],
+                published: true,
+                readingTime: Math.ceil(matterResult.content.split(/\s+/).length / 200),
+            };
+        } catch (error) {
+            console.error(`Error loading post ${slug}:`, error);
+            return null;
+        }
+    },
+    ['dynamic-post'],
     {
-        revalidate: false, // 静态生成，不需要重新验证
-        tags: ['posts'] // 用于手动重新验证
+        revalidate: 300, // 5分钟后重新验证
+        tags: ['posts', 'dynamic']
     }
 );
 
+
+
 export async function generateMetadata({ params }: PostPageProps) {
     const { detail } = await params;
-    const post = await getCachedPostData(detail);
+    const post = await getDynamicPostData(detail);
 
     if (!post) {
         return {
-            title: "文章未找到",
+            title: "文章未找到 - 小石潭记",
+            description: "抱歉，您访问的文章不存在或已被删除。",
         };
     }
 
@@ -51,16 +110,20 @@ export async function generateMetadata({ params }: PostPageProps) {
             publishedTime: post.date,
             modifiedTime: post.updated || post.date,
         },
+        twitter: {
+            card: "summary_large_image",
+            title: post.title,
+            description: post.summary,
+        },
     };
 }
 
 export default async function PostPage({ params }: PostPageProps) {
     const { detail } = await params;
-    // 使用缓存的函数获取数据，避免重复处理
-    const post = await getCachedPostData(detail);
+    const post = await getDynamicPostData(detail);
 
     if (!post) {
-        notFound();
+        return <PostNotFound slug={detail} />;
     }
 
     return (
