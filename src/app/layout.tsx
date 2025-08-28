@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { StructuredData } from "@/components/seo/StructuredData";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import "./globals.css";
 
 // 更优雅的字体选择
@@ -19,7 +20,14 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "小石潭记",
   description: "分享编程路上的点点滴滴，记录技术成长的心路历程",
-  keywords: ["技术博客", "编程", "学习笔记", "经验总结", "前端开发", "后端开发"],
+  keywords: [
+    "技术博客",
+    "编程",
+    "学习笔记",
+    "经验总结",
+    "前端开发",
+    "后端开发",
+  ],
   authors: [{ name: "小石潭记" }],
   openGraph: {
     title: "小石潭记 - 技术心得与经验总结",
@@ -59,6 +67,36 @@ export default function RootLayout({
     <html lang="zh-CN" className="scroll-smooth">
       <head>
         <StructuredData type="Blog" data={{}} />
+        {/* 防闪烁脚本 - 必须在body之前执行 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme') || 'system';
+                  var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var isDark = theme === 'dark' || (theme === 'system' && systemDark);
+
+                  if (isDark) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+
+                  // 添加过渡动画类，而不是直接设置style属性
+                  document.documentElement.classList.add('theme-transition');
+                } catch (e) {
+                  // 静默处理错误，使用系统主题
+                  var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (systemDark) {
+                    document.documentElement.classList.add('dark');
+                  }
+                  document.documentElement.classList.add('theme-transition');
+                }
+              })();
+            `,
+          }}
+        />
         {/* 添加 favicon 等元标签 */}
         <link rel="icon" href="/assets/site-Logo.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -68,23 +106,29 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
-        <main>
-          {children}
-        </main>
+        <ThemeProvider>
+          <main>{children}</main>
 
-        {/* 添加页脚 */}
-        <footer className="bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="text-center">
-              <p className="text-gray-600 dark:text-gray-400 mb-2" style={{ fontFamily: "'LXGW Marker Gothic', sans-serif" }}>
-                © 2024 小石潭记. All rights reserved.
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500" style={{ fontFamily: "'LXGW Marker Gothic', sans-serif" }}>
-                用心记录每一次学习，用代码书写成长故事
-              </p>
+          {/* 添加页脚 */}
+          <footer className="bg-gray-50 dark:bg-gray-900">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+              <div className="text-center">
+                <p
+                  className="text-gray-600 dark:text-gray-400 mb-2"
+                  style={{ fontFamily: "'LXGW Marker Gothic', sans-serif" }}
+                >
+                  © 2024 小石潭记. All rights reserved.
+                </p>
+                <p
+                  className="text-sm text-gray-500 dark:text-gray-500"
+                  style={{ fontFamily: "'LXGW Marker Gothic', sans-serif" }}
+                >
+                  用心记录每一次学习，用代码书写成长故事
+                </p>
+              </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        </ThemeProvider>
       </body>
     </html>
   );

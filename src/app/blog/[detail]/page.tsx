@@ -16,6 +16,8 @@ import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import rehypeSlug from "rehype-slug";
 import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css";
+import "highlight.js/styles/github.css";
 
 interface PostPageProps {
     params: Promise<{
@@ -211,7 +213,9 @@ export default async function PostPage({ params }: PostPageProps) {
                             fontFamily: 'var(--font-content)',
                             // 确保深色模式下的代码块样式正确
                             '--hljs-bg': 'var(--bg-secondary)',
-                            '--hljs-color': 'var(--text-primary)'
+                            '--hljs-color': 'var(--text-primary)',
+                            // 代码块边框颜色
+                            '--prose-pre-border': 'var(--accent-subtle)'
                         } as React.CSSProperties}
                     />
 
