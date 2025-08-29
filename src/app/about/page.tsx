@@ -42,7 +42,7 @@ export default function AboutPage() {
                                     style={{ outline: 'none', boxShadow: 'none' }}
                                 >
                                     <Image src="/logos/QQ.svg" alt="QQ" width={20} height={20} className="flex-shrink-0" />
-                                    <span className="font-pixel text-xl text-gray-800 dark:text-gray-200 leading-none">849517015@qq.com</span>
+                                    <span className="font-pixel text-xl text-gray-800 leading-none">849517015@qq.com</span>
                                 </CopyButton>
                             </div>
 
