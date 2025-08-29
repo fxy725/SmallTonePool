@@ -68,6 +68,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setThemeState(newTheme);
     const newActualTheme = calculateActualTheme(newTheme);
     setActualTheme(newActualTheme);
+
+
+
     applyTheme(newActualTheme);
 
     // 持久化到localStorage
@@ -137,8 +140,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         value={{
           theme: "system", // 默认系统主题
           actualTheme: "light", // SSR期间默认浅色
-          setTheme: () => {},
-          toggleTheme: () => {},
+          setTheme: () => { },
+          toggleTheme: () => { },
         }}
       >
         {children}

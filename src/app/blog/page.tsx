@@ -74,12 +74,13 @@ function BlogContent() {
         }
     }, [currentPage, filteredPosts, postsPerPage]);
 
-    // 从URL参数获取标签
+    // 从URL参数获取标签和页码
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const tag = urlParams.get('tag') || '';
+        const page = parseInt(urlParams.get('page') || '1', 10);
         setSelectedTag(tag);
-        setCurrentPage(1); // 切换标签时重置到第一页
+        setCurrentPage(Math.max(1, page)); // 确保页码至少为1
     }, []);
 
     // 处理标签点击 - 使用 useCallback 优化
@@ -95,6 +96,7 @@ function BlogContent() {
         } else {
             url.searchParams.delete('tag');
         }
+        url.searchParams.delete('page'); // 清除页码参数
         window.history.pushState({}, '', url);
     }, [selectedTag]);
 
@@ -102,6 +104,15 @@ function BlogContent() {
     const handlePageChange = useCallback((page: number) => {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // 更新URL中的页码参数
+        const url = new URL(window.location.href);
+        if (page > 1) {
+            url.searchParams.set('page', page.toString());
+        } else {
+            url.searchParams.delete('page');
+        }
+        window.history.pushState({}, '', url);
     }, []);
 
     return (
@@ -112,7 +123,7 @@ function BlogContent() {
             <div className="flex flex-wrap gap-3 justify-center pt-20 pb-2" style={{ fontFamily: 'var(--font-content)' }}>
                 <button
                     onClick={() => handleTagClick('')}
-                    className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 ${selectedTag === '' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : ''}`}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium ${selectedTag === '' ? 'bg-gray-100 dark:bg-gray-700/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                 >
                     ALL
                 </button>
@@ -120,7 +131,7 @@ function BlogContent() {
                     <button
                         key={tag}
                         onClick={() => handleTagClick(tag)}
-                        className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 ${selectedTag === tag ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : ''}`}
+                        className={`px-3 py-1 rounded-lg text-sm font-medium ${selectedTag === tag ? 'bg-gray-100 dark:bg-gray-700/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                     >
                         {tag}
                     </button>
@@ -134,7 +145,7 @@ function BlogContent() {
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                            className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                         >
                             上一页
                         </button>
@@ -171,7 +182,7 @@ function BlogContent() {
                                 <button
                                     key={pageNum}
                                     onClick={() => handlePageChange(pageNum)}
-                                    className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === pageNum ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                                    className={`px-3 py-1 rounded-lg text-sm font-medium ${currentPage === pageNum ? 'bg-gray-100 dark:bg-gray-700/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                                 >
                                     {pageNum}
                                 </button>
@@ -185,7 +196,7 @@ function BlogContent() {
                         {totalPages > 5 && currentPage < totalPages - 1 && (
                             <button
                                 onClick={() => handlePageChange(totalPages)}
-                                className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === totalPages ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                                className={`px-3 py-1 rounded-lg text-sm font-medium ${currentPage === totalPages ? 'bg-gray-100 dark:bg-gray-700/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                             >
                                 {totalPages}
                             </button>
@@ -194,7 +205,7 @@ function BlogContent() {
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                            className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                         >
                             下一页
                         </button>
@@ -245,7 +256,7 @@ function BlogContent() {
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                                className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                             >
                                 上一页
                             </button>
@@ -277,12 +288,12 @@ function BlogContent() {
 
                                 return pageNumbers.map(pageNum => (
                                     <button
-                                        key={pageNum}
-                                        onClick={() => handlePageChange(pageNum)}
-                                        className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === pageNum ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-                                    >
-                                        {pageNum}
-                                    </button>
+                                     key={pageNum}
+                                     onClick={() => handlePageChange(pageNum)}
+                                     className={`px-3 py-1 rounded-lg text-sm font-medium ${currentPage === pageNum ? 'bg-gray-100 dark:bg-gray-700/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                                     >
+                                     {pageNum}
+                                 </button>
                                 ));
                             })()}
 
@@ -292,17 +303,17 @@ function BlogContent() {
 
                             {totalPages > 5 && currentPage < totalPages - 1 && (
                                 <button
-                                    onClick={() => handlePageChange(totalPages)}
-                                    className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === totalPages ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-                                >
-                                    {totalPages}
-                                </button>
+                                 onClick={() => handlePageChange(totalPages)}
+                                 className={`px-3 py-1 rounded-lg text-sm font-medium ${currentPage === totalPages ? 'bg-gray-100 dark:bg-gray-700/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                             >
+                                 {totalPages}
+                             </button>
                             )}
 
                             <button
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
-                                className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors duration-200 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                                className={`px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                             >
                                 下一页
                             </button>

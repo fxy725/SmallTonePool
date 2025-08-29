@@ -12,10 +12,11 @@ export function Hero() {
     return (
         <section className="relative min-h-screen flex justify-center overflow-hidden">
             {/* Background Pattern */}
+            {/* Crossfade background layers for smooth theme transition */}
             <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900"></div>
 
-            {/* Animated Elements */}
-            <div className="absolute inset-0">
+            {/* Animated Elements - do not theme-transition these heavy layers */}
+            <div className="absolute inset-0 no-theme-transition">
                 <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 dark:bg-blue-800 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-pulse"></div>
                 <div className="absolute top-40 right-10 w-72 h-72 bg-cyan-200 dark:bg-cyan-800 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
                 <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-indigo-200 dark:bg-indigo-800 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>

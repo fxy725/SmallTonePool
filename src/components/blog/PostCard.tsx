@@ -38,7 +38,7 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
             }
         }}>
             <article
-                className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
+                className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 onMouseDown={(e) => e.preventDefault()}

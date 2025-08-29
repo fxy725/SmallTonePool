@@ -16,7 +16,6 @@ import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import rehypeSlug from "rehype-slug";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/github-dark.css";
 import "highlight.js/styles/github.css";
 
 interface PostPageProps {
@@ -188,7 +187,7 @@ export default async function PostPage({ params }: PostPageProps) {
                                         <Link
                                             href={`/blog?tag=${encodeURIComponent(tag)}`}
                                             key={tag}
-                                            className="article-tag px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium select-none no-underline transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                            className="px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium select-none no-underline hover:bg-gray-50 dark:hover:bg-gray-700"
                                         >
                                             {tag}
                                         </Link>

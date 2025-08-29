@@ -83,8 +83,7 @@ export default function RootLayout({
                     document.documentElement.classList.remove('dark');
                   }
 
-                  // 添加过渡动画类，而不是直接设置style属性
-                  document.documentElement.classList.add('theme-transition');
+                  // 初始化时不要强制开启全局过渡，避免初次渲染抖动
                 } catch (e) {
                   // 静默处理错误，使用系统主题
                   var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
