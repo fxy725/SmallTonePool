@@ -399,16 +399,33 @@ export default function Home() {
               -webkit-touch-callout: none;
               -webkit-tap-highlight-color: transparent;
             }
+
+            /* 滑动列表容器背景色 */
+            [ref={scrollContainerRef}] {
+              background-color: #f9fafb; /* bg-gray-50 */
+            }
+            
+            @media (prefers-color-scheme: dark) {
+              [ref={scrollContainerRef}] {
+                background-color: #111827; /* bg-gray-900 */
+              }
+            }
+
+            /* 使用类名选择器更可靠 */
+            .scroll-container-bg {
+              background-color: #f9fafb; /* bg-gray-50 */
+            }
+            
+            @media (prefers-color-scheme: dark) {
+              .scroll-container-bg {
+                background-color: #111827; /* bg-gray-900 */
+              }
+            }
           `}</style>
             </section>
 
             {/* Recent Posts Section */}
-            <section className="relative py-20 bg-white dark:bg-gray-800">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-30">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(147,51,234,0.1),transparent_50%)]"></div>
-                </div>
+            <section className="relative py-20 bg-gray-50 dark:bg-gray-900">
 
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Section Header */}
@@ -437,10 +454,16 @@ export default function Home() {
                                 </svg>
                             </div>
 
+                            {/* Left Fade-out Gradient Overlay */}
+                            <div className="absolute left-0 top-0 bottom-6 w-24 bg-gradient-to-r from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none"></div>
+
+                            {/* Right Fade-out Gradient Overlay */}
+                            <div className="absolute right-0 top-0 bottom-6 w-24 bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none"></div>
+
                             {/* Scrollable Posts */}
                             <div
                                 ref={scrollContainerRef}
-                                className={`overflow-x-auto pb-6 scrollbar-hide select-none outline-none focus:outline-none user-select-none post-card-unselectable ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                                className={`overflow-x-auto pb-6 scrollbar-hide select-none outline-none focus:outline-none user-select-none post-card-unselectable scroll-container-bg ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
                                 onMouseDown={handleMouseDown}
                                 onMouseUp={handleMouseUp}
                                 onMouseMove={handleMouseMove}
