@@ -16,6 +16,9 @@ import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import rehypeSlug from "rehype-slug";
 import rehypeHighlight from "rehype-highlight";
+import remarkBreaks from "remark-breaks";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import "highlight.js/styles/github.css";
 
 interface PostPageProps {
@@ -42,7 +45,10 @@ async function processMDXContent(mdxContent: string): Promise<string> {
     const file = await unified()
         .use(remarkParse)
         .use(remarkGfm)
+        .use(remarkBreaks)
+        .use(remarkMath)
         .use(remarkRehype)
+        .use(rehypeKatex)
         .use(rehypeSlug)
         .use(rehypeHighlight)
         .use(rehypeStringify)

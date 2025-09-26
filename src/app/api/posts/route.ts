@@ -11,12 +11,14 @@ import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import rehypeSlug from 'rehype-slug';
 import rehypeHighlight from 'rehype-highlight';
+import remarkBreaks from 'remark-breaks';
 
 // 动态读取和处理MDX内容
 async function processMDXContent(mdxContent: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkBreaks)
     .use(remarkRehype)
     .use(rehypeSlug)
     .use(rehypeHighlight)

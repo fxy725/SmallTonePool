@@ -1,0 +1,299 @@
+---
+title: "MDX 渲染效果展示"
+date: "2025-09-12"
+summary: "一个包含各种 MDX 元素的示例文件，用于测试和展示 MDX 的完整渲染效果。"
+tags: ["其他"]
+published: true
+---
+
+# MDX 渲染效果展示
+
+这是一个包含各种 MDX 元素的示例文件，用于测试和展示 MDX 的完整渲染效果。
+
+## 文本格式
+
+### 基本文本格式
+
+这是**粗体文本**，这是*斜体文本*，这是***粗斜体文本***。
+
+这是 ~~删除线文本~~。
+
+这是 `内联代码` 示例。
+
+### 引用块
+
+> 这是一个引用块。
+> 可以包含多行内容。
+>
+> > 嵌套引用块
+
+## 列表
+
+### 无序列表
+
+- 项目 1
+- 项目 2
+  - 子项目 2.1
+  - 子项目 2.2
+- 项目 3
+
+### 有序列表
+
+1. 第一项
+2. 第二项
+   1. 子项 2.1
+   2. 子项 2.2
+3. 第三项
+
+### 任务列表
+
+- [x] 已完成的任务
+- [ ] 未完成的任务
+- [x] 另一个已完成的任务
+
+## 代码块
+
+### JavaScript 代码
+
+```javascript
+// 这是一个 JavaScript 代码块
+function greet(name) {
+  console.log(`Hello, ${name}!`);
+  return `Welcome, ${name}`;
+}
+
+// 使用示例
+const result = greet('MDX');
+console.log(result);
+```
+
+### TypeScript 代码
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  isActive: boolean;
+}
+
+class UserService {
+  private users: User[] = [];
+
+  addUser(user: User): void {
+    this.users.push(user);
+  }
+
+  getActiveUsers(): User[] {
+    return this.users.filter(user => user.isActive);
+  }
+}
+```
+
+### Python 代码
+
+```python
+# Python 代码示例
+def fibonacci(n):
+    """生成斐波那契数列"""
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [0]
+    elif n == 2:
+        return [0, 1]
+
+    fib = [0, 1]
+    for i in range(2, n):
+        fib.append(fib[i-1] + fib[i-2])
+    return fib
+
+# 使用示例
+print(fibonacci(10))
+```
+
+### C++ 代码
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+
+class GameObject {
+private:
+    std::string name;
+    int health;
+    bool isActive;
+
+public:
+    GameObject(const std::string& objName, int hp)
+        : name(objName), health(hp), isActive(true) {}
+
+    void takeDamage(int damage) {
+        health -= damage;
+        if (health <= 0) {
+            isActive = false;
+            std::cout << name << " has been destroyed!" << std::endl;
+        }
+    }
+
+    bool getIsActive() const { return isActive; }
+};
+```
+
+### JSON 数据
+
+```json
+{
+  "project": {
+    "name": "MDX Showcase",
+    "version": "1.0.0",
+    "dependencies": {
+      "next": "^14.0.0",
+      "react": "^18.0.0",
+      "typescript": "^5.0.0"
+    },
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start"
+    }
+  }
+}
+```
+
+## 表格
+
+### 简单表格
+
+| 语言 | 用途 | 特点 |
+|------|------|------|
+| JavaScript | 前端开发 | 动态类型，事件驱动 |
+| TypeScript | 前端开发 | 静态类型，更安全 |
+| Python | 全栈开发 | 简洁易读，生态丰富 |
+| C++ | 系统开发 | 高性能，底层控制 |
+
+### 对齐表格
+
+| 左对齐 | 居中对齐 | 右对齐 |
+|:--------|:---------:|--------:|
+| 文本 1 | 文本 2 | 文本 3 |
+| 长文本内容 | 中等长度 | 数字 42 |
+| 短 | 居中 | 100.50 |
+
+## 链接和图片
+
+### 链接
+
+这是一个 [外部链接](https://www.example.com) 的示例。
+
+这是一个 [相对链接](./welcome-to-smalltone) 到另一篇文章。
+
+### 图片
+
+![MDX Logo](https://mdxjs.com/favicon.ico)
+
+> 注意：图片路径需要根据实际部署情况调整
+
+## 数学公式
+
+### 行内公式
+
+质能方程：$E = mc^2$
+
+勾股定理：$a^2 + b^2 = c^2$
+
+### 块级公式
+
+高斯求和公式：
+
+$$
+\sum_{i=1}^{n} i = \frac{n(n+1)}{2}
+$$
+
+矩阵乘法：
+
+$$
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+\times
+\begin{pmatrix}
+x & y \\
+z & w
+\end{pmatrix}
+=
+\begin{pmatrix}
+ax + bz & ay + bw \\
+cx + dz & cy + dw
+\end{pmatrix}
+$$
+
+## 分割线
+
+---
+
+## 脚注
+
+这是一个带有脚注的句子[^1]。
+
+另一个脚注示例[^2]。
+
+## HTML 元素
+
+<div style="border: 1px solid #ccc; padding: 1rem; margin: 1rem 0;">
+  <h3>HTML 块元素</h3>
+  <p>这是使用 HTML 标签创建的块级元素。</p>
+  <ul>
+    <li>项目 A</li>
+    <li>项目 B</li>
+  </ul>
+</div>
+
+## 其他元素
+
+### 定义列表
+
+术语 1
+: 这是术语 1 的定义
+
+术语 2
+: 这是术语 2 的定义
+: 可以有多行定义
+
+### 缩写
+
+MDX[^3] 是一种强大的文档格式。
+
+### 自动链接
+
+访问 https://nextjs.org 或发送邮件到 test@example.com
+
+## 总结
+
+这个 MDX 文件展示了以下元素：
+
+- ✅ 标题（H1-H6）
+- ✅ 段落和文本格式（粗体、斜体、删除线）
+- ✅ 引用块
+- ✅ 列表（有序、无序、任务列表）
+- ✅ 代码块（多种语言）
+- ✅ 内联代码
+- ✅ 表格
+- ✅ 链接和图片
+- ✅ 数学公式
+- ✅ 分割线
+- ✅ 脚注
+- ✅ HTML 元素
+- ✅ 定义列表
+- ✅ 缩写
+- ✅ 自动链接
+
+通过这个示例，你可以全面测试 MDX 的渲染效果和各种元素的显示情况。
+
+---
+
+[^1]: 这是第一个脚注的内容。
+[^2]: 这是第二个脚注的内容。
+[^3]: MDX = Markdown + JSX

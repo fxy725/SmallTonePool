@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import "./globals.css";
 
 // 更优雅的字体选择
@@ -64,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="scroll-smooth">
+    <html lang="zh-CN" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <StructuredData type="Blog" data={{}} />
         {/* 防闪烁脚本 - 必须在body之前执行 */}
@@ -107,26 +108,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <main>{children}</main>
-
-          {/* 添加页脚 */}
-          <footer className="bg-gray-50 dark:bg-gray-900">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-              <div className="text-center">
-                <p
-                  className="text-gray-600 dark:text-gray-400 mb-2"
-                  style={{ fontFamily: "'LXGW Marker Gothic', sans-serif" }}
-                >
-                  © 2024 小石潭记. All rights reserved.
-                </p>
-                <p
-                  className="text-sm text-gray-500 dark:text-gray-500"
-                  style={{ fontFamily: "'LXGW Marker Gothic', sans-serif" }}
-                >
-                  用心记录每一次学习，用代码书写成长故事
-                </p>
-              </div>
-            </div>
-          </footer>
+          <ConditionalFooter />
         </ThemeProvider>
       </body>
     </html>

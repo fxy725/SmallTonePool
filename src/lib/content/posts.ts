@@ -103,15 +103,21 @@ async function mdxToHtml(mdx: string, cacheKey?: string): Promise<string> {
         const { unified } = await import('unified');
         const remarkParse = (await import('remark-parse')).default;
         const remarkGfm = (await import('remark-gfm')).default;
+        const remarkBreaks = (await import('remark-breaks')).default;
+        const remarkMath = (await import('remark-math')).default;
         const remarkRehype = (await import('remark-rehype')).default;
         const rehypeStringify = (await import('rehype-stringify')).default;
         const rehypeSlug = (await import('rehype-slug')).default;
         const rehypeHighlight = (await import('rehype-highlight')).default;
+        const rehypeKatex = (await import('rehype-katex')).default;
 
         const file = await unified()
             .use(remarkParse)
             .use(remarkGfm)
+            .use(remarkBreaks)
+            .use(remarkMath)
             .use(remarkRehype)
+            .use(rehypeKatex)
             .use(rehypeSlug)
             .use(rehypeHighlight)
             .use(rehypeStringify)

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "highlight.js/styles/atom-one-dark.css";
+@import "katex/dist/katex.min.css";
 
 /* Tailwind CSS 4.0 Dark Mode Custom Variant */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -736,6 +737,57 @@ a:focus-visible,
     padding-left: 1.625rem;
 }
 
+/* 区分无序与有序列表的外观 */
+.prose ul {
+    list-style-type: disc;
+    /* 顶层无序：实心圆点 */
+    list-style-position: outside;
+}
+
+.prose ul ul {
+    list-style-type: circle;
+    /* 第二层无序：空心圆 */
+}
+
+.prose ul ul ul {
+    list-style-type: square;
+    /* 第三层无序：方块 */
+}
+
+.prose ul li::marker {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.dark .prose ul li::marker {
+    color: var(--accent-secondary);
+}
+
+.prose ol {
+    list-style-type: decimal;
+    /* 顶层有序：十进制数字 */
+    list-style-position: outside;
+}
+
+.prose ol ol {
+    list-style-type: lower-alpha;
+    /* 第二层有序：小写字母 */
+}
+
+.prose ol ol ol {
+    list-style-type: lower-roman;
+    /* 第三层有序：小写罗马数字 */
+}
+
+.prose ol li::marker {
+    color: var(--brand-primary);
+    font-weight: 700;
+}
+
+.dark .prose ol li::marker {
+    color: var(--brand-accent);
+}
+
 .prose li {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
@@ -837,29 +889,37 @@ a:focus-visible,
 }
 
 .prose table {
-    width: 100%;
+    width: max-content;
+    max-width: 100%;
     table-layout: auto;
-    text-align: left;
     margin: 2rem 0;
-    font-size: 0.875rem;
+    font-size: 1.25rem;
     line-height: 1.714;
-    border-collapse: collapse;
+    /* 扁平化为类似代码块的容器视觉 */
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent-subtle);
     border-radius: 0.5rem;
     overflow: hidden;
-    box-shadow: var(--shadow-md);
+    box-shadow: none;
+    /* 让圆角与外边框生效 */
+    border-collapse: separate;
+    border-spacing: 0;
+    /* 内部网格线颜色（更高对比度） */
+    --table-grid: var(--stone-300);
 }
 
 .prose thead {
-    background: var(--bg-tertiary);
-    border-bottom: 2px solid var(--accent-subtle);
+    background: transparent;
+    border-bottom: 0;
 }
 
 .prose th {
     font-weight: 600;
     padding: 1rem;
     color: var(--text-primary);
-    border-bottom: 1px solid var(--accent-subtle);
+    border-bottom: 0;
     font-family: var(--font-content);
+    background: transparent;
 }
 
 .prose tbody tr {
@@ -875,6 +935,108 @@ a:focus-visible,
     padding: 1rem;
     color: var(--text-secondary);
     font-family: var(--font-content);
+    background: transparent;
+}
+
+/* 表格扁平风格增强：与代码块一致的容器与滚动表现 */
+.prose table {
+    display: block;
+    overflow-x: auto;
+}
+
+/* 深色模式下提高网格线对比度 */
+.dark .prose table {
+    --table-grid: var(--stone-600);
+}
+
+/* 统一表格单元格左对齐，简化视觉表现 */
+.prose table th,
+.prose table td {
+    text-align: left !important;
+}
+
+.prose table th,
+.prose table td {
+    border: 0 !important;
+}
+
+.prose tbody tr {
+    border-bottom: 0;
+}
+
+.prose tbody tr:last-child {
+    border-bottom: 0;
+}
+
+.prose tbody tr:hover {
+    background: transparent;
+}
+
+/* 边缘留白，营造和代码块类似的内边距感 */
+.prose table tr:first-child th {
+    padding-top: 1rem;
+}
+
+.prose table tr:last-child td {
+    padding-bottom: 1rem;
+}
+
+.prose table th:first-child,
+.prose table td:first-child {
+    padding-left: 1.25rem;
+}
+
+.prose table th:last-child,
+.prose table td:last-child {
+    padding-right: 1.25rem;
+}
+
+/* 让表格四角与代码块一致的圆角效果 */
+.prose table thead tr:first-child th:first-child {
+    border-top-left-radius: 0.5rem;
+}
+
+.prose table thead tr:first-child th:last-child {
+    border-top-right-radius: 0.5rem;
+}
+
+.prose table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 0.5rem;
+}
+
+.prose table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 0.5rem;
+}
+
+/* 表格内部分割线（扁平风格下的细线，兼容对齐表格） */
+.prose table thead th {
+    border-bottom: 1.5px solid var(--table-grid) !important;
+}
+
+.prose table thead tr+tr th {
+    border-top: 1px solid var(--table-grid) !important;
+}
+
+.prose table th+th,
+.prose table td+td {
+    border-left: 1px solid var(--table-grid) !important;
+}
+
+.prose table tbody tr+tr td {
+    border-top: 1px solid var(--table-grid) !important;
+}
+
+/* 使用更通用的选择器确保行列网格线都出现 */
+.prose table tr>*+* {
+    border-left: 1px solid var(--table-grid) !important;
+}
+
+.prose table tr+tr>* {
+    border-top: 1px solid var(--table-grid) !important;
+}
+
+.prose table thead>tr:last-child>* {
+    border-bottom: 1.5px solid var(--table-grid) !important;
 }
 
 .prose img {
@@ -2092,6 +2254,75 @@ a:focus-visible,
 /* Code block copy button styling */
 .prose pre {
     position: relative;
+}
+
+/* 顶部工具栏布局：当存在工具栏时为代码内容预留顶部空间 */
+.prose pre.has-toolbar {
+    padding-top: 2.25rem !important;
+}
+
+/* 顶部工具栏容器：显示语言标签与复制按钮 */
+.prose pre .codeblock-toolbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.75rem;
+    background: var(--bg-secondary) !important;
+    box-shadow: none !important;
+    border-bottom: none !important;
+    border-radius: 0.5rem 0.5rem 0 0;
+    z-index: 5;
+}
+
+/* 语言标签样式 */
+.prose pre .codeblock-lang {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    background: var(--bg-quaternary);
+    border: 1px solid var(--accent-subtle);
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    user-select: none;
+}
+
+/* 顶部工具栏内的复制按钮：使用常规流式定位并始终可见 */
+.prose pre .codeblock-toolbar .copy-button {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    opacity: 1 !important;
+    background: var(--bg-secondary) !important;
+    color: var(--text-tertiary) !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    border: 1px solid var(--accent-subtle) !important;
+}
+
+.prose pre .codeblock-toolbar .copy-button:hover {
+    background: var(--brand-primary) !important;
+    color: var(--text-inverse) !important;
+}
+
+/* 统一代码区域与容器背景，移除可能的内部分割线/阴影 */
+.prose pre .hljs,
+.prose pre code.hljs {
+    background: transparent !important;
+    border: none !important;
+    border-top: none !important;
+    box-shadow: none !important;
+}
+
+/* 防止在带顶栏的代码块中，代码本体顶部出现任何边线 */
+.prose pre.has-toolbar code {
+    border-top: none !important;
 }
 
 /* Enhanced styles for code elements in headings */
