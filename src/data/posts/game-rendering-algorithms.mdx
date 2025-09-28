@@ -1,8 +1,8 @@
 ---
-title: "游戏渲染算法：从光栅化到实时光线追踪"
+title: "Lambda表达式"
 date: "2024-08-06"
 summary: "深入探讨游戏渲染的核心算法，包括光栅化、延迟渲染、PBR、实时光线追踪等技术原理和实现。"
-tags: ["渲染", "性能优化"]
+tags: ["渲染", "性能优化"]s
 published: true
 ---
 
@@ -25,7 +25,7 @@ public:
         Fragment,         // 片段阶段
         Output            // 输出阶段
     };
-    
+
     std::vector<std::string> getStageDescriptions() const {
         return {
             "应用阶段: CPU处理场景数据、剔除、批处理",
@@ -49,67 +49,67 @@ private:
     int width, height;
     float* depthBuffer;
     uint32_t* colorBuffer;
-    
+
 public:
     Rasterizer(int w, int h) : width(w), height(h) {
         depthBuffer = new float[width * height];
         colorBuffer = new uint32_t[width * height];
         clearBuffers();
     }
-    
+
     ~Rasterizer() {
         delete[] depthBuffer;
         delete[] colorBuffer;
     }
-    
+
     void clearBuffers() {
         std::fill(depthBuffer, depthBuffer + width * height, FLT_MAX);
         std::fill(colorBuffer, colorBuffer + width * height, 0xFF000000);
     }
-    
+
     // 边界函数计算
     float edgeFunction(const Vector2& a, const Vector2& b, const Vector2& c) {
         return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
     }
-    
+
     // 三角形光栅化
-    void rasterizeTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, 
+    void rasterizeTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2,
                           const Vector3& color) {
-        
+
         // 计算边界框
         int minX = std::max(0, (int)std::floor(std::min(v0.x, std::min(v1.x, v2.x))));
         int maxX = std::min(width - 1, (int)std::ceil(std::max(v0.x, std::max(v1.x, v2.x))));
         int minY = std::max(0, (int)std::floor(std::min(v0.y, std::min(v1.y, v2.y))));
         int maxY = std::min(height - 1, (int)std::ceil(std::max(v0.y, std::max(v1.y, v2.y))));
-        
+
         // 计算边界函数面积
         float area = edgeFunction(v0, v1, v2);
-        
+
         // 遍历边界框内的像素
         for (int y = minY; y <= maxY; y++) {
             for (int x = minX; x <= maxX; x++) {
                 Vector2 p(x + 0.5f, y + 0.5f);
-                
+
                 // 计算重心坐标
                 float w0 = edgeFunction(v1, v2, p);
                 float w1 = edgeFunction(v2, v0, p);
                 float w2 = edgeFunction(v0, v1, p);
-                
+
                 // 检查像素是否在三角形内
                 if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
                     // 归一化重心坐标
                     w0 /= area;
                     w1 /= area;
                     w2 /= area;
-                    
+
                     // 透视校正插值深度
                     float depth = 1.0f / (w0 / v0.z + w1 / v1.z + w2 / v2.z);
-                    
+
                     // 深度测试
                     int index = y * width + x;
                     if (depth < depthBuffer[index]) {
                         depthBuffer[index] = depth;
-                        
+
                         // 简单的颜色插值
                         Vector3 pixelColor = color;
                         colorBuffer[index] = rgbToUint32(pixelColor);
@@ -118,7 +118,7 @@ public:
             }
         }
     }
-    
+
     uint32_t rgbToUint32(const Vector3& color) {
         uint32_t r = (uint32_t)(color.x * 255);
         uint32_t g = (uint32_t)(color.y * 255);
@@ -136,16 +136,16 @@ class MSAARasterizer : public Rasterizer {
 private:
     int samplesPerPixel;
     std::vector<Vector2> samplePositions;
-    
+
 public:
-    MSAARasterizer(int w, int h, int samples = 4) 
+    MSAARasterizer(int w, int h, int samples = 4)
         : Rasterizer(w, h), samplesPerPixel(samples) {
         generateSamplePositions();
     }
-    
+
     void generateSamplePositions() {
         samplePositions.resize(samplesPerPixel);
-        
+
         // 生成采样位置 (例如4x MSAA)
         if (samplesPerPixel == 4) {
             samplePositions[0] = Vector2(0.25f, 0.25f);
@@ -155,40 +155,40 @@ public:
         }
         // 其他采样模式...
     }
-    
-    void rasterizeTriangleMSAA(const Vector3& v0, const Vector3& v1, const Vector3& v2, 
+
+    void rasterizeTriangleMSAA(const Vector3& v0, const Vector3& v1, const Vector3& v2,
                                const Vector3& color) {
-        
+
         // 计算边界框
         int minX = std::max(0, (int)std::floor(std::min(v0.x, std::min(v1.x, v2.x))));
         int maxX = std::min(width - 1, (int)std::ceil(std::max(v0.x, std::max(v1.x, v2.x))));
         int minY = std::max(0, (int)std::floor(std::min(v0.y, std::min(v1.y, v2.y))));
         int maxY = std::min(height - 1, (int)std::ceil(std::max(v0.y, std::max(v1.y, v2.y))));
-        
+
         float area = edgeFunction(v0, v1, v2);
-        
+
         for (int y = minY; y <= maxY; y++) {
             for (int x = minX; x <= maxX; x++) {
                 int index = y * width + x;
                 int coveredSamples = 0;
                 float accumulatedDepth = 0.0f;
                 Vector3 accumulatedColor(0, 0, 0);
-                
+
                 // 对每个采样点进行测试
                 for (int s = 0; s < samplesPerPixel; s++) {
                     Vector2 p(x + samplePositions[s].x, y + samplePositions[s].y);
-                    
+
                     float w0 = edgeFunction(v1, v2, p);
                     float w1 = edgeFunction(v2, v0, p);
                     float w2 = edgeFunction(v0, v1, p);
-                    
+
                     if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
                         w0 /= area;
                         w1 /= area;
                         w2 /= area;
-                        
+
                         float depth = 1.0f / (w0 / v0.z + w1 / v1.z + w2 / v2.z);
-                        
+
                         if (depth < depthBuffer[index]) {
                             coveredSamples++;
                             accumulatedDepth += depth;
@@ -196,13 +196,13 @@ public:
                         }
                     }
                 }
-                
+
                 // 如果有采样点覆盖，更新像素
                 if (coveredSamples > 0) {
                     float coverage = (float)coveredSamples / samplesPerPixel;
                     float avgDepth = accumulatedDepth / coveredSamples;
                     Vector3 avgColor = accumulatedColor / coveredSamples;
-                    
+
                     depthBuffer[index] = avgDepth;
                     colorBuffer[index] = rgbToUint32(avgColor * coverage);
                 }
@@ -221,21 +221,21 @@ public:
 struct GBuffer {
     // 位置信息 (世界坐标)
     Vector3 position;
-    
+
     // 法线信息
     Vector3 normal;
-    
+
     // 颜色信息 (反照率)
     Vector3 albedo;
-    
+
     // 材质属性
     float metallic;
     float roughness;
     float ao;
-    
+
     // 运动矢量
     Vector2 motionVector;
-    
+
     // 其他自定义数据
     uint32_t materialID;
     float depth;
@@ -245,34 +245,34 @@ struct GBuffer {
 class DeferredRenderer {
 private:
     int width, height;
-    
+
     // G-Buffer纹理
     GLuint gPosition;
     GLuint gNormal;
     GLuint gAlbedo;
     GLuint gMaterial;
     GLuint gDepth;
-    
+
     // G-Buffer FBO
     GLuint gBufferFBO;
-    
+
     // 屏幕大小四边形
     GLuint screenVAO, screenVBO;
-    
+
 public:
     DeferredRenderer(int w, int h) : width(w), height(h) {
         initializeGBuffer();
         initializeScreenQuad();
     }
-    
+
     ~DeferredRenderer() {
         cleanup();
     }
-    
+
     void initializeGBuffer() {
         glGenFramebuffers(1, &gBufferFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, gBufferFBO);
-        
+
         // 位置纹理
         glGenTextures(1, &gPosition);
         glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -280,7 +280,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-        
+
         // 法线纹理
         glGenTextures(1, &gNormal);
         glBindTexture(GL_TEXTURE_2D, gNormal);
@@ -288,7 +288,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-        
+
         // 反照率纹理
         glGenTextures(1, &gAlbedo);
         glBindTexture(GL_TEXTURE_2D, gAlbedo);
@@ -296,7 +296,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
-        
+
         // 材质纹理
         glGenTextures(1, &gMaterial);
         glBindTexture(GL_TEXTURE_2D, gMaterial);
@@ -304,7 +304,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gMaterial, 0);
-        
+
         // 深度纹理
         glGenTextures(1, &gDepth);
         glBindTexture(GL_TEXTURE_2D, gDepth);
@@ -312,38 +312,38 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth, 0);
-        
+
         // 设置绘制缓冲区
         GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
         glDrawBuffers(4, attachments);
-        
+
         // 检查帧缓冲区完整性
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             std::cout << "Framebuffer not complete!" << std::endl;
         }
-        
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-    
+
     void geometryPass(const std::vector<Mesh>& meshes) {
         glBindFramebuffer(GL_FRAMEBUFFER, gBufferFBO);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+
         glEnable(GL_DEPTH_TEST);
-        
+
         // 渲染所有网格到G-Buffer
         for (const auto& mesh : meshes) {
             renderMeshToGBuffer(mesh);
         }
-        
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-    
+
     void lightingPass(const std::vector<Light>& lights) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST);
-        
+
         // 绑定G-Buffer纹理
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -353,93 +353,93 @@ public:
         glBindTexture(GL_TEXTURE_2D, gAlbedo);
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, gMaterial);
-        
+
         // 使用延迟着色器
         glUseProgram(deferredShader);
-        
+
         // 设置shader uniforms
         glUniform1i(glGetUniformLocation(deferredShader, "gPosition"), 0);
         glUniform1i(glGetUniformLocation(deferredShader, "gNormal"), 1);
         glUniform1i(glGetUniformLocation(deferredShader, "gAlbedo"), 2);
         glUniform1i(glGetUniformLocation(deferredShader, "gMaterial"), 3);
-        
+
         // 设置光源参数
         for (size_t i = 0; i < lights.size(); i++) {
             setLightUniforms(lights[i], i);
         }
-        
+
         // 渲染屏幕四边形
         glBindVertexArray(screenVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
     }
-    
+
     void renderMeshToGBuffer(const Mesh& mesh) {
         // 设置模型矩阵
         glUniformMatrix4fv(glGetUniformLocation(gBufferShader, "model"), 1, GL_FALSE, &mesh.transform[0][0]);
-        
+
         // 绑定材质
         mesh.material->bind();
-        
+
         // 绘制网格
         glBindVertexArray(mesh.vao);
         glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
-    
+
     void setLightUniforms(const Light& light, int index) {
         std::string prefix = "lights[" + std::to_string(index) + "].";
-        
-        glUniform3fv(glGetUniformLocation(deferredShader, (prefix + "position").c_str()), 
+
+        glUniform3fv(glGetUniformLocation(deferredShader, (prefix + "position").c_str()),
                      1, &light.position[0]);
-        glUniform3fv(glGetUniformLocation(deferredShader, (prefix + "color").c_str()), 
+        glUniform3fv(glGetUniformLocation(deferredShader, (prefix + "color").c_str()),
                      1, &light.color[0]);
-        glUniform1f(glGetUniformLocation(deferredShader, (prefix + "intensity").c_str()), 
+        glUniform1f(glGetUniformLocation(deferredShader, (prefix + "intensity").c_str()),
                      light.intensity);
-        
+
         if (light.type == Light::Type::Point) {
-            glUniform1f(glGetUniformLocation(deferredShader, (prefix + "radius").c_str()), 
+            glUniform1f(glGetUniformLocation(deferredShader, (prefix + "radius").c_str()),
                          light.radius);
         }
     }
-    
+
     void initializeScreenQuad() {
         float screenQuadVertices[] = {
             // 位置坐标   // 纹理坐标
             -1.0f,  1.0f,  0.0f, 1.0f,
             -1.0f, -1.0f,  0.0f, 0.0f,
              1.0f, -1.0f,  1.0f, 0.0f,
-            
+
             -1.0f,  1.0f,  0.0f, 1.0f,
              1.0f, -1.0f,  1.0f, 0.0f,
              1.0f,  1.0f,  1.0f, 1.0f
         };
-        
+
         glGenVertexArrays(1, &screenVAO);
         glGenBuffers(1, &screenVBO);
-        
+
         glBindVertexArray(screenVAO);
         glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(screenQuadVertices), &screenQuadVertices, GL_STATIC_DRAW);
-        
+
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-        
+
         glBindVertexArray(0);
     }
-    
+
     void cleanup() {
         glDeleteVertexArrays(1, &screenVAO);
         glDeleteBuffers(1, &screenVBO);
-        
+
         glDeleteTextures(1, &gPosition);
         glDeleteTextures(1, &gNormal);
         glDeleteTextures(1, &gAlbedo);
         glDeleteTextures(1, &gMaterial);
         glDeleteTextures(1, &gDepth);
-        
+
         glDeleteFramebuffers(1, &gBufferFBO);
     }
 };
@@ -457,39 +457,39 @@ public:
     float metallic;           // 金属度
     float roughness;          // 粗糙度
     float ao;                // 环境光遮蔽
-    
-    PBRMaterial(const Vector3& alb = Vector3(1.0f), float met = 0.0f, 
+
+    PBRMaterial(const Vector3& alb = Vector3(1.0f), float met = 0.0f,
                 float rough = 0.5f, float ambientOcclusion = 1.0f)
         : albedo(alb), metallic(met), roughness(rough), ao(ambientOcclusion) {}
-    
+
     // Cook-Torrance BRDF
-    Vector3 cookTorranceBRDF(const Vector3& normal, const Vector3& lightDir, 
+    Vector3 cookTorranceBRDF(const Vector3& normal, const Vector3& lightDir,
                             const Vector3& viewDir, const Vector3& lightColor) const {
-        
+
         Vector3 halfway = normalize(lightDir + viewDir);
-        
+
         // 计算各项
         float NDF = distributionGGX(normal, halfway, roughness);
         float G = geometrySmith(normal, viewDir, lightDir, roughness);
         Vector3 F = fresnelSchlick(max(dot(halfway, viewDir), 0.0f), albedo, metallic);
-        
+
         // 计算BRDF的分子
         Vector3 numerator = NDF * G * F;
-        float denominator = 4.0f * max(dot(normal, viewDir), 0.0f) * 
+        float denominator = 4.0f * max(dot(normal, viewDir), 0.0f) *
                            max(dot(normal, lightDir), 0.0f) + 0.001f;
-        
+
         Vector3 specular = numerator / denominator;
-        
+
         // 计算漫反射和镜面反射的比例
         Vector3 kS = F;
         Vector3 kD = Vector3(1.0f) - kS;
         kD *= 1.0f - metallic;
-        
+
         // 计算最终颜色
         float NdotL = max(dot(normal, lightDir), 0.0f);
         return (kD * albedo / PI + specular) * lightColor * NdotL;
     }
-    
+
 private:
     // Trowbridge-Reitz GGX法线分布函数
     float distributionGGX(const Vector3& normal, const Vector3& halfway, float roughness) const {
@@ -497,36 +497,36 @@ private:
         float a2 = a * a;
         float NdotH = max(dot(normal, halfway), 0.0f);
         float NdotH2 = NdotH * NdotH;
-        
+
         float num = a2;
         float denom = (NdotH2 * (a2 - 1.0f) + 1.0f);
         denom = PI * denom * denom;
-        
+
         return num / denom;
     }
-    
+
     // Schlick-GGX几何函数
     float geometrySchlickGGX(float NdotV, float roughness) const {
         float r = (roughness + 1.0f);
         float k = (r * r) / 8.0f;
-        
+
         float num = NdotV;
         float denom = NdotV * (1.0f - k) + k;
-        
+
         return num / denom;
     }
-    
+
     // Smith几何函数
-    float geometrySmith(const Vector3& normal, const Vector3& viewDir, 
+    float geometrySmith(const Vector3& normal, const Vector3& viewDir,
                        const Vector3& lightDir, float roughness) const {
         float NdotV = max(dot(normal, viewDir), 0.0f);
         float NdotL = max(dot(normal, lightDir), 0.0f);
         float ggx2 = geometrySchlickGGX(NdotV, roughness);
         float ggx1 = geometrySchlickGGX(NdotL, roughness);
-        
+
         return ggx1 * ggx2;
     }
-    
+
     // Schlick近似菲涅尔方程
     Vector3 fresnelSchlick(float cosTheta, const Vector3& F0, float metallic) const {
         return F0 + (Vector3(1.0f) - F0) * pow(1.0f - cosTheta, 5.0f);
@@ -541,100 +541,100 @@ private:
     GLuint irradianceMap;
     GLuint prefilterMap;
     GLuint brdfLUT;
-    
+
 public:
     PBRRenderer() {
         initializePBREnvironment();
     }
-    
-    void renderPBRObject(const Mesh& mesh, const PBRMaterial& material, 
-                        const Matrix4& model, const Matrix4& view, 
+
+    void renderPBRObject(const Mesh& mesh, const PBRMaterial& material,
+                        const Matrix4& model, const Matrix4& view,
                         const Matrix4& projection, const std::vector<Light>& lights) {
-        
+
         glUseProgram(pbrShader);
-        
+
         // 设置矩阵
         glUniformMatrix4fv(glGetUniformLocation(pbrShader, "model"), 1, GL_FALSE, &model[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(pbrShader, "view"), 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(pbrShader, "projection"), 1, GL_FALSE, &projection[0][0]);
-        
+
         // 设置材质参数
         glUniform3fv(glGetUniformLocation(pbrShader, "material.albedo"), 1, &material.albedo[0]);
         glUniform1f(glGetUniformLocation(pbrShader, "material.metallic"), material.metallic);
         glUniform1f(glGetUniformLocation(pbrShader, "material.roughness"), material.roughness);
         glUniform1f(glGetUniformLocation(pbrShader, "material.ao"), material.ao);
-        
+
         // 设置相机位置
         Vector3 camPos = Vector3(view[3][0], view[3][1], view[3][2]);
         glUniform3fv(glGetUniformLocation(pbrShader, "camPos"), 1, &camPos[0]);
-        
+
         // 设置环境贴图
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
         glUniform1i(glGetUniformLocation(pbrShader, "irradianceMap"), 0);
-        
+
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
         glUniform1i(glGetUniformLocation(pbrShader, "prefilterMap"), 1);
-        
+
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, brdfLUT);
         glUniform1i(glGetUniformLocation(pbrShader, "brdfLUT"), 2);
-        
+
         // 设置光源
         for (size_t i = 0; i < lights.size(); i++) {
             setPBRLightUniforms(lights[i], i);
         }
-        
+
         // 绘制网格
         glBindVertexArray(mesh.vao);
         glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
-    
+
 private:
     void initializePBREnvironment() {
         // 加载环境贴图
         loadEnvironmentMap();
-        
+
         // 生成辐照度图
         generateIrradianceMap();
-        
+
         // 生成预过滤环境贴图
         generatePrefilterMap();
-        
+
         // 生成BRDF LUT
         generateBRDFLUT();
     }
-    
+
     void loadEnvironmentMap() {
         // 加载HDR环境贴图
         // 这里简化处理，实际需要从文件加载
     }
-    
+
     void generateIrradianceMap() {
         // 使用球谐函数生成辐照度图
         // 这里简化处理
     }
-    
+
     void generatePrefilterMap() {
         // 生成不同粗糙度的预过滤环境贴图
         // 这里简化处理
     }
-    
+
     void generateBRDFLUT() {
         // 生成BRDF查找表
         // 这里简化处理
     }
-    
+
     void setPBRLightUniforms(const Light& light, int index) {
         std::string prefix = "lights[" + std::to_string(index) + "].";
-        
-        glUniform3fv(glGetUniformLocation(pbrShader, (prefix + "position").c_str()), 
+
+        glUniform3fv(glGetUniformLocation(pbrShader, (prefix + "position").c_str()),
                      1, &light.position[0]);
-        glUniform3fv(glGetUniformLocation(pbrShader, (prefix + "color").c_str()), 
+        glUniform3fv(glGetUniformLocation(pbrShader, (prefix + "color").c_str()),
                      1, &light.color[0]);
-        glUniform1f(glGetUniformLocation(pbrShader, (prefix + "intensity").c_str()), 
+        glUniform1f(glGetUniformLocation(pbrShader, (prefix + "intensity").c_str()),
                      light.intensity);
     }
 };
@@ -651,10 +651,10 @@ struct Ray {
     Vector3 direction;
     float tMin;
     float tMax;
-    
+
     Ray(const Vector3& orig, const Vector3& dir, float tMin = 0.001f, float tMax = FLT_MAX)
         : origin(orig), direction(normalize(dir)), tMin(tMin), tMax(tMax) {}
-    
+
     Vector3 at(float t) const {
         return origin + direction * t;
     }
@@ -668,7 +668,7 @@ struct HitInfo {
     Vector2 uv;
     Material* material;
     bool frontFace;
-    
+
     void setFaceNormal(const Ray& ray, const Vector3& outwardNormal) {
         frontFace = dot(ray.direction, outwardNormal) < 0;
         normal = frontFace ? outwardNormal : -outwardNormal;
@@ -678,7 +678,7 @@ struct HitInfo {
 // 材质基类
 class Material {
 public:
-    virtual bool scatter(const Ray& ray, const HitInfo& hit, 
+    virtual bool scatter(const Ray& ray, const HitInfo& hit,
                         Vector3& attenuation, Ray& scattered) const = 0;
     virtual Vector3 emitted(float u, float v, const Vector3& point) const {
         return Vector3(0, 0, 0);
@@ -689,18 +689,18 @@ public:
 class Lambertian : public Material {
 public:
     Vector3 albedo;
-    
+
     Lambertian(const Vector3& a) : albedo(a) {}
-    
-    virtual bool scatter(const Ray& ray, const HitInfo& hit, 
+
+    virtual bool scatter(const Ray& ray, const HitInfo& hit,
                         Vector3& attenuation, Ray& scattered) const override {
         Vector3 scatterDirection = hit.normal + randomUnitVector();
-        
+
         // 处理退化散射方向
         if (nearZero(scatterDirection)) {
             scatterDirection = hit.normal;
         }
-        
+
         scattered = Ray(hit.point, scatterDirection);
         attenuation = albedo;
         return true;
@@ -712,14 +712,14 @@ class Metal : public Material {
 public:
     Vector3 albedo;
     float fuzz;
-    
+
     Metal(const Vector3& a, float f = 0.0f) : albedo(a), fuzz(f < 1.0f ? f : 1.0f) {}
-    
-    virtual bool scatter(const Ray& ray, const HitInfo& hit, 
+
+    virtual bool scatter(const Ray& ray, const HitInfo& hit,
                         Vector3& attenuation, Ray& scattered) const override {
         Vector3 reflected = reflect(normalize(ray.direction), hit.normal);
         reflected = reflected + fuzz * randomUnitVector();
-        
+
         scattered = Ray(hit.point, reflected);
         attenuation = albedo;
         return (dot(scattered.direction, hit.normal) > 0);
@@ -730,31 +730,31 @@ public:
 class Dielectric : public Material {
 public:
     float refractionIndex;
-    
+
     Dielectric(float ri) : refractionIndex(ri) {}
-    
-    virtual bool scatter(const Ray& ray, const HitInfo& hit, 
+
+    virtual bool scatter(const Ray& ray, const HitInfo& hit,
                         Vector3& attenuation, Ray& scattered) const override {
         attenuation = Vector3(1.0f, 1.0f, 1.0f);
         float ri = hit.frontFace ? (1.0f / refractionIndex) : refractionIndex;
-        
+
         Vector3 unitDirection = normalize(ray.direction);
         float cosTheta = fmin(dot(-unitDirection, hit.normal), 1.0f);
         float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
-        
+
         bool cannotRefract = ri * sinTheta > 1.0f;
         Vector3 direction;
-        
+
         if (cannotRefract || reflectance(cosTheta, ri) > randomFloat()) {
             direction = reflect(unitDirection, hit.normal);
         } else {
             direction = refract(unitDirection, hit.normal, ri);
         }
-        
+
         scattered = Ray(hit.point, direction);
         return true;
     }
-    
+
 private:
     static float reflectance(float cosine, float refractionIndex) {
         // Schlick近似
@@ -776,41 +776,41 @@ public:
     Vector3 center;
     float radius;
     Material* material;
-    
-    Sphere(const Vector3& cen, float r, Material* m) 
+
+    Sphere(const Vector3& cen, float r, Material* m)
         : center(cen), radius(r), material(m) {}
-    
+
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitInfo& info) const override {
         Vector3 oc = ray.origin - center;
         float a = dot(ray.direction, ray.direction);
         float halfB = dot(oc, ray.direction);
         float c = dot(oc, oc) - radius * radius;
         float discriminant = halfB * halfB - a * c;
-        
+
         if (discriminant < 0) return false;
-        
+
         float sqrtD = sqrt(discriminant);
         float root = (-halfB - sqrtD) / a;
-        
+
         if (root < tMin || root > tMax) {
             root = (-halfB + sqrtD) / a;
             if (root < tMin || root > tMax) {
                 return false;
             }
         }
-        
+
         info.t = root;
         info.point = ray.at(info.t);
         Vector3 outwardNormal = (info.point - center) / radius;
         info.setFaceNormal(ray, outwardNormal);
         info.material = material;
-        
+
         // 计算UV坐标
         Vector3 p = (info.point - center) / radius;
         float theta = acos(-p.y);
         float phi = atan2(-p.z, p.x) + PI;
         info.u = Vector2(phi / (2 * PI), theta / PI);
-        
+
         return true;
     }
 };
@@ -821,7 +821,7 @@ private:
     int width, height;
     int samplesPerPixel;
     int maxDepth;
-    
+
     std::vector<Hittable*> world;
     Vector3 cameraPos;
     Vector3 cameraTarget;
@@ -829,11 +829,11 @@ private:
     float fov;
     float aperture;
     float focusDist;
-    
+
 public:
-    RayTracer(int w, int h, int spp = 100, int depth = 50) 
+    RayTracer(int w, int h, int spp = 100, int depth = 50)
         : width(w), height(h), samplesPerPixel(spp), maxDepth(depth) {
-        
+
         cameraPos = Vector3(0, 0, 0);
         cameraTarget = Vector3(0, 0, -1);
         cameraUp = Vector3(0, 1, 0);
@@ -841,12 +841,12 @@ public:
         aperture = 0.0f;
         focusDist = 1.0f;
     }
-    
+
     void addHittable(Hittable* obj) {
         world.push_back(obj);
     }
-    
-    void setCamera(const Vector3& pos, const Vector3& target, const Vector3& up, 
+
+    void setCamera(const Vector3& pos, const Vector3& target, const Vector3& up,
                    float fovDeg, float aperture, float focusDist) {
         cameraPos = pos;
         cameraTarget = target;
@@ -855,70 +855,70 @@ public:
         this->aperture = aperture;
         this->focusDist = focusDist;
     }
-    
+
     void render(uint32_t* buffer) {
         Camera camera(cameraPos, cameraTarget, cameraUp, fov, width / (float)height, aperture, focusDist);
-        
+
         // 并行渲染
         #pragma omp parallel for schedule(dynamic)
         for (int j = height - 1; j >= 0; j--) {
             for (int i = 0; i < width; i++) {
                 Vector3 pixelColor(0, 0, 0);
-                
+
                 // 多重采样抗锯齿
                 for (int s = 0; s < samplesPerPixel; s++) {
                     float u = (i + randomFloat()) / (width - 1);
                     float v = (j + randomFloat()) / (height - 1);
-                    
+
                     Ray ray = camera.getRay(u, v);
                     pixelColor += rayColor(ray, maxDepth);
                 }
-                
+
                 // 平均采样值
                 pixelColor /= samplesPerPixel;
-                
+
                 // Gamma校正
                 pixelColor = Vector3(sqrt(pixelColor.x), sqrt(pixelColor.y), sqrt(pixelColor.z));
-                
+
                 // 写入缓冲区
                 buffer[(height - 1 - j) * width + i] = rgbToUint32(pixelColor);
             }
         }
     }
-    
+
 private:
     Vector3 rayColor(const Ray& ray, int depth) const {
         HitInfo info;
-        
+
         // 递归深度限制
         if (depth <= 0) {
             return Vector3(0, 0, 0);
         }
-        
+
         // 光线与场景相交测试
         if (worldHit(ray, 0.001f, FLT_MAX, info)) {
             Ray scattered;
             Vector3 attenuation;
             Vector3 emitted = info.material->emitted(info.u, info.v, info.point);
-            
+
             if (info.material->scatter(ray, info, attenuation, scattered)) {
                 return emitted + attenuation * rayColor(scattered, depth - 1);
             } else {
                 return emitted;
             }
         }
-        
+
         // 背景颜色
         Vector3 unitDirection = normalize(ray.direction);
         float t = 0.5f * (unitDirection.y + 1.0f);
         return (1.0f - t) * Vector3(1.0f, 1.0f, 1.0f) + t * Vector3(0.5f, 0.7f, 1.0f);
     }
-    
+
     bool worldHit(const Ray& ray, float tMin, float tMax, HitInfo& info) const {
         HitInfo tempInfo;
         bool hitAnything = false;
         float closestSoFar = tMax;
-        
+
         for (const auto& obj : world) {
             if (obj->hit(ray, tMin, closestSoFar, tempInfo)) {
                 hitAnything = true;
@@ -926,10 +926,10 @@ private:
                 info = tempInfo;
             }
         }
-        
+
         return hitAnything;
     }
-    
+
     uint32_t rgbToUint32(const Vector3& color) const {
         uint32_t r = (uint32_t)(color.x * 255.99f);
         uint32_t g = (uint32_t)(color.y * 255.99f);
@@ -947,32 +947,32 @@ private:
     Vector3 vertical;
     Vector3 u, v, w;
     float lensRadius;
-    
+
 public:
-    Camera(const Vector3& lookFrom, const Vector3& lookAt, const Vector3& vup, 
+    Camera(const Vector3& lookFrom, const Vector3& lookAt, const Vector3& vup,
             float vfov, float aspectRatio, float aperture, float focusDist) {
-        
+
         lensRadius = aperture / 2.0f;
         float theta = degreesToRadians(vfov);
         float h = tan(theta / 2.0f);
         float viewportHeight = 2.0f * h;
         float viewportWidth = aspectRatio * viewportHeight;
-        
+
         w = normalize(lookFrom - lookAt);
         u = normalize(cross(vup, w));
         v = cross(w, u);
-        
+
         origin = lookFrom;
         horizontal = focusDist * viewportWidth * u;
         vertical = focusDist * viewportHeight * v;
         lowerLeftCorner = origin - horizontal / 2.0f - vertical / 2.0f - focusDist * w;
     }
-    
+
     Ray getRay(float s, float t) const {
         Vector3 rd = lensRadius * randomInUnitDisk();
         Vector3 offset = u * rd.x + v * rd.y;
-        
-        return Ray(origin + offset, 
+
+        return Ray(origin + offset,
                   lowerLeftCorner + s * horizontal + t * vertical - origin - offset);
     }
 };
@@ -987,16 +987,16 @@ public:
     Hittable* left;
     Hittable* right;
     AABB box;
-    
+
     BVHNode() {}
-    
+
     BVHNode(std::vector<Hittable*>& objects, size_t start, size_t end) {
         int axis = randomInt(0, 2);
-        auto comparator = (axis == 0) ? boxXCompare : 
+        auto comparator = (axis == 0) ? boxXCompare :
                          (axis == 1) ? boxYCompare : boxZCompare;
-        
+
         size_t objectSpan = end - start;
-        
+
         if (objectSpan == 1) {
             left = right = objects[start];
         } else if (objectSpan == 2) {
@@ -1009,56 +1009,56 @@ public:
             }
         } else {
             std::sort(objects.begin() + start, objects.begin() + end, comparator);
-            
+
             auto mid = start + objectSpan / 2;
             left = new BVHNode(objects, start, mid);
             right = new BVHNode(objects, mid, end);
         }
-        
+
         AABB boxLeft, boxRight;
-        
+
         if (!left->boundingBox(boxLeft) || !right->boundingBox(boxRight)) {
             std::cerr << "No bounding box in BVHNode constructor.\n";
         }
-        
+
         box = surroundingBox(boxLeft, boxRight);
     }
-    
+
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitInfo& info) const override {
         if (!box.hit(ray, tMin, tMax)) {
             return false;
         }
-        
+
         bool hitLeft = left->hit(ray, tMin, tMax, info);
         bool hitRight = right->hit(ray, tMin, hitLeft ? info.t : tMax, info);
-        
+
         return hitLeft || hitRight;
     }
-    
+
     virtual bool boundingBox(AABB& outputBox) const override {
         outputBox = box;
         return true;
     }
-    
+
 private:
     static bool boxCompare(const Hittable* a, const Hittable* b, int axis) {
         AABB boxA, boxB;
-        
+
         if (!a->boundingBox(boxA) || !b->boundingBox(boxB)) {
             std::cerr << "No bounding box in BVHNode constructor.\n";
         }
-        
+
         return boxA.min().e[axis] < boxB.min().e[axis];
     }
-    
+
     static bool boxXCompare(const Hittable* a, const Hittable* b) {
         return boxCompare(a, b, 0);
     }
-    
+
     static bool boxYCompare(const Hittable* a, const Hittable* b) {
         return boxCompare(a, b, 1);
     }
-    
+
     static bool boxZCompare(const Hittable* a, const Hittable* b) {
         return boxCompare(a, b, 2);
     }
@@ -1076,40 +1076,40 @@ private:
     struct Plane {
         Vector3 normal;
         float distance;
-        
+
         bool inside(const Vector3& point) const {
             return dot(point, normal) + distance >= 0;
         }
-        
+
         bool inside(const AABB& box) const {
             Vector3 positive = box.min();
             Vector3 negative = box.max();
-            
+
             for (int i = 0; i < 3; i++) {
                 if (normal[i] >= 0) {
                     positive[i] = box.max()[i];
                     negative[i] = box.min()[i];
                 }
             }
-            
+
             return inside(positive);
         }
     };
-    
+
     Plane planes[6];
-    
+
 public:
     void update(const Matrix4& viewProjection) {
         // 从视图投影矩阵提取视锥体平面
         Matrix4 m = transpose(viewProjection);
-        
+
         planes[0] = { Vector3(m[3][0] + m[0][0], m[3][1] + m[0][1], m[3][2] + m[0][2]), m[3][3] + m[0][3] }; // 左
         planes[1] = { Vector3(m[3][0] - m[0][0], m[3][1] - m[0][1], m[3][2] - m[0][2]), m[3][3] - m[0][3] }; // 右
         planes[2] = { Vector3(m[3][0] + m[1][0], m[3][1] + m[1][1], m[3][2] + m[1][2]), m[3][3] + m[1][3] }; // 下
         planes[3] = { Vector3(m[3][0] - m[1][0], m[3][1] - m[1][1], m[3][2] - m[1][2]), m[3][3] - m[1][3] }; // 上
         planes[4] = { Vector3(m[3][0] + m[2][0], m[3][1] + m[2][1], m[3][2] + m[2][2]), m[3][3] + m[2][3] }; // 近
         planes[5] = { Vector3(m[3][0] - m[2][0], m[3][1] - m[2][1], m[3][2] - m[2][2]), m[3][3] - m[2][3] }; // 远
-        
+
         // 归一化平面
         for (int i = 0; i < 6; i++) {
             float length = planes[i].normal.length();
@@ -1117,7 +1117,7 @@ public:
             planes[i].distance /= length;
         }
     }
-    
+
     bool isVisible(const AABB& box) const {
         for (int i = 0; i < 6; i++) {
             if (!planes[i].inside(box)) {
@@ -1126,16 +1126,16 @@ public:
         }
         return true;
     }
-    
+
     std::vector<Mesh*> cullMeshes(const std::vector<Mesh*>& meshes) {
         std::vector<Mesh*> visibleMeshes;
-        
+
         for (auto mesh : meshes) {
             if (isVisible(mesh->getBoundingBox())) {
                 visibleMeshes.push_back(mesh);
             }
         }
-        
+
         return visibleMeshes;
     }
 };
@@ -1147,83 +1147,83 @@ private:
     GLuint queryFBO;
     GLuint depthTexture;
     std::vector<Mesh*> previousVisible;
-    
+
 public:
     OcclusionCuller(int width, int height) {
         initializeOcclusionQueries(width, height);
     }
-    
+
     void initializeOcclusionQueries(int width, int height) {
         glGenQueries(1, &occlusionQuery);
-        
+
         // 创建深度纹理
         glGenTextures(1, &depthTexture);
         glBindTexture(GL_TEXTURE_2D, depthTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, 
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0,
                      GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        
+
         // 创建FBO
         glGenFramebuffers(1, &queryFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, queryFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
-        
+
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             std::cout << "Framebuffer not complete!" << std::endl;
         }
-        
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-    
+
     std::vector<Mesh*> cullMeshes(const std::vector<Mesh*>& meshes, const Matrix4& viewProjection) {
         std::vector<Mesh*> visibleMeshes;
-        
+
         // 先渲染边界框进行遮挡查询
         glBindFramebuffer(GL_FRAMEBUFFER, queryFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
-        
+
         glEnable(GL_DEPTH_TEST);
         glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-        
+
         for (auto mesh : meshes) {
             // 如果前一帧可见，跳过查询
             if (std::find(previousVisible.begin(), previousVisible.end(), mesh) != previousVisible.end()) {
                 visibleMeshes.push_back(mesh);
                 continue;
             }
-            
+
             // 渲染边界框进行遮挡查询
             glBeginQuery(GL_SAMPLES_PASSED, occlusionQuery);
             renderBoundingBox(mesh->getBoundingBox(), viewProjection);
             glEndQuery(GL_SAMPLES_PASSED);
-            
+
             // 获取查询结果
             GLuint sampleCount;
             glGetQueryObjectuiv(occlusionQuery, GL_QUERY_RESULT, &sampleCount);
-            
+
             if (sampleCount > 0) {
                 visibleMeshes.push_back(mesh);
             }
         }
-        
+
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
+
         // 更新前一帧可见列表
         previousVisible = visibleMeshes;
-        
+
         return visibleMeshes;
     }
-    
+
 private:
     void renderBoundingBox(const AABB& box, const Matrix4& viewProjection) {
         // 渲染AABB边界框
         Vector3 min = box.min();
         Vector3 max = box.max();
-        
+
         // 边界框的8个顶点
         Vector3 vertices[8] = {
             Vector3(min.x, min.y, min.z),
@@ -1235,24 +1235,24 @@ private:
             Vector3(max.x, max.y, max.z),
             Vector3(min.x, max.y, max.z)
         };
-        
+
         // 边界框的12条边
         int edges[12][2] = {
             {0, 1}, {1, 2}, {2, 3}, {3, 0}, // 底面
             {4, 5}, {5, 6}, {6, 7}, {7, 4}, // 顶面
             {0, 4}, {1, 5}, {2, 6}, {3, 7}  // 垂直边
         };
-        
+
         // 渲染边界框
         glBegin(GL_LINES);
         for (int i = 0; i < 12; i++) {
             Vector3 v1 = vertices[edges[i][0]];
             Vector3 v2 = vertices[edges[i][1]];
-            
+
             // 应用变换
             Vector4 v1Proj = viewProjection * Vector4(v1, 1.0f);
             Vector4 v2Proj = viewProjection * Vector4(v2, 1.0f);
-            
+
             glVertex3f(v1Proj.x, v1Proj.y, v1Proj.z);
             glVertex3f(v2Proj.x, v2Proj.y, v2Proj.z);
         }

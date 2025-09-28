@@ -1,52 +1,18 @@
 ---
-title: "Unity Addressables 资产管理"
-date: "2024-08-17"
-summary: "Unity Addressable Asset System 简介，这是一种强大而动态的资产管理方式。"
-tags: ["Unity", "内存管理"]
+title: "C++的初始化机制"
+date: "2025-04-17"
+summary: "C++存在一个复制、高性能的初始化机制，本篇文章主要是笔者学习时厘清关系的笔记"
+tags: ["C++"]
 published: true
 ---
 
-# Unity Addressables 资产管理
+## 初始化类别
+- 值初始化
+- 聚合初始化
+- 列表初始化
+- 构造函数初始化
 
-Addressable Asset System 提供了一种通过"地址"而非路径加载资产的强大方式，将你的资产与项目结构解耦，并支持动态内容更新。
-
-## 为什么使用 Addressables？
-
-- **解耦资产**：可以从任何地方（本地、远程服务器）加载资产，而无需更改代码。
-- **简化加载**：异步加载 API 使加载资产而不会冻结游戏变得容易。
-- **内存管理**：Addressables 自动处理资产卸载和依赖管理，减少内存使用。
-
-## 基本用法
-
-首先在检查器中将资产标记为 addressable。然后，你可以在代码中加载它：
-
-```csharp
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-
-public class AddressableLoader : MonoBehaviour
-{
-    public string assetAddress;
-
-    void Start()
-    {
-        AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(assetAddress);
-        handle.Completed += OnAssetLoaded;
-    }
-
-    private void OnAssetLoaded(AsyncOperationHandle<GameObject> handle)
-    {
-        if (handle.Status == AsyncOperationStatus.Succeeded)
-        {
-            Instantiate(handle.Result);
-        }
-        else
-        {
-            Debug.LogError("资产加载失败: " + handle.DebugName);
-        }
-
-        // 使用完资产后释放句柄很重要
-        // Addressables.Release(handle);
-    }
-}
-```
+## 初始化时机
+- 成员初始化列表
+- 构造函数体初始化
+- 变量声明时初始化
