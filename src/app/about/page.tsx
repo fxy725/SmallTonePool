@@ -12,7 +12,7 @@ export default function AboutPage() {
             <Header />
 
             {/* Content Sections */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16 about-container">
 
 
 
@@ -20,7 +20,7 @@ export default function AboutPage() {
                 {/* About Me — replaced by centered avatar + caption */}
                 <section className="p-6 md:p-8 bg-transparent rounded-none shadow-none">
                     <div className="flex flex-col items-center text-center">
-                        <div className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-2 border-[#8B5E3C] dark:border-[#8B5E3C] relative">
+                        <div className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-2 border-[#8B5E3C] dark:border-[#8B5E3C] relative about-avatar-container">
                             <Image src="/assets/Profile.png" alt="头像" fill className="object-cover" />
                         </div>
                         <p className="mt-4 text-lg text-gray-900 dark:text-white font-hero">小石潭记博客主 — AI爱好者 · 游戏开发者</p>
@@ -38,7 +38,7 @@ export default function AboutPage() {
                                 <CopyButton
                                     text="849517015@qq.com"
                                     successMessage="已复制邮箱地址"
-                                    className="flex items-center gap-1 px-4 py-2 bg-white hover:bg-gray-100 transition-colors"
+                                    className="flex items-center gap-1 px-4 py-2 bg-white hover:bg-gray-100 transition-colors about-email-button"
                                     style={{ outline: 'none', boxShadow: 'none' }}
                                 >
                                     <Image src="/logos/QQ.svg" alt="QQ" width={20} height={20} className="flex-shrink-0" />
@@ -46,7 +46,7 @@ export default function AboutPage() {
                                 </CopyButton>
                             </div>
 
-                            <div className="flex items-center justify-center ">
+                            <div className="flex items-center justify-center about-social-buttons about-social-vertical">
                                 <a href="https://space.bilibili.com/2045320027?spm_id_from=333.1007.0.0" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-4 py-2 bg-[#fb7299] hover:bg-[#ff6b9d] transition-colors" style={{ outline: 'none', boxShadow: 'none' }}>
                                     <Image src="/logos/bilibili.svg" alt="Bilibili" width={20} height={20} className="flex-shrink-0 filter brightness-0 invert" />
                                     <span className="font-pixel text-xl text-white leading-none">Bilibili</span>
@@ -70,7 +70,7 @@ export default function AboutPage() {
                             </div>
                         </div>
                         {/* Skills Section */}
-                        <div className="flex items-center justify-center mt-8">
+                        <div className="flex items-center justify-center mt-8 about-skills-container">
                             <span
                                 className="mr-4 text-lg text-gray-600 dark:text-gray-300"
                                 style={{ fontFamily: 'var(--font-tech-stack)' }}
@@ -165,7 +165,7 @@ export default function AboutPage() {
 
                             <span className="px-8 py-3 bg-white dark:bg-gray-900 shadow-lg rounded-full border-2 border-blue-200 dark:border-blue-800">
                                 <span
-                                    className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 dark:from-blue-400 dark:via-blue-300 dark:to-indigo-400 bg-clip-text text-transparent"
+                                    className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 dark:from-blue-400 dark:via-blue-300 dark:to-indigo-400 bg-clip-text text-transparent about-project-title"
                                     style={{ fontFamily: 'LXGW Marker Gothic' }}
                                 >
                                     项目展示
@@ -191,7 +191,7 @@ export default function AboutPage() {
                         <div className="absolute right-40 top-1/2 transform -translate-y-1/2 w-0.5 h-0.5 bg-indigo-400 rounded-full opacity-30"></div>
                     </div>
                     <div className="grid md:grid-cols-1 gap-6">
-                        <div className="p-4 border-b-2 border-gray-300 dark:border-gray-600 bg-transparent rounded-none shadow-none" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
+                        <div className="p-4 border-b-2 border-gray-300 dark:border-gray-600 bg-transparent rounded-none shadow-none about-project-card" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
                             <div className="flex items-center gap-3 mb-4">
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">FarmingRPG</h3>
                                 <div className="ml-auto flex items-center gap-4">
@@ -211,14 +211,14 @@ export default function AboutPage() {
                                 基于Unity开发的农场模拟RPG游戏，包含完整的种植系统、养殖系统、季节变化和经济系统。玩家可以种植作物、养殖动物、制作物品，体验农场生活的乐趣。
                             </p>
                             <div className="flex flex-wrap gap-2">
-                                <span className="skill-badge-sm px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">Unity</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">C#</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">2D游戏</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">RPG</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">Unity</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">C#</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">2D游戏</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs">RPG</span>
                             </div>
                         </div>
 
-                        <div className="p-4 border-b-2 border-gray-300 dark:border-gray-600 bg-transparent rounded-none shadow-none" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
+                        <div className="p-4 border-b-2 border-gray-300 dark:border-gray-600 bg-transparent rounded-none shadow-none about-project-card" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
                             <div className="flex items-center gap-3 mb-4">
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">SpaceSurvivor</h3>
                                 <div className="ml-auto flex items-center gap-4">
@@ -238,14 +238,14 @@ export default function AboutPage() {
                                 太空主题的生存游戏，玩家在外太空环境中收集资源、建造基地、对抗外星生物。包含飞船升级、武器系统、科技树等深度玩法，提供紧张刺激的生存体验。
                             </p>
                             <div className="flex flex-wrap gap-2">
-                                <span className="skill-badge-sm px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs">Unity</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs">C#</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs">3D游戏</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs">生存游戏</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs">Unity</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs">C#</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs">3D游戏</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs">生存游戏</span>
                             </div>
                         </div>
 
-                        <div className="p-4 bg-transparent rounded-none shadow-none" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
+                        <div className="p-4 bg-transparent rounded-none shadow-none about-project-card" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
                             <div className="flex items-center gap-3 mb-4">
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">SmallPoolTone</h3>
                                 <div className="ml-auto flex items-center gap-4">
@@ -265,10 +265,10 @@ export default function AboutPage() {
                                 基于Next.js构建的现代化个人博客系统，采用小石潭主题设计，支持MDX文章管理、深色模式、搜索功能、标签系统等特性。专注于技术文章分享，具有优秀的SEO优化和响应式设计。
                             </p>
                             <div className="flex flex-wrap gap-2">
-                                <span className="skill-badge-sm px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">Next.js</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">TypeScript</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">Tailwind CSS</span>
-                                <span className="skill-badge-sm px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">MDX</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">Next.js</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">TypeScript</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">Tailwind CSS</span>
+                                <span className="skill-badge-sm about-skill-badge px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs">MDX</span>
                             </div>
                         </div>
                     </div>

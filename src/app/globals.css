@@ -613,6 +613,93 @@ html {
     }
 }
 
+/* 关于页面响应式技能标签样式（仅保留 about-* 辅助类，避免覆盖原有 .skill-tag） */
+
+/* 关于页面全面响应式优化 */
+@media (max-width: 768px) {
+
+    /* 头像容器响应式 */
+    .about-avatar-container {
+        width: 8rem !important;
+        height: 8rem !important;
+    }
+
+    /* 社交媒体按钮在移动端堆叠 */
+    .about-social-buttons {
+        max-width: 280px;
+        gap: 0.5rem;
+    }
+
+    /* 技术栈标签在移动端改为简单布局 */
+    .about-skills-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    /* 项目展示标题在移动端减小 */
+    .about-project-title {
+        font-size: 1.5rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    /* 项目装饰元素在移动端隐藏一些 */
+    .about-project-decoration {
+        display: none;
+    }
+
+    /* 项目卡片内容在移动端紧凑化 */
+    .about-project-card {
+        padding: 1rem !important;
+    }
+
+    /* 技能标签在移动端更紧凑 */
+    .about-skill-badge {
+        font-size: 0.75rem !important;
+        padding: 0.25rem 0.75rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* 极小屏幕优化 */
+    .about-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* 邮箱按钮在极小屏幕上字体更小 */
+    .about-email-button {
+        font-size: 0.75rem !important;
+    }
+
+    /* 社交按钮在极小屏幕上改为垂直布局 */
+    .about-social-vertical {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+    }
+}
+
+/* 中等屏幕优化 */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .about-container {
+        max-width: 700px;
+    }
+
+    .about-project-title {
+        font-size: 2.5rem !important;
+    }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1025px) {
+    .about-container {
+        max-width: 900px;
+    }
+}
+
 /* Selection Styles */
 ::selection {
     background: var(--brand-light);
