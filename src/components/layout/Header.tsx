@@ -73,34 +73,27 @@ export function Header() {
               </MobileNavLink>
             </nav>
 
-            {/* 移动端展开按钮 */}
+            {/* 移动端展开按钮（汉堡菜单动画：三条杠 → 叉号） */}
             <button
-              className="p-2 transition-colors bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg ml-2"
+              className="p-2 ml-2 bg-transparent hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent rounded-lg focus:outline-none focus-visible:outline-none"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle theme menu"
+              aria-label="切换主题菜单"
+              aria-expanded={isMenuOpen}
             >
-              <svg
-                className="w-5 h-5 text-gray-600 dark:text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                {isMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                  />
-                )}
-              </svg>
+              <span className="relative block w-6 h-4">
+                <span
+                  className={`absolute left-0 w-6 h-0.5 rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-left ${isMenuOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"
+                    }`}
+                />
+                <span
+                  className={`absolute left-0 w-6 h-0.5 rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-left top-1/2 -translate-y-1/2 ${isMenuOpen ? "opacity-0 scale-x-0" : "opacity-100 scale-x-100"
+                    }`}
+                />
+                <span
+                  className={`absolute left-0 w-6 h-0.5 rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-left ${isMenuOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-0"
+                    }`}
+                />
+              </span>
             </button>
           </div>
         </div>

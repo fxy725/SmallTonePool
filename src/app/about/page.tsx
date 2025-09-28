@@ -163,7 +163,7 @@ export default function AboutPage() {
                                 <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
                             </div>
 
-                            <span className="px-8 py-3 bg-white dark:bg-gray-900 shadow-lg rounded-full border-2 border-blue-200 dark:border-blue-800">
+                            <span className="px-8 py-3 bg-white dark:bg-gray-900 shadow-lg rounded-full border-2 border-blue-200 dark:border-blue-800 about-project-title-pill">
                                 <span
                                     className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 dark:from-blue-400 dark:via-blue-300 dark:to-indigo-400 bg-clip-text text-transparent about-project-title"
                                     style={{ fontFamily: 'LXGW Marker Gothic' }}
