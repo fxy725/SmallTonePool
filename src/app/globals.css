@@ -646,6 +646,12 @@ html {
     }
 
     /* 技术栈形状保持与 PC 一致；行间距通过 row-gap 控制 */
+    .about-skills-title {
+        margin-bottom: 0.5rem;
+        width: 100%;
+        text-align: center;
+        display: block;
+    }
 
     /* 项目展示标题在移动端减小（文字本身） */
     .about-project-title {
@@ -695,7 +701,8 @@ html {
 
     /* 邮箱按钮在极小屏幕上字体更小 */
     .about-email-button {
-        font-size: 0.75rem !important;
+        font-size: 0.7rem !important;
+        padding: 0.375rem 0.5rem !important;
     }
 
     /* 极小屏幕上社交按钮仍保持横向（可自动换行），不留间隙 */
@@ -711,6 +718,8 @@ html {
 
     .about-social-vertical a {
         margin: 0 !important;
+        padding: 0.375rem 0.5rem !important;
+        border-radius: 0.5rem !important;
     }
 }
 

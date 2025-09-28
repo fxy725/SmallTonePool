@@ -72,7 +72,7 @@ export default function AboutPage() {
                         {/* Skills Section */}
                         <div className="flex items-center justify-center mt-8 about-skills-container">
                             <span
-                                className="mr-4 text-lg text-gray-600 dark:text-gray-300"
+                                className="block w-full text-center mb-2 text-lg text-gray-600 dark:text-gray-300 about-skills-title"
                                 style={{ fontFamily: 'var(--font-tech-stack)' }}
                             >
                                 技术栈

@@ -80,17 +80,17 @@ export function Header() {
               aria-label="切换主题菜单"
               aria-expanded={isMenuOpen}
             >
-              <span className="relative block w-6 h-4">
+              <span className="relative block w-5 h-4">
                 <span
-                  className={`absolute left-0 w-6 h-0.5 rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-left ${isMenuOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"
+                  className={`absolute left-0 w-5 h-px rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-center ${isMenuOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"
                     }`}
                 />
                 <span
-                  className={`absolute left-0 w-6 h-0.5 rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-left top-1/2 -translate-y-1/2 ${isMenuOpen ? "opacity-0 scale-x-0" : "opacity-100 scale-x-100"
+                  className={`absolute left-0 w-5 h-px rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-center top-1/2 -translate-y-1/2 ${isMenuOpen ? "opacity-0 scale-x-0" : "opacity-100 scale-x-100"
                     }`}
                 />
                 <span
-                  className={`absolute left-0 w-6 h-0.5 rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-left ${isMenuOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-0"
+                  className={`absolute left-0 w-5 h-px rounded-full bg-gray-700 dark:bg-gray-200 transition-all duration-300 ease-in-out origin-center ${isMenuOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-0"
                     }`}
                 />
               </span>
