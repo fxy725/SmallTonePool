@@ -624,22 +624,28 @@ html {
         height: 8rem !important;
     }
 
-    /* 社交媒体按钮在移动端堆叠 */
+    /* 社交媒体按钮在移动端保持横向紧凑排列 */
     .about-social-buttons {
-        max-width: 280px;
+        flex-wrap: nowrap;
         gap: 0.5rem;
     }
 
-    /* 技术栈标签在移动端改为简单布局 */
+    /* 技术栈标签在移动端横向紧凑排列 */
     .about-skills-container {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 1rem;
+        justify-content: center;
+        gap: 0.5rem;
     }
 
-    /* 项目展示标题在移动端减小 */
+    /* 项目展示标题在移动端减小（文字本身） */
     .about-project-title {
         font-size: 1.5rem !important;
+    }
+
+    /* “项目展示”外层按钮框在移动端收紧内边距 */
+    .about-project-title-pill {
         padding: 0.5rem 1rem !important;
     }
 
@@ -658,6 +664,17 @@ html {
         font-size: 0.75rem !important;
         padding: 0.25rem 0.75rem !important;
     }
+
+    /* 移动端项目列表字体略小 */
+    .about-project-card h3 {
+        font-size: 1.125rem !important;
+        /* ≈ text-lg */
+    }
+
+    .about-project-card p {
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -673,10 +690,12 @@ html {
         font-size: 0.75rem !important;
     }
 
-    /* 社交按钮在极小屏幕上改为垂直布局 */
+    /* 极小屏幕上社交按钮仍保持横向（可自动换行） */
     .about-social-vertical {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
         width: 100%;
     }
