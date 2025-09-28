@@ -627,7 +627,8 @@ html {
     /* 社交媒体按钮在移动端保持横向紧凑排列且允许换行，不留间隙 */
     .about-social-buttons {
         flex-wrap: wrap;
-        gap: 0;
+        column-gap: 0;
+        row-gap: 0.5rem;
     }
 
     .about-social-buttons a {
@@ -640,14 +641,11 @@ html {
         flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        gap: 0;
+        column-gap: 0;
+        row-gap: 0.5rem;
     }
 
-    /* 移动端去除技能块的外边距与箭头裁剪，避免缝隙 */
-    .about-skills-container>div {
-        margin: 0 !important;
-        clip-path: none !important;
-    }
+    /* 技术栈形状保持与 PC 一致；行间距通过 row-gap 控制 */
 
     /* 项目展示标题在移动端减小（文字本身） */
     .about-project-title {
@@ -706,7 +704,8 @@ html {
         flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        gap: 0;
+        column-gap: 0;
+        row-gap: 0.5rem;
         width: 100%;
     }
 
