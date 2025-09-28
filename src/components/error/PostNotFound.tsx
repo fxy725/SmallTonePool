@@ -5,57 +5,45 @@ interface PostNotFoundProps {
 }
 
 export function PostNotFound({ slug }: PostNotFoundProps) {
-    return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
-            <div className="max-w-2xl w-full text-center">
-                <div className="text-gray-400 dark:text-gray-600 mb-8">
-                    <svg className="w-32 h-32 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
+    // 处理超长文本，限制显示长度
+    const displaySlug = slug.length > 30 
+        ? slug.substring(0, 27) + '...' 
+        : slug;
 
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+    return (
+        <div className="min-h-screen flex items-center justify-center px-6 bg-gray-50 dark:bg-gray-950" style={{ fontFamily: 'var(--font-content)' }}>
+            <div className="text-center max-w-md">
+                <div className="mb-8">
+                    <div className="w-20 h-20 mx-auto mb-6 relative">
+                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 rounded-lg transform rotate-3"></div>
+                        <div className="absolute inset-0 bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center transform -rotate-3 shadow-sm">
+                            <div className="w-8 h-8 bg-gray-300 dark:bg-gray-700 rounded-sm"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h1 className="text-3xl font-light text-gray-900 dark:text-gray-100 mb-4 tracking-wide">
                     文章未找到
                 </h1>
-
-                <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-                    抱歉，您访问的文章 &quot;{slug}&quot; 不存在或已被删除。
+                
+                <p className="text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
+                    您访问的文章 <span className="text-gray-800 dark:text-gray-200 font-medium break-all">&quot;{displaySlug}&quot;</span> 不存在或已被移除。
                 </p>
-
-                <div className="text-gray-500 dark:text-gray-400 mb-8">
-                    <p className="mb-2">可能的原因：</p>
-                    <ul className="text-left max-w-md mx-auto space-y-1">
-                        <li>• 文章链接错误</li>
-                        <li>• 文章已被删除</li>
-                        <li>• 文章尚未发布</li>
-                        <li>• 链接已过期</li>
-                    </ul>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                
+                <div className="flex items-center justify-center gap-3">
                     <Link
                         href="/blog"
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center justify-center gap-2"
+                        className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
                         返回文章列表
                     </Link>
-
+                    
                     <Link
                         href="/home"
-                        className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors inline-flex items-center justify-center gap-2"
+                        className="px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
-                        返回首页
+                        回到首页
                     </Link>
-                </div>
-
-                <div className="mt-12 text-sm text-gray-500 dark:text-gray-400">
-                    <p>如果您认为这是一个错误，请联系网站管理员。</p>
                 </div>
             </div>
         </div>

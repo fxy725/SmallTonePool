@@ -64,10 +64,7 @@ const getDynamicPostData = unstable_cache(
             const mdxContent = await readMDXFile(slug);
             const matterResult = matter(mdxContent);
 
-            // 检查是否已发布
-            if (matterResult.data.published === false) {
-                return null;
-            }
+            // 不再根据 published 进行过滤
 
             const html = await processMDXContent(matterResult.content);
 
@@ -79,7 +76,6 @@ const getDynamicPostData = unstable_cache(
                 summary: matterResult.data.summary || '',
                 content: html,
                 tags: matterResult.data.tags || [],
-                published: true,
                 readingTime: Math.ceil(matterResult.content.split(/\s+/).length / 200),
             };
         } catch (error) {

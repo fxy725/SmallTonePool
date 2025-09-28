@@ -6,7 +6,6 @@ export interface Post {
     summary: string;
     content: string;
     tags: string[];
-    published: boolean;
     readingTime?: number;
 }
 

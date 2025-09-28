@@ -180,7 +180,6 @@ export async function getAllPosts(): Promise<Post[]> {
                         summary: matterResult.data.summary || '',
                         content: html,
                         tags: matterResult.data.tags || [],
-                        published: matterResult.data.published !== false,
                         readingTime: calculateReadingTime(matterResult.content),
                     };
 
@@ -189,7 +188,6 @@ export async function getAllPosts(): Promise<Post[]> {
         );
 
         const filteredPosts = allPostsData
-            .filter(post => post.published)
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
         // 更新缓存池和文件修改时间
@@ -211,7 +209,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         // 首先尝试从缓存池获取
         if (cachePool.postMap && !shouldInvalidateCache()) {
             const cachedPost = cachePool.postMap.get(slug);
-            if (cachedPost && cachedPost.published) {
+            if (cachedPost) {
                 return cachedPost;
             }
         }
@@ -219,7 +217,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         // 如果缓存中没有或缓存已失效，尝试从缓存的文章列表中查找
         if (cachePool.posts && !shouldInvalidateCache()) {
             const cachedPost = cachePool.posts.find(post => post.slug === slug);
-            if (cachedPost && cachedPost.published) {
+            if (cachedPost) {
                 return cachedPost;
             }
         }
@@ -236,10 +234,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         const fileContents = fs.readFileSync(fullPath, 'utf8');
         const matterResult = grayMatter.default(fileContents);
 
-        // 检查是否已发布
-        if (matterResult.data.published === false) {
-            return null;
-        }
+        // 不再根据 published 进行过滤
 
         // 使用缓存键来避免重复处理MDX
         const cacheKey = `mdx_${slug}`;
@@ -253,7 +248,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
             summary: matterResult.data.summary || '',
             content: html,
             tags: matterResult.data.tags || [],
-            published: true,
             readingTime: calculateReadingTime(matterResult.content),
         };
 

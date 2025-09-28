@@ -50,10 +50,7 @@ const getAllPostsDynamic = unstable_cache(
             const fileContents = fs.readFileSync(fullPath, 'utf8');
             const matterResult = matter(fileContents);
 
-            // 检查是否已发布
-            if (matterResult.data.published === false) {
-              return null;
-            }
+            // 不再根据 published 进行过滤
 
             // 处理MDX内容
             const html = await processMDXContent(matterResult.content);
@@ -66,7 +63,6 @@ const getAllPostsDynamic = unstable_cache(
               summary: matterResult.data.summary || '',
               content: html,
               tags: matterResult.data.tags || [],
-              published: true,
               readingTime: Math.ceil(matterResult.content.split(/\s+/).length / 200),
             } as Post;
           } catch (error) {
@@ -93,6 +89,7 @@ const getAllPostsDynamic = unstable_cache(
     tags: ['posts', 'dynamic-posts']
   }
 );
+
 
 export async function GET() {
   try {
