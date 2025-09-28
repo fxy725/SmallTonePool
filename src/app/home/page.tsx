@@ -14,6 +14,12 @@ export default function Home() {
     const [scrollLeft, setScrollLeft] = useState(0);
     const [mounted, setMounted] = useState(false);
 
+    // 触摸事件状态
+    const [touchStartX, setTouchStartX] = useState(0);
+    const [touchStartY, setTouchStartY] = useState(0);
+    const [touchScrollLeft, setTouchScrollLeft] = useState(0);
+    const [isTouchScrolling, setIsTouchScrolling] = useState(false);
+
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
     const oneSetWidthRef = useRef(0);
     const SPEED_PX_PER_SEC = 120; // 自动滚动速度（像素/秒）
@@ -266,6 +272,61 @@ export default function Home() {
         }
     };
 
+    // 触摸事件处理 - 移动端支持
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (!scrollContainerRef.current) return;
+
+        const touch = e.touches[0];
+        setTouchStartX(touch.clientX);
+        setTouchStartY(touch.clientY);
+        setTouchScrollLeft(scrollContainerRef.current.scrollLeft);
+        setIsAutoScrolling(false);
+        setIsTouchScrolling(false);
+        dragMovedRef.current = false;
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!scrollContainerRef.current) return;
+
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+
+        // 判断滑动方向：如果水平滑动距离大于垂直滑动距离，则进行水平滚动
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 15) {
+            e.preventDefault(); // 阻止垂直滚动
+            setIsTouchScrolling(true);
+            const newScrollLeft = touchScrollLeft - deltaX;
+            scrollContainerRef.current.scrollLeft = newScrollLeft;
+
+            // 标记为拖拽移动
+            if (Math.abs(deltaX) > DRAG_CLICK_SUPPRESS_THRESHOLD_PX) {
+                dragMovedRef.current = true;
+            }
+        }
+        // 如果是垂直滑动，不阻止事件，允许页面滚动
+    };
+
+    const handleTouchEnd = () => {
+        // 延迟恢复自动滚动
+        setTimeout(() => {
+            setIsAutoScrolling(true);
+            setIsTouchScrolling(false);
+        }, 2000);
+
+        // 如果发生了明显的水平滑动，抑制点击事件
+        if (dragMovedRef.current) {
+            (window as Window & { __suppressNextPostClick__?: boolean }).__suppressNextPostClick__ = true;
+            setTimeout(() => {
+                (window as Window & { __suppressNextPostClick__?: boolean }).__suppressNextPostClick__ = false;
+                dragMovedRef.current = false; // 清理标记
+            }, 100);
+        } else {
+            // 如果没有拖拽，立即清理标记
+            dragMovedRef.current = false;
+        }
+    };
+
     const recentPosts = posts.slice(0, 7);
 
     return (
@@ -470,11 +531,14 @@ export default function Home() {
                                 onKeyDown={handleKeyDown}
                                 onMouseEnter={handleMouseEnter}
                                 onMouseLeave={handleMouseLeaveContainer}
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
                                 tabIndex={0}
                                 onContextMenu={(e) => e.preventDefault()}
                                 onClickCapture={(e) => {
                                     // 若刚发生拖拽，则抑制本次点击，避免误入详情页
-                                    if (dragMovedRef.current) {
+                                    if (dragMovedRef.current || isTouchScrolling) {
                                         e.preventDefault();
                                         e.stopPropagation();
                                         dragMovedRef.current = false;
@@ -494,7 +558,9 @@ export default function Home() {
                                     transform: 'translateZ(0)',
                                     // 防止拖拽时的文本选择
                                     WebkitTouchCallout: 'none',
-                                    WebkitTapHighlightColor: 'transparent'
+                                    WebkitTapHighlightColor: 'transparent',
+                                    // 移动端允许垂直滚动，优化触摸响应
+                                    touchAction: 'manipulation'
                                 }}
                             >
                                 <div className="flex gap-6" style={{ minWidth: 'max-content' }}>

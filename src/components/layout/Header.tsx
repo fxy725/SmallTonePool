@@ -25,7 +25,18 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* 左侧占位区域 - 用于平衡布局 */}
+          {/* 移动端左侧Logo按钮 */}
+          <div className="md:hidden">
+            <Link href="/home" className="flex items-center p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
+              <img
+                src="/assets/Logo.png"
+                alt="Smalltone Logo"
+                className="h-8 w-8 hover:scale-110 transition-transform duration-200"
+              />
+            </Link>
+          </div>
+
+          {/* 桌面端左侧占位区域 - 用于平衡布局 */}
           <div className="hidden md:block w-32"></div>
 
           {/* Desktop Navigation - 绝对居中 */}
@@ -41,14 +52,13 @@ export function Header() {
             </NavLink>
           </nav>
 
-          {/* Theme Toggle - 右侧固定 */}
+          {/* Desktop Theme Toggle - 右侧固定 */}
           <div className="hidden md:block">
             <TripleThemeToggle />
           </div>
 
-          {/* Mobile Menu Button and Theme Toggle */}
-          <div className="flex items-center gap-2 md:hidden">
-            <TripleThemeToggle />
+          {/* 移动端右侧菜单按钮 */}
+          <div className="md:hidden">
             <button
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -83,28 +93,36 @@ export function Header() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <nav className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col space-y-3 items-center">
-              <MobileNavLink
-                href="/home"
-                onClick={() => setIsMenuOpen(false)}
-                className="font-hero"
-              >
-                首页
-              </MobileNavLink>
-              <MobileNavLink
-                href="/blog"
-                onClick={() => setIsMenuOpen(false)}
-                className="font-hero"
-              >
-                文章
-              </MobileNavLink>
-              <MobileNavLink
-                href="/about"
-                onClick={() => setIsMenuOpen(false)}
-                className="font-hero"
-              >
-                关于
-              </MobileNavLink>
+            <div className="flex flex-col space-y-4 items-center">
+              {/* 第一栏：导航链接并列排布 */}
+              <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+                <MobileNavLink
+                  href="/home"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="font-hero text-sm sm:text-base"
+                >
+                  首页
+                </MobileNavLink>
+                <MobileNavLink
+                  href="/blog"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="font-hero text-sm sm:text-base"
+                >
+                  文章
+                </MobileNavLink>
+                <MobileNavLink
+                  href="/about"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="font-hero text-sm sm:text-base"
+                >
+                  关于
+                </MobileNavLink>
+              </div>
+
+              {/* 第二栏：主题切换按钮 */}
+              <div className="flex items-center justify-center">
+                <TripleThemeToggle />
+              </div>
             </div>
           </nav>
         )}
@@ -157,7 +175,7 @@ function MobileNavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`nav-link block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 ${className}`}
+      className={`nav-link inline-block px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 text-center min-w-[60px] ${className}`}
     >
       {children}
     </Link>

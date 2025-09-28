@@ -200,12 +200,7 @@ export default function BlogContentClient({ posts: initialPosts, tags: initialTa
                                 className={`${index < 6 ? 'animate-fade-in-up' : ''}`}
                                 style={index >= 6 ? { animationDelay: `${(index - 6) * 0.1}s` } : {}}
                             >
-                                <div className="bg-white/95 dark:bg-gray-800/95 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable" style={{
-                                    WebkitUserSelect: 'none',
-                                    MozUserSelect: 'none',
-                                    msUserSelect: 'none',
-                                    userSelect: 'none'
-                                }}>
+                                <div className="bg-white/95 dark:bg-gray-800/95 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-[1px]">
                                     <PostCard post={post} />
                                 </div>
                             </div>

@@ -16,6 +16,12 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
     const pathname = usePathname();
     const router = useRouter();
 
+    // 触摸事件状态
+    const [touchStartTime, setTouchStartTime] = useState(0);
+    const [touchStartX, setTouchStartX] = useState(0);
+    const [touchStartY, setTouchStartY] = useState(0);
+    const [hasMoved, setHasMoved] = useState(false);
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('zh-CN', {
@@ -27,6 +33,54 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
     // const [clickCount, setClickCount] = useState(0);
     // const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null);
 
+    // 触摸事件处理函数
+    const handleTouchStart = (e: React.TouchEvent) => {
+        const touch = e.touches[0];
+        setTouchStartTime(Date.now());
+        setTouchStartX(touch.clientX);
+        setTouchStartY(touch.clientY);
+        setHasMoved(false);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        const touch = e.touches[0];
+        const deltaX = Math.abs(touch.clientX - touchStartX);
+        const deltaY = Math.abs(touch.clientY - touchStartY);
+
+        // 如果移动距离超过阈值，标记为已移动
+        if (deltaX > 10 || deltaY > 10) {
+            setHasMoved(true);
+
+            // 只在水平滚动列表中且水平移动大于垂直移动时才阻止默认行为
+            if (requireDoubleClick && deltaX > deltaY && deltaX > 15) {
+                e.preventDefault();
+            }
+        }
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        const touchEndTime = Date.now();
+        const touchDuration = touchEndTime - touchStartTime;
+
+        // 如果不是水平滚动列表，简化处理
+        if (!requireDoubleClick) {
+            // 在博客列表页，允许快速点击通过
+            if (!hasMoved || touchDuration < 200) {
+                return; // 允许点击事件继续
+            }
+        } else {
+            // 在水平滚动列表中，更严格的处理
+            if (!hasMoved && touchDuration < 300) {
+                return; // 允许点击事件继续
+            }
+
+            // 如果有移动，则阻止点击
+            if (hasMoved && touchDuration < 500) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+    };
 
     return (
         <Link href={`/blog/${post.slug}`} draggable={false} prefetch={true} onClick={(e) => {
@@ -35,6 +89,14 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                 e.preventDefault();
                 e.stopPropagation();
                 (window as Window & { __suppressNextPostClick__?: boolean }).__suppressNextPostClick__ = false;
+                return;
+            }
+
+            // 在水平滚动列表中，如果刚发生移动，则阻止点击
+            if (requireDoubleClick && hasMoved) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
             }
         }}>
             <article
@@ -49,9 +111,9 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                 onDragEnd={(e) => e.preventDefault()}
                 onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
                 onDoubleClick={(e: React.MouseEvent) => e.preventDefault()}
-                onTouchStart={(e: React.TouchEvent) => e.preventDefault()}
-                onTouchMove={(e: React.TouchEvent) => e.preventDefault()}
-                onTouchEnd={(e: React.TouchEvent) => e.preventDefault()}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
                 style={{
                     WebkitUserSelect: 'none',
                     MozUserSelect: 'none',
@@ -59,7 +121,8 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                     userSelect: 'none',
                     WebkitTouchCallout: 'none',
                     KhtmlUserSelect: 'none',
-                    touchAction: 'none'
+                    // 在移动端允许垂直滚动，只在水平滚动列表中限制水平滑动
+                    touchAction: requireDoubleClick ? 'manipulation' : 'auto'
                 }}
             >
                 {/* Animated Background Pattern */}
