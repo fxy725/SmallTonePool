@@ -25,17 +25,6 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* 移动端左侧Logo按钮 */}
-          <div className="md:hidden">
-            <Link href="/home" className="flex items-center p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
-              <img
-                src="/assets/Logo.png"
-                alt="Smalltone Logo"
-                className="h-8 w-8 hover:scale-110 transition-transform duration-200"
-              />
-            </Link>
-          </div>
-
           {/* 桌面端左侧占位区域 - 用于平衡布局 */}
           <div className="hidden md:block w-32"></div>
 
@@ -57,15 +46,41 @@ export function Header() {
             <TripleThemeToggle />
           </div>
 
-          {/* 移动端右侧菜单按钮 */}
-          <div className="md:hidden">
+          {/* 移动端导航 - 顶栏显示 */}
+          <div className="md:hidden flex items-center justify-between w-full">
+            {/* 移动端导航链接 */}
+            <nav className="flex items-center gap-6 flex-1 justify-center">
+              <MobileNavLink
+                href="/home"
+                onClick={() => setIsMenuOpen(false)}
+                className="font-hero text-base"
+              >
+                首页
+              </MobileNavLink>
+              <MobileNavLink
+                href="/blog"
+                onClick={() => setIsMenuOpen(false)}
+                className="font-hero text-base"
+              >
+                文章
+              </MobileNavLink>
+              <MobileNavLink
+                href="/about"
+                onClick={() => setIsMenuOpen(false)}
+                className="font-hero text-base"
+              >
+                关于
+              </MobileNavLink>
+            </nav>
+
+            {/* 移动端展开按钮 */}
             <button
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="p-2 transition-colors bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg ml-2"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
+              aria-label="Toggle theme menu"
             >
               <svg
-                className="w-6 h-6 text-gray-600 dark:text-gray-400"
+                className="w-5 h-5 text-gray-600 dark:text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -82,7 +97,7 @@ export function Header() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
+                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
                   />
                 )}
               </svg>
@@ -90,41 +105,13 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Theme Menu */}
         {isMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col space-y-4 items-center">
-              {/* 第一栏：导航链接并列排布 */}
-              <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
-                <MobileNavLink
-                  href="/home"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="font-hero text-sm sm:text-base"
-                >
-                  首页
-                </MobileNavLink>
-                <MobileNavLink
-                  href="/blog"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="font-hero text-sm sm:text-base"
-                >
-                  文章
-                </MobileNavLink>
-                <MobileNavLink
-                  href="/about"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="font-hero text-sm sm:text-base"
-                >
-                  关于
-                </MobileNavLink>
-              </div>
-
-              {/* 第二栏：主题切换按钮 */}
-              <div className="flex items-center justify-center">
-                <TripleThemeToggle />
-              </div>
+          <div className="md:hidden py-3 border-t border-gray-200 dark:border-gray-700 bg-transparent">
+            <div className="flex items-center justify-center">
+              <TripleThemeToggle />
             </div>
-          </nav>
+          </div>
         )}
       </div>
 
@@ -175,9 +162,10 @@ function MobileNavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`nav-link inline-block px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 font-medium select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 text-center min-w-[60px] ${className}`}
+      className={`nav-link relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium px-2 py-1 select-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 transition-colors duration-200 ${className}`}
     >
       {children}
+      <span className="pointer-events-none absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 group-hover:w-full transition-all duration-300"></span>
     </Link>
   );
 }

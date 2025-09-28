@@ -95,7 +95,7 @@ export default function BlogContentClient({ posts: initialPosts, tags: initialTa
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 blog-page-container">
             {/* 顶部控制区：标签栏 + 顶部分页（统一容器控制与文章列表的间距） */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 mb-6" style={{ fontFamily: 'var(--font-content)' }}>
                 <div className="flex flex-wrap gap-3 justify-center">
@@ -193,11 +193,11 @@ export default function BlogContentClient({ posts: initialPosts, tags: initialTa
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
                     </div>
                 ) : (
-                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 blog-posts-grid">
                         {currentPosts.map((post, index) => (
                             <div
                                 key={post.slug}
-                                className={`${index < 6 ? 'animate-fade-in-up' : ''}`}
+                                className={`${index < 6 ? 'animate-fade-in-up' : ''} post-card-container`}
                                 style={index >= 6 ? { animationDelay: `${(index - 6) * 0.1}s` } : {}}
                             >
                                 <div className="bg-white/95 dark:bg-gray-800/95 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-[1px]">

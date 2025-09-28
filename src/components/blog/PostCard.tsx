@@ -35,6 +35,9 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
 
     // 触摸事件处理函数
     const handleTouchStart = (e: React.TouchEvent) => {
+        // 如果不是水平滚动列表，不做任何处理
+        if (!requireDoubleClick) return;
+
         const touch = e.touches[0];
         setTouchStartTime(Date.now());
         setTouchStartX(touch.clientX);
@@ -43,6 +46,9 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
+        // 如果不是水平滚动列表，完全不干扰
+        if (!requireDoubleClick) return;
+
         const touch = e.touches[0];
         const deltaX = Math.abs(touch.clientX - touchStartX);
         const deltaY = Math.abs(touch.clientY - touchStartY);
@@ -52,7 +58,7 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
             setHasMoved(true);
 
             // 只在水平滚动列表中且水平移动大于垂直移动时才阻止默认行为
-            if (requireDoubleClick && deltaX > deltaY && deltaX > 15) {
+            if (deltaX > deltaY && deltaX > 15) {
                 e.preventDefault();
             }
         }
@@ -62,12 +68,10 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
         const touchEndTime = Date.now();
         const touchDuration = touchEndTime - touchStartTime;
 
-        // 如果不是水平滚动列表，简化处理
+        // 如果不是水平滚动列表，完全允许默认行为
         if (!requireDoubleClick) {
-            // 在博客列表页，允许快速点击通过
-            if (!hasMoved || touchDuration < 200) {
-                return; // 允许点击事件继续
-            }
+            // 在博客列表页，不干扰任何触摸行为，允许垂直滚动
+            return;
         } else {
             // 在水平滚动列表中，更严格的处理
             if (!hasMoved && touchDuration < 300) {
@@ -121,7 +125,7 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                     userSelect: 'none',
                     WebkitTouchCallout: 'none',
                     KhtmlUserSelect: 'none',
-                    // 在移动端允许垂直滚动，只在水平滚动列表中限制水平滑动
+                    // 博客列表页完全允许触摸操作，首页水平滚动列表使用manipulation
                     touchAction: requireDoubleClick ? 'manipulation' : 'auto'
                 }}
             >
