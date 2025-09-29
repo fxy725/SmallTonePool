@@ -106,8 +106,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* PWA Manifest */}
-        <link rel="manifest" href="/manifest-light.json" media="(prefers-color-scheme: light)" />
-        <link rel="manifest" href="/manifest-dark.json" media="(prefers-color-scheme: dark)" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
