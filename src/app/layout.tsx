@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { PWAInstall } from "@/components/PWAInstall";
 import { PWAThemeSync } from "@/components/PWAThemeSync";
-import { PWAManifestSync } from "@/components/PWAManifestSync";
 import "./globals.css";
 
 // 更优雅的字体选择
@@ -107,7 +106,8 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* PWA Manifest */}
-        <link rel="manifest" href="/api/manifest" />
+        <link rel="manifest" href="/manifest-light.json" media="(prefers-color-scheme: light)" />
+        <link rel="manifest" href="/manifest-dark.json" media="(prefers-color-scheme: dark)" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -122,7 +122,6 @@ export default function RootLayout({
         <ThemeProvider>
           <PWAInstall />
           <PWAThemeSync />
-          <PWAManifestSync />
           <main>{children}</main>
           <ConditionalFooter />
         </ThemeProvider>
