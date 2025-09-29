@@ -4,8 +4,8 @@ import { StructuredData } from "@/components/seo/StructuredData";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { PWAInstall } from "@/components/PWAInstall";
-import { PWASplashScreen } from "@/components/PWASplashScreen";
 import { PWAThemeSync } from "@/components/PWAThemeSync";
+import { PWAManifestSync } from "@/components/PWAManifestSync";
 import "./globals.css";
 
 // 更优雅的字体选择
@@ -107,13 +107,13 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* PWA Manifest */}
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/api/manifest" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="小石潭记" />
         <meta name="application-name" content="小石潭记" />
-        <meta name="msapplication-TileColor" content="#3b82f6" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
       <body
@@ -122,7 +122,7 @@ export default function RootLayout({
         <ThemeProvider>
           <PWAInstall />
           <PWAThemeSync />
-          <PWASplashScreen />
+          <PWAManifestSync />
           <main>{children}</main>
           <ConditionalFooter />
         </ThemeProvider>
