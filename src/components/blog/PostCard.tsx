@@ -87,7 +87,7 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
     };
 
     return (
-        <Link href={`/blog/${post.slug}`} draggable={false} prefetch={true} onClick={(e) => {
+        <Link href={`/blog/${encodeURIComponent(post.slug)}`} draggable={false} prefetch={true} onClick={(e) => {
             // 若外层容器在拖拽中设置了抑制标记，这里仍会被捕获，保底阻止
             if ((window as Window & { __suppressNextPostClick__?: boolean }).__suppressNextPostClick__) {
                 e.preventDefault();

@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 博客文章
     const posts = await getAllPosts()
     const blogPages = posts.map((post) => ({
-        url: `${baseUrl}/blog/${post.slug}`,
+        url: `${baseUrl}/blog/${encodeURIComponent(post.slug)}`,
         lastModified: new Date(post.updated || post.date),
         changeFrequency: 'weekly' as const,
         priority: 0.9,

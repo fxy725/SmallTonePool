@@ -51,7 +51,7 @@ export function StructuredData({ type, data }: StructuredDataProps) {
                 },
                 "mainEntityOfPage": {
                     "@type": "WebPage",
-                    "@id": `https://smalltone-blog.vercel.app/blog/${data.slug as string}`
+                    "@id": `https://smalltone-blog.vercel.app/blog/${encodeURIComponent(data.slug as string)}`
                 },
                 "keywords": data.tags && Array.isArray(data.tags) ? (data.tags as string[]).join(", ") : "",
                 "articleSection": "Technology",

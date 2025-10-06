@@ -21,8 +21,8 @@ export async function GET() {
         feed.item({
             title: post.title,
             description: post.summary,
-            url: `${site_url}/blog/${post.slug}`,
-            guid: `${site_url}/blog/${post.slug}`,
+            url: `${site_url}/blog/${encodeURIComponent(post.slug)}`,
+            guid: `${site_url}/blog/${encodeURIComponent(post.slug)}`,
             date: new Date(post.date),
             author: '小石潭记',
             categories: post.tags,

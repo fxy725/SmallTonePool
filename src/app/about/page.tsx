@@ -247,7 +247,7 @@ export default function AboutPage() {
 
                         <div className="p-4 bg-transparent rounded-none shadow-none about-project-card" style={{ fontFamily: 'LXGW WenKai Mono TC' }}>
                             <div className="flex items-center gap-3 mb-4">
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">SmallPoolTone</h3>
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">SmallTonePool</h3>
                                 <div className="ml-auto flex items-center gap-4">
                                     <a href="https://github.com/fxy725/SmallPoolTone" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

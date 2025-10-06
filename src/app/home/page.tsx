@@ -491,11 +491,16 @@ export default function Home() {
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Section Header */}
                     <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-2">
-                            <svg className="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="inline-flex items-center gap-3">
+                            <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span className="text-gray-700 dark:text-gray-300" style={{ fontFamily: 'var(--font-tech-stack)' }}>最新发布</span>
+                            <span
+                                className="text-gray-700 dark:text-gray-300 text-xl md:text-2xl"
+                                style={{ fontFamily: 'var(--font-tech-stack)' }}
+                            >
+                                最新发布
+                            </span>
                         </div>
                     </div>
 
@@ -575,6 +580,9 @@ export default function Home() {
                         </div>
 
                         {/* 查看更多文章按钮 - 放在滑动列表下方 */}
+                        <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 text-center" style={{ fontFamily: 'var(--font-tech-stack)' }}>
+                            （鼠标悬浮以暂停，拖曳以滑动）
+                        </p>
                         <div className="text-center mt-12">
                             <div className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px]" style={{ fontFamily: 'var(--font-tech-stack)' }}>
                                 <Link href="/blog" className="inline-flex items-center gap-3 text-blue-700 dark:text-blue-300">

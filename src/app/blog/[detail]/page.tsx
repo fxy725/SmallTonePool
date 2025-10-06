@@ -27,6 +27,14 @@ interface PostPageProps {
     }>;
 }
 
+function safeDecodeURIComponent(value: string): string {
+    try {
+        return decodeURIComponent(value);
+    } catch {
+        return value;
+    }
+}
+
 // 动态读取MDX文件的函数
 async function readMDXFile(slug: string): Promise<string> {
     const postsDirectory = path.join(process.cwd(), 'src/data/posts');
@@ -94,7 +102,8 @@ const getDynamicPostData = unstable_cache(
 
 export async function generateMetadata({ params }: PostPageProps) {
     const { detail } = await params;
-    const post = await getDynamicPostData(detail);
+    const decoded = safeDecodeURIComponent(detail);
+    const post = await getDynamicPostData(decoded);
 
     if (!post) {
         return {
@@ -123,10 +132,11 @@ export async function generateMetadata({ params }: PostPageProps) {
 
 export default async function PostPage({ params }: PostPageProps) {
     const { detail } = await params;
-    const post = await getDynamicPostData(detail);
+    const decoded = safeDecodeURIComponent(detail);
+    const post = await getDynamicPostData(decoded);
 
     if (!post) {
-        return <PostNotFound slug={detail} />;
+        return <PostNotFound slug={decoded} />;
     }
 
     return (

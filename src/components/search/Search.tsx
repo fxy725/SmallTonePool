@@ -44,7 +44,7 @@ export function Search() {
     const handleResultClick = (slug: string) => {
         setIsOpen(false);
         setQuery("");
-        router.push(`/blog/${slug}`);
+        router.push(`/blog/${encodeURIComponent(slug)}`);
     };
 
     return (
