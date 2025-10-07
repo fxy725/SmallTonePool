@@ -40,8 +40,8 @@
 /* Enhanced Color System - Small Stone Pond Theme */
 :root {
     /* Background Colors - Stone Inspired */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
+    --bg-primary: #f9fafb;
+    --bg-secondary: #ffffff;
     --bg-tertiary: #f1f5f9;
     --bg-quaternary: #e2e8f0;
     --bg-card: #ffffff;
@@ -499,9 +499,9 @@ pre code {
     letter-spacing: var(--tracking-wide);
 }
 
-/* Smooth Scrolling */
+/* Disable global smooth scroll to preserve instant scroll restoration */
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     /* Firefox scrollbar colors based on theme variables */
     scrollbar-color: var(--text-muted) transparent;
 }
@@ -2566,6 +2566,14 @@ a:focus-visible,
 .prose pre.collapsed code.hljs {
     display: none !important;
 }
+.prose pre.collapsed > :not(.codeblock-toolbar) {
+    display: none !important;
+}
+.prose pre.collapsed::before,
+.prose pre.collapsed::after {
+    display: none !important;
+    content: none !important;
+}
 
 /* 统一代码区域与容器背景，移除可能的内部分割线/阴影 */
 .prose pre .hljs,
@@ -3235,7 +3243,8 @@ a:focus-visible,
     user-select: none !important;
     -webkit-touch-callout: none !important;
     -webkit-tap-highlight-color: transparent !important;
-    touch-action: none !important;
+    /* 允许默认滚动行为，避免在移动端阻断上下滚动 */
+    touch-action: auto !important;
 }
 
 /* 防止任何形式的选择 */

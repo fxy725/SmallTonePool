@@ -1,25 +1,43 @@
 {
-    "name": "小石潭记 - 技术心得与经验总结",
-    "short_name": "小石潭记",
+    "name": "小石谭记 - 技术心得与经验总结",
+    "short_name": "小石谭记",
     "description": "分享编程路上的点点滴滴，记录技术成长的心路历程",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait-primary",
-    "background_color": "#ffffff",
-    "theme_color": "#ffffff",
+    "background_color": "#f9fafb",
+    "theme_color": "#f9fafb",
     "scope": "/",
     "icons": [
         {
-            "src": "/assets/Logo.png",
+            "src": "/assets/Logo-192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "/assets/Logo.png",
+            "src": "/assets/Logo-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
         }
-    ]
+    ],
+    "dark_mode": {
+        "background_color": "#0f172a",
+        "theme_color": "#0f172a",
+        "icons": [
+            {
+                "src": "/assets/Logo-dark-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any maskable"
+            },
+            {
+                "src": "/assets/Logo-dark-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any maskable"
+            }
+        ]
+    }
 }

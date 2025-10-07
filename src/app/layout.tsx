@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { PWAInstall } from "@/components/PWAInstall";
 import { PWAThemeSync } from "@/components/PWAThemeSync";
+import { InAppSplash } from "@/components/pwa/InAppSplash";
 import "./globals.css";
 
 // 更优雅的字体选择
@@ -67,10 +68,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <StructuredData type="Blog" data={{}} />
-        {/* 防闪烁脚本 - 必须在body之前执行 */}
+        {/* 防闪烁脚本 - 必须在body之前执行，同时同步 theme-color */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -85,6 +86,30 @@ export default function RootLayout({
                   } else {
                     document.documentElement.classList.remove('dark');
                   }
+
+                  var ensureMetaTheme = function() {
+                    var meta = document.querySelector('meta[name="theme-color"]');
+                    if (!meta) {
+                      meta = document.createElement('meta');
+                      meta.setAttribute('name', 'theme-color');
+                      document.head.appendChild(meta);
+                    }
+                    return meta;
+                  };
+
+                  var resolveThemeColor = function(isDarkMode) {
+                    try {
+                      var styles = getComputedStyle(document.documentElement);
+                      var bg = styles.getPropertyValue('--bg-primary');
+                      if (bg && bg.trim()) {
+                        return bg.trim();
+                      }
+                    } catch (_) {}
+                    return isDarkMode ? '#0f172a' : '#f9fafb';
+                  };
+
+                  var metaTheme = ensureMetaTheme();
+                  metaTheme.setAttribute('content', resolveThemeColor(isDark));
 
                   // 初始化时不要强制开启全局过渡，避免初次渲染抖动
                 } catch (e) {
@@ -101,9 +126,11 @@ export default function RootLayout({
         />
         {/* 添加 favicon 等元标签 */}
         <link rel="icon" href="/assets/site-Logo.ico" />
-        <link rel="apple-touch-icon" href="/assets/Logo.png" />
-        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+        <link rel="apple-touch-icon" href="/assets/Logo-512.png" />
+        {/* 初始以接近页面底色的颜色填充，挂载后由 PWAThemeSync 精准同步为 --bg-primary */}
+        <meta name="theme-color" content="#f9fafb" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f9fafb" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
@@ -116,13 +143,16 @@ export default function RootLayout({
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
       >
         <ThemeProvider>
+          <InAppSplash />
           <PWAInstall />
           <PWAThemeSync />
-          <main>{children}</main>
-          <ConditionalFooter />
+          <div className="min-h-screen flex flex-col">
+            <main className="flex-1 w-full pb-16 sm:pb-20 lg:pb-24">{children}</main>
+            <ConditionalFooter />
+          </div>
         </ThemeProvider>
       </body>
     </html>

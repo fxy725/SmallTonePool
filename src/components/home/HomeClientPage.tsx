@@ -28,6 +28,8 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
   const isHoveringRef = useRef(false); // 记录鼠标是否悬停，避免误恢复自动滚动
   const isPageScrollingRef = useRef(false); // 记录页面是否处于垂直滚动中
   const pageScrollIdleTimerRef = useRef<NodeJS.Timeout | null>(null); // 垂直滚动停止后的恢复定时器
+  const hasRestoredRef = useRef(false); // 是否已从会话中恢复过位置
+  const RESTORE_KEY = 'home:postSliderScrollLeft';
 
   useEffect(() => {
     setMounted(true);
@@ -38,7 +40,7 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
     setPosts(initialPosts);
   }, [initialPosts]);
 
-  // 精确测量一组宽度，并初始化至中间组的起点
+  // 精确测量一组宽度，并初始化至中间组的起点（含返回时的滚动位置恢复）
   useEffect(() => {
     if (!scrollContainerRef.current || posts.length === 0) return;
 
@@ -54,13 +56,72 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
           if (width > 0) {
             oneSetWidthRef.current = width;
             container.style.scrollBehavior = 'auto';
-            container.scrollLeft = width;
+            // 优先恢复历史位置（归一化到中间组），否则回到中间组起点
+            let restored = false;
+            if (!hasRestoredRef.current) {
+              try {
+                const raw = sessionStorage.getItem(RESTORE_KEY);
+                if (raw !== null) {
+                  const saved = parseFloat(raw);
+                  if (!Number.isNaN(saved)) {
+                    const normalized = ((saved % width) + width) % width;
+                    container.scrollLeft = width + normalized;
+                    restored = true;
+                    hasRestoredRef.current = true;
+                  }
+                }
+              } catch { /* 忽略存取异常 */ }
+            }
+            if (!restored) {
+              container.scrollLeft = width;
+            }
+            // 若组件可见，确保自动滚动恢复
+            requestAnimationFrame(() => {
+              try {
+                const rect = container.getBoundingClientRect();
+                const vh = window.innerHeight || document.documentElement.clientHeight;
+                const visible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+                const ratio = rect.height > 0 ? visible / rect.height : 0;
+                if (ratio > 0.2) {
+                  setIsAutoScrolling(true);
+                }
+              } catch { /* 忽略 */ }
+            });
           }
         } else {
           const fallback = (320 + 24) * posts.length;
           oneSetWidthRef.current = fallback;
           container.style.scrollBehavior = 'auto';
-          container.scrollLeft = fallback;
+          // 同样尝试恢复
+          let restored = false;
+          if (!hasRestoredRef.current) {
+            try {
+              const raw = sessionStorage.getItem(RESTORE_KEY);
+              if (raw !== null) {
+                const saved = parseFloat(raw);
+                if (!Number.isNaN(saved)) {
+                  const normalized = ((saved % fallback) + fallback) % fallback;
+                  container.scrollLeft = fallback + normalized;
+                  restored = true;
+                  hasRestoredRef.current = true;
+                }
+              }
+            } catch { /* 忽略 */ }
+          }
+          if (!restored) {
+            container.scrollLeft = fallback;
+          }
+          requestAnimationFrame(() => {
+            try {
+              const rect = container.getBoundingClientRect();
+              const vh = window.innerHeight || document.documentElement.clientHeight;
+              const visible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+              const ratio = rect.height > 0 ? visible / rect.height : 0;
+              if (ratio > 0.2) {
+                setIsAutoScrolling(true);
+              }
+            } catch { /* 忽略 */ }
+          });
         }
       } catch {
         // 忽略测量失败
@@ -70,6 +131,22 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
     const raf = requestAnimationFrame(measure);
     return () => cancelAnimationFrame(raf);
   }, [posts.length]);
+
+  // 组件卸载（如进入详情页）时，保存当前滑动位置（按一组宽度归一化）
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    return () => {
+      if (!container) return;
+      try {
+        const oneSet = oneSetWidthRef.current || 0;
+        let toSave = container.scrollLeft;
+        if (oneSet > 0) {
+          toSave = ((toSave % oneSet) + oneSet) % oneSet;
+        }
+        sessionStorage.setItem(RESTORE_KEY, String(Math.round(toSave)));
+      } catch { /* 忽略 */ }
+    };
+  }, []);
 
   // 全局鼠标事件处理，确保拖拽在鼠标离开容器时也能正常工作
   useEffect(() => {
@@ -357,7 +434,7 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-16 md:bottom-24 left-1/2 transform -translate-x-1/2 animate-bounce">
           <svg className="w-8 h-8 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
@@ -386,7 +463,7 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
       </section>
 
       {/* Recent Posts Section */}
-      <section className="relative py-20 bg-gray-50 dark:bg-gray-900">
+      <section className="relative pt-20 pb-0 bg-gray-50 dark:bg-gray-900">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16">
@@ -441,7 +518,9 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
               style={{
                 WebkitUserSelect: 'none', userSelect: 'none', scrollBehavior: 'auto',
                 WebkitOverflowScrolling: 'touch', willChange: 'scroll-position', transform: 'translateZ(0)',
-                WebkitTouchCallout: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation'
+                WebkitTouchCallout: 'none', WebkitTapHighlightColor: 'transparent',
+                // 允许横向滑动用于列表滚动，同时把纵向滑动交给页面
+                touchAction: 'pan-x'
               }}
             >
               <div className="flex gap-6" style={{ minWidth: 'max-content' }}>
@@ -460,11 +539,11 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
           </p>
 
           {/* 查看更多 */}
-          <div className="text-center mt-12">
-            <div className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px]" style={{ fontFamily: 'var(--font-tech-stack)' }}>
-              <Link href="/blog" className="inline-flex items-center gap-3 text-blue-700 dark:text-blue-300">
-                <span className="text-lg font-medium">查看更多文章</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center mt-12 mb-8 md:mb-12">
+            <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px]" style={{ fontFamily: 'var(--font-tech-stack)' }}>
+              <Link href="/blog" className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                查看近期文章
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
@@ -475,4 +554,3 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
     </div>
   );
 }
-

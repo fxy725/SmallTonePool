@@ -12,7 +12,7 @@ export default function AboutPage() {
             <Header />
 
             {/* Content Sections */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16 about-container">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-0 space-y-16 about-container">
 
 
 
@@ -83,7 +83,7 @@ export default function AboutPage() {
                                 style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%)' }}
                             >
                                 <Image src="/logos/unity.svg" alt="Unity" width={16} height={16} className="flex-shrink-0 filter brightness-0 invert" />
-                                <span className="font-pixel text-lg text-white leading-none">Unity</span>
+                                <span className="font-pixel text-lg text-white leading-none select-none user-select-none">Unity</span>
                             </div>
 
                             {/* C++ */}
@@ -92,7 +92,7 @@ export default function AboutPage() {
                                 style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%)' }}
                             >
                                 <Image src="/logos/c++.svg" alt="C++" width={16} height={16} className="flex-shrink-0 filter brightness-0 invert" />
-                                <span className="font-pixel text-lg text-white leading-none">C++</span>
+                                <span className="font-pixel text-lg text-white leading-none select-none user-select-none">C++</span>
                             </div>
 
                             {/* C# */}
@@ -107,7 +107,7 @@ export default function AboutPage() {
                                     height={16}
                                     className="flex-shrink-0 filter brightness-0 invert"
                                 />
-                                <span className="font-pixel text-lg text-white leading-none">C#</span>
+                                <span className="font-pixel text-lg text-white leading-none select-none user-select-none">C#</span>
                             </div>
 
                             {/* Lua */}
@@ -116,7 +116,7 @@ export default function AboutPage() {
                                 style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%)' }}
                             >
                                 <Image src="/logos/lua.svg" alt="Lua" width={16} height={16} className="flex-shrink-0 filter brightness-0 invert" />
-                                <span className="font-pixel text-lg text-white leading-none">Lua</span>
+                                <span className="font-pixel text-lg text-white leading-none select-none user-select-none">Lua</span>
                             </div>
                         </div>
                     </div>

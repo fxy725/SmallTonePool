@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { unstable_cache } from 'next/cache';
 import path from 'path';
 import fs from 'fs';
 import matter from 'gray-matter';

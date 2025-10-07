@@ -20,12 +20,30 @@ export default function BlogContentClient({ posts: initialPosts, tags: initialTa
     const postsPerPage = 12;
 
     // 根据标签筛选文章 - 使用 useMemo 优化
-    const filteredPosts = useMemo(() =>
-        selectedTag
+    const filteredPosts = useMemo(() => {
+        const base = selectedTag
             ? posts.filter(post => post.tags.includes(selectedTag))
-            : posts,
-        [posts, selectedTag]
-    );
+            : posts;
+
+        // 在 ALL 标签下追加一个“文章未发现(调试)”占位项，永远排在列表最后
+        if (!selectedTag) {
+            const debugPost = {
+                slug: "__debug-not-found__",
+                title: "文章未发现（调试）",
+                date: new Date(0).toISOString(), // 置顶排序不会受影响，我们在末尾追加
+                updated: undefined,
+                summary: "点击后跳转到不存在的文章详情页，便于开发调试未发现页面。",
+                content: "",
+                tags: [],
+                readingTime: 0,
+            } as Post;
+
+            // 复制并在末尾追加，确保永远在最后
+            return [...base, debugPost];
+        }
+
+        return base;
+    }, [posts, selectedTag]);
 
     // 分页计算 - 使用 useMemo 优化
     const paginationData = useMemo(() => {
@@ -82,7 +100,8 @@ export default function BlogContentClient({ posts: initialPosts, tags: initialTa
     // 处理翻页 - 使用 useCallback 优化
     const handlePageChange = useCallback((page: number) => {
         setCurrentPage(page);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // 保持即时跳转，不使用平滑滚动，避免与返回历史滚动恢复冲突
+        window.scrollTo({ top: 0 });
 
         // 更新URL中的页码参数
         const url = new URL(window.location.href);
@@ -187,7 +206,7 @@ export default function BlogContentClient({ posts: initialPosts, tags: initialTa
             </div>
 
             {/* Posts Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-0">
                 {isLoading ? (
                     <div className="flex justify-center items-center py-20">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
@@ -219,7 +238,7 @@ export default function BlogContentClient({ posts: initialPosts, tags: initialTa
 
                 {/* Bottom Pagination - 使用相同的优化逻辑 */}
                 {totalPages > 1 && !isLoading && (
-                    <div className="mt-8 pt-4">
+                    <div className="mt-8 pt-4 mb-8 md:mb-12">
                         <div className="flex items-center justify-center gap-2" style={{ fontFamily: 'var(--font-content)' }}>
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}

@@ -86,6 +86,8 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
         }
     };
 
+    const isDebug = post.slug === "__debug-not-found__";
+
     return (
         <Link href={`/blog/${encodeURIComponent(post.slug)}`} draggable={false} prefetch={true} onClick={(e) => {
             // 若外层容器在拖拽中设置了抑制标记，这里仍会被捕获，保底阻止
@@ -104,17 +106,17 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
             }
         }}>
             <article
-                className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-[1px] select-none user-select-none post-card-unselectable ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
+                className={`group relative bg-white/95 dark:bg-gray-800/95 rounded-xl overflow-hidden border ${isDebug ? 'border-amber-300 dark:border-amber-500' : 'border-gray-200 dark:border-gray-700'} backdrop-blur-[1px] select-none user-select-none post-card-unselectable ${requireDoubleClick ? 'cursor-grab' : 'cursor-pointer'}`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                onMouseDown={(e) => e.preventDefault()}
-                onMouseUp={(e) => e.preventDefault()}
-                onMouseMove={(e) => e.preventDefault()}
+                onMouseDown={requireDoubleClick ? ((e) => e.preventDefault()) : undefined}
+                onMouseUp={requireDoubleClick ? ((e) => e.preventDefault()) : undefined}
+                onMouseMove={requireDoubleClick ? ((e) => e.preventDefault()) : undefined}
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
                 onDragEnd={(e) => e.preventDefault()}
                 onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
-                onDoubleClick={(e: React.MouseEvent) => e.preventDefault()}
+                onDoubleClick={requireDoubleClick ? ((e: React.MouseEvent) => e.preventDefault()) : undefined}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -125,8 +127,8 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                     userSelect: 'none',
                     WebkitTouchCallout: 'none',
                     KhtmlUserSelect: 'none',
-                    // 博客列表页完全允许触摸操作，首页水平滚动列表使用manipulation
-                    touchAction: requireDoubleClick ? 'manipulation' : 'auto'
+                    // 博客列表页允许垂直滚动穿透；首页水平滚动列表保留横向滑动
+                    touchAction: requireDoubleClick ? 'pan-x' : 'pan-y'
                 }}
             >
                 {/* Animated Background Pattern */}
@@ -155,6 +157,11 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
                     onMouseMove={(e: React.MouseEvent) => e.preventDefault()}
                     onDoubleClick={(e: React.MouseEvent) => e.preventDefault()}
                 >
+                    {isDebug && (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-300/70 dark:border-amber-700/70 select-none">
+                            调试
+                        </span>
+                    )}
                     {/* Meta Information */}
                     <div className="flex items-center gap-3 mb-4 text-sm text-gray-500 dark:text-gray-400 select-none user-select-none post-card-unselectable">
                         <time
@@ -178,7 +185,9 @@ export function PostCard({ post, requireDoubleClick = false }: PostCardProps) {
 
                     {/* Summary */}
                     <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3 select-none user-select-none post-card-unselectable" style={{ pointerEvents: 'none' }}>
-                        {post.summary}
+                        {isDebug
+                            ? '这是一个用于开发调试的占位文章。点击它将前往“文章未发现”页面，以便快速检查未发现页面的样式与交互。'
+                            : post.summary}
                     </p>
 
                     {/* Tags */}

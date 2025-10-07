@@ -59,7 +59,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // 更新meta标签的theme-color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute("content", isDark ? "#0f172a" : "#ffffff");
+      // 优先使用设计系统的背景主色变量，保持地址栏与页面底色一致
+      const rootStyles = getComputedStyle(document.documentElement);
+      const bgPrimary = rootStyles.getPropertyValue('--bg-primary')?.trim();
+      const fallback = isDark ? '#0f172a' : '#f9fafb';
+      metaThemeColor.setAttribute("content", bgPrimary || fallback);
     }
   };
 
