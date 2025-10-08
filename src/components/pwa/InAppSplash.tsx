@@ -7,12 +7,15 @@ export function InAppSplash() {
   const [enabled, setEnabled] = useState(true);
 
   useEffect(() => {
-    // 在已安装的 PWA（standalone）中避免与系统开屏重复；同时每个会话只显示一次。
+    // ���Ѱ�װ�� PWA��standalone���б�����ϵͳ�����ظ���ͬʱÿ���Ựֻ��ʾһ�Ρ�
     try {
+      // Type guard for iOS Safari's non-standard `navigator.standalone`
+      const hasNavigatorStandalone = (n: Navigator): n is Navigator & { standalone: boolean } => 'standalone' in n;
+
       const isStandalone =
         (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
-        // iOS Safari 独立模式
-        (typeof navigator !== 'undefined' && (navigator as any).standalone === true);
+        // iOS Safari ����ģʽ
+        (typeof navigator !== 'undefined' && hasNavigatorStandalone(navigator) && navigator.standalone === true);
 
       const alreadyShown = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('inapp:splash:shown') === '1';
 
@@ -58,9 +61,9 @@ export function InAppSplash() {
         userSelect: "none",
       }}
     >
-      {/* 同一份 Logo，深浅色由 .dark class 控制 */}
+      {/* ͬһ�� Logo����ǳɫ�� .dark class ���� */}
       <div className="relative w-40 h-40 select-none pointer-events-none">
-        {/* 浅色 */}
+        {/* ǳɫ */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/assets/Logo-512.png"
@@ -68,7 +71,7 @@ export function InAppSplash() {
           className="absolute inset-0 w-full h-full object-contain dark:hidden"
           draggable={false}
         />
-        {/* 深色 */}
+        {/* ��ɫ */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/assets/Logo-dark-512.png"
@@ -78,7 +81,7 @@ export function InAppSplash() {
         />
       </div>
       <style>{`
-        /* 在不支持 CSS 变量的环境兜底深色背景 */
+        /* �ڲ�֧�� CSS �����Ļ���������ɫ���� */
         .dark #inapp-splash { background-color: #0f172a; }
       `}</style>
     </div>
