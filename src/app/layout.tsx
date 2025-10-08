@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { PWAInstall } from "@/components/PWAInstall";
 import { PWAThemeSync } from "@/components/PWAThemeSync";
-import { InAppSplash } from "@/components/pwa/InAppSplash";
 import "./globals.css";
 
 // 更优雅的字体选择
@@ -146,7 +145,6 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
       >
         <ThemeProvider>
-          <InAppSplash />
           <PWAInstall />
           <PWAThemeSync />
           <div className="min-h-screen flex flex-col">

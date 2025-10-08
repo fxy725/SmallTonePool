@@ -122,7 +122,7 @@ export default function AboutPage() {
                     </div>
                 </section>
                 {/* Projects Section */}
-                <div className="p-6 md:p-8 bg-transparent rounded-none shadow-none">
+                <div id="projects" className="p-6 md:p-8 bg-transparent rounded-none shadow-none scroll-mt-12 md:scroll-mt-24">
                     {/* 项目展示分割线 */}
                     <div className="relative mb-12">
                         <div className="absolute inset-0 flex items-center">

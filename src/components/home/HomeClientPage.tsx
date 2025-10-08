@@ -540,13 +540,23 @@ export default function HomeClientPage({ initialPosts }: { initialPosts: Post[] 
 
           {/* 查看更多 */}
           <div className="text-center mt-12 mb-8 md:mb-12">
-            <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px]" style={{ fontFamily: 'var(--font-tech-stack)' }}>
-              <Link href="/blog" className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                查看近期文章
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
+            <div className="flex flex-col items-center gap-4">
+              <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px]" style={{ fontFamily: 'var(--font-tech-stack)' }}>
+                <Link href="/blog" className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  查看近期文章
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+              <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px]" style={{ fontFamily: 'var(--font-tech-stack)' }}>
+                <Link href="/about#projects" className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  前往我的项目
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

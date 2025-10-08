@@ -4,11 +4,28 @@ import { useEffect, useState } from "react";
 
 export function InAppSplash() {
   const [hidden, setHidden] = useState(false);
+  const [enabled, setEnabled] = useState(true);
 
   useEffect(() => {
+    // 在已安装的 PWA（standalone）中避免与系统开屏重复；同时每个会话只显示一次。
+    try {
+      const isStandalone =
+        (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        // iOS Safari 独立模式
+        (typeof navigator !== 'undefined' && (navigator as any).standalone === true);
+
+      const alreadyShown = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('inapp:splash:shown') === '1';
+
+      if (isStandalone || alreadyShown) {
+        setEnabled(false);
+        setHidden(true);
+        return;
+      }
+      try { sessionStorage.setItem('inapp:splash:shown', '1'); } catch {}
+    } catch {}
+
     const hide = () => setHidden(true);
 
-    // 尽快在首次可交互后淡出（两种兜底：DOMContentLoaded 或超时）
     if (document.readyState === "complete" || document.readyState === "interactive") {
       const t = window.setTimeout(hide, 250);
       return () => window.clearTimeout(t);
@@ -22,6 +39,8 @@ export function InAppSplash() {
       };
     }
   }, []);
+
+  if (!enabled) return null;
 
   return (
     <div
@@ -39,7 +58,7 @@ export function InAppSplash() {
         userSelect: "none",
       }}
     >
-      {/* 根据主题显示不同的 Logo（利用 .dark class 控制）*/}
+      {/* 同一份 Logo，深浅色由 .dark class 控制 */}
       <div className="relative w-40 h-40 select-none pointer-events-none">
         {/* 浅色 */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -59,7 +78,7 @@ export function InAppSplash() {
         />
       </div>
       <style>{`
-        /* 在不支持 CSS 变量的环境兜底深色 */
+        /* 在不支持 CSS 变量的环境兜底深色背景 */
         .dark #inapp-splash { background-color: #0f172a; }
       `}</style>
     </div>
